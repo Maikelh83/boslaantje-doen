@@ -308,27 +308,6 @@
     padding:.9rem 1.1rem;border-left:4px solid var(--green)}
   .rent-grid .photo{aspect-ratio:4/5}
 
-  /* ---- aanvraagformulier (catering & verhuur) ---- */
-  .request-form{
-    max-width:760px;background:#fff;border:1.5px solid var(--paper-line);
-    border-radius:var(--r);box-shadow:var(--shadow);padding:2.2rem 2.4rem;
-  }
-  @media(max-width:600px){.request-form{padding:1.6rem 1.4rem}}
-  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.1rem;margin-bottom:1.6rem}
-  .field{display:flex;flex-direction:column;gap:.4rem}
-  .field-wide{grid-column:1/-1}
-  .field label{font-weight:700;font-size:.92rem;color:var(--green-ink)}
-  .field input,.field select,.field textarea{
-    font-family:var(--font-body);font-size:1rem;padding:.72em .9em;
-    border:1.5px solid var(--paper-line);border-radius:10px;background:#fff;color:var(--ink);
-    transition:border-color .15s ease,box-shadow .15s ease;
-  }
-  .field input:focus,.field select:focus,.field textarea:focus{
-    outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(74,93,61,.18);
-  }
-  .field textarea{resize:vertical;min-height:5.5em}
-  .form-note{margin-top:1rem;font-size:.9rem;color:#5a5343}
-
   /* ---- sfeer-gallerij ---- */
   .gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
   @media(min-width:760px){.gallery{grid-template-columns:repeat(4,1fr)}}
@@ -959,55 +938,6 @@
 <section class="seo" aria-label="Over 't Boslaantje">
   <div class="wrap">
     <p>Op zoek naar een snackbar in Veenendaal? Bij 't Boslaantje (Boslaantje Doen) aan de Oleander haal je elke dag vers gebakken friet, burgers, snacks en broodjes — afhalen bij de snackbar of laten bezorgen in Veenendaal. Iets te vieren? Wij regelen ook de catering en de feestspullen voor je verjaardag, jubileum of buurtfeest. Voor bedrijven, scholen en trainingslocaties verzorgen we onder de naam <a href="https://maikelh83.github.io/vers-en-belegd/" style="color:#e1b7ab;font-weight:700">Vers &amp; Belegd</a> de dagelijkse zakelijke lunch en vergaderlunch in Veenendaal en omgeving. Bestel eenvoudig online of loop gewoon even binnen.</p>
-  </div>
-</section>
-
-<!-- ============ aanvraagformulier: catering & verhuur ============ -->
-<section id="aanvraag" class="alt">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Catering &amp; verhuur</span>
-      <h2>Vraag vrijblijvend een offerte aan</h2>
-      <p>Vul het formulier in en we reageren binnen &eacute;&eacute;n werkdag met een voorstel op maat.</p>
-    </div>
-    <form class="request-form reveal" action="mailto:feest@boslaantjedoen.nl" method="POST" enctype="text/plain">
-      <div class="form-grid">
-        <div class="field">
-          <label for="rq-naam">Naam</label>
-          <input type="text" id="rq-naam" name="Naam" autocomplete="name" required>
-        </div>
-        <div class="field">
-          <label for="rq-email">E-mail</label>
-          <input type="email" id="rq-email" name="E-mail" autocomplete="email" required>
-        </div>
-        <div class="field">
-          <label for="rq-telefoon">Telefoon</label>
-          <input type="tel" id="rq-telefoon" name="Telefoon" autocomplete="tel">
-        </div>
-        <div class="field">
-          <label for="rq-datum">Datum feest</label>
-          <input type="date" id="rq-datum" name="Datum feest">
-        </div>
-        <div class="field">
-          <label for="rq-aantal">Aantal personen</label>
-          <input type="number" id="rq-aantal" name="Aantal personen" min="1" step="1">
-        </div>
-        <div class="field">
-          <label for="rq-keuze">Keuze</label>
-          <select id="rq-keuze" name="Keuze">
-            <option value="Snackbar-catering">Snackbar-catering</option>
-            <option value="Partyverhuur">Partyverhuur</option>
-            <option value="Combi">Combi (catering + verhuur)</option>
-          </select>
-        </div>
-        <div class="field field-wide">
-          <label for="rq-opmerkingen">Opmerkingen</label>
-          <textarea id="rq-opmerkingen" name="Opmerkingen" rows="4" placeholder="Vertel ons over je feest, allergie&euml;n of wensen&hellip;"></textarea>
-        </div>
-      </div>
-      <button type="submit" class="btn btn-green">Offerte aanvragen</button>
-      <p class="form-note">We reageren binnen &eacute;&eacute;n werkdag. Liever bellen? 0318 &ndash; 514 916.</p>
-    </form>
   </div>
 </section>
 
