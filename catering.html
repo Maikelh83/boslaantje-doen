@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
 <meta name="theme-color" content="#4A5D3D">
 
 <title>Catering Veenendaal e.o. — BBQ, buffet &amp; hapjes | Boslaantje Doen</title>
@@ -74,8 +76,41 @@
   .nav{display:flex;align-items:center;justify-content:space-between;height:66px;gap:1rem}
   .brand{display:flex;align-items:center;gap:.6rem}
   .brand .logo{width:132px;height:42px;background:var(--logo) left center/contain no-repeat}
-  .nav .back{font-weight:700;font-size:.92rem;color:var(--green-ink)}
-  .nav .back:hover{color:var(--green)}
+  .nav-links{display:none;align-items:center;gap:1.7rem}
+  .nav-links a{font-weight:600;font-size:.94rem;color:var(--green-ink)}
+  .nav-links a:hover{color:var(--green)}
+  .nav-links a[aria-current="page"]{color:var(--green);border-bottom:2px solid var(--green)}
+  .nav .btn-green.nav-order{padding:.6em 1.1em;font-size:.92rem}
+
+  .nav-toggle{
+    display:inline-flex;flex-direction:column;justify-content:center;gap:5px;
+    width:44px;height:44px;padding:0 10px;background:none;border:none;cursor:pointer;margin-left:.4rem;
+  }
+  .nav-toggle span{display:block;height:2.5px;width:100%;background:var(--green-ink);border-radius:2px;
+    transition:transform .25s ease,opacity .2s ease}
+  .nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7.5px) rotate(45deg)}
+  .nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+  .nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
+
+  .mobile-menu{
+    display:flex;flex-direction:column;gap:.2rem;
+    background:var(--paper-2);border-top:1px solid var(--paper-line);
+    padding:0 22px;max-height:0;overflow:hidden;opacity:0;
+    transition:max-height .32s ease,opacity .22s ease,padding .32s ease;
+  }
+  .mobile-menu.is-open{max-height:520px;opacity:1;padding:.6rem 22px 1.1rem}
+  .mobile-menu[hidden]{display:none}
+  .mobile-menu a{color:var(--green-ink);font-weight:600;font-size:1.05rem;padding:.85rem .2rem;
+    border-bottom:1px solid var(--paper-line)}
+  .mobile-menu a:last-of-type{border-bottom:none}
+  .mobile-menu .mobile-order{margin-top:.8rem;justify-content:center;border-bottom:none}
+
+  @media(min-width:900px){
+    .nav-links{display:flex}
+    .nav-toggle{display:none}
+    .mobile-menu{display:none !important}
+  }
+  @media (prefers-reduced-motion:reduce){.nav-toggle span{transition:none}}
 
   /* hero */
   .hero{background:var(--green);color:#fff;padding:clamp(2.4rem,6vw,4rem) 0}
@@ -196,9 +231,8 @@
   "servesCuisine": ["BBQ", "Buffet", "Hapjes", "Borrelplank"],
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "Boslaan 85",
+    "streetAddress": "Oleander 1a",
     "addressLocality": "Veenendaal",
-    "postalCode": "3903",
     "addressCountry": "NL"
   },
   "areaServed": {
@@ -221,11 +255,29 @@
 
 <a href="#main" class="skip-link">Direct naar de inhoud</a>
 
-<header>
+<header id="header">
   <div class="wrap nav">
     <a href="index.html" class="brand" aria-label="Boslaantje Doen"><span class="logo" role="img" aria-label="Boslaantje Doen"></span></a>
-    <a href="index.html" class="back">← Terug naar de site</a>
+    <nav class="nav-links" aria-label="Hoofdmenu">
+      <a href="index.html#diensten">Diensten</a>
+      <a href="catering.html" aria-current="page">Catering</a>
+      <a href="https://maikelh83.github.io/vers-en-belegd/">Zakelijke lunch</a>
+      <a href="index.html#verhuur">Verhuur</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+    <a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-green nav-order">Bestellen</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu openen" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
+  <nav class="mobile-menu" id="mobileMenu" aria-label="Mobiel hoofdmenu" hidden>
+    <a href="index.html#diensten">Diensten</a>
+    <a href="catering.html" aria-current="page">Catering</a>
+    <a href="https://maikelh83.github.io/vers-en-belegd/">Zakelijke lunch</a>
+    <a href="index.html#verhuur">Verhuur</a>
+    <a href="index.html#contact">Contact</a>
+    <a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-green mobile-order">Bestellen</a>
+  </nav>
 </header>
 
 <section class="hero">
@@ -471,6 +523,35 @@
     <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 3C9 3 3.5 8.5 3.5 15.5c0 2.4.7 4.7 1.9 6.7L3 29l7-1.8c1.9 1 4 1.6 6 1.6 7 0 12.5-5.5 12.5-12.5S23 3 16 3zm0 22.8c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-4.2 1.1 1.1-4.1-.2-.4c-1-1.6-1.5-3.4-1.5-5.3C5.7 9.8 10.3 5.2 16 5.2s10.3 4.6 10.3 10.3S21.7 25.8 16 25.8zm5.7-7.7c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2c-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-1.8-.9-3-1.6-4.2-3.6-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.2 4.6 1.9.8 2.7.9 3.6.8.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.2-.3-.2-.6-.4z"/></svg>
   </span>
 </a>
+
+<script>
+  // mobiel hamburgermenu — zelfde betrouwbare geforceerde-reflow-aanpak als op de homepage
+  const navToggle = document.getElementById('navToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (navToggle && mobileMenu) {
+    const setMenu = (open) => {
+      navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      navToggle.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
+      if (open) {
+        mobileMenu.hidden = false;
+        void mobileMenu.offsetHeight;
+        mobileMenu.classList.add('is-open');
+      } else {
+        mobileMenu.classList.remove('is-open');
+        window.setTimeout(() => { mobileMenu.hidden = true; }, 320);
+      }
+    };
+    navToggle.addEventListener('click', () => {
+      setMenu(navToggle.getAttribute('aria-expanded') !== 'true');
+    });
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && navToggle.getAttribute('aria-expanded') === 'true') {
+        setMenu(false); navToggle.focus();
+      }
+    });
+  }
+</script>
 
 </body>
 </html>

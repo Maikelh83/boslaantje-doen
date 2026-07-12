@@ -6,6 +6,53 @@
 <title>Boslaantje Doen · Snackbar, catering, zakelijke lunch & verhuur in Veenendaal</title>
 <meta name="description" content="Je vertrouwde snackbar in Veenendaal. Vers gebakken friet en burgers, catering voor thuis, zakelijke lunch (Vers & Belegd) en feestverhuur — onder één naam.">
 <meta name="keywords" content="snackbar Veenendaal, friet bezorgen, catering thuis, zakelijke lunch Veenendaal, vergaderlunch, feestverhuur, statafels huren">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+<meta name="theme-color" content="#4A5D3D">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://www.boslaantjedoen.nl/">
+
+<meta property="og:title" content="Boslaantje Doen · Snackbar, catering, zakelijke lunch & verhuur in Veenendaal">
+<meta property="og:description" content="Je vertrouwde snackbar in Veenendaal. Vers gebakken friet en burgers, catering voor thuis, zakelijke lunch (Vers & Belegd) en feestverhuur — onder één naam.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:url" content="https://www.boslaantjedoen.nl/">
+<meta property="og:site_name" content="Boslaantje Doen">
+<!-- og:image: vervang door een echte foto (aanbevolen 1200×630px) zodra beschikbaar -->
+<meta property="og:image" content="https://www.boslaantjedoen.nl/images/og-home.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Boslaantje Doen — snackbar, catering & verhuur in Veenendaal">
+<meta name="twitter:description" content="Vers gebakken friet en burgers, catering voor thuis, zakelijke lunch en feestverhuur — onder één naam.">
+<meta name="twitter:image" content="https://www.boslaantjedoen.nl/images/og-home.jpg">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FastFoodRestaurant",
+  "name": "Boslaantje Doen",
+  "description": "Snackbar, catering, zakelijke lunch en feestverhuur in Veenendaal en omstreken.",
+  "url": "https://www.boslaantjedoen.nl/",
+  "telephone": "+31318514916",
+  "priceRange": "€",
+  "servesCuisine": ["Snackbar", "Friet", "Burgers"],
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Oleander 1a",
+    "addressLocality": "Veenendaal",
+    "addressCountry": "NL"
+  },
+  "areaServed": {
+    "@type": "GeoCircle",
+    "geoMidpoint": { "@type": "GeoCoordinates", "latitude": 52.0286, "longitude": 5.5581 },
+    "geoRadius": "15000"
+  },
+  "sameAs": [
+    "https://www.facebook.com/BoslaantjeDoen/",
+    "https://www.instagram.com/boslaantjedoen/"
+  ]
+}
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -397,6 +444,11 @@
   .hero-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(105deg,rgba(44,56,38,.96) 0%,rgba(44,56,38,.86) 38%,rgba(44,56,38,.45) 72%,rgba(44,56,38,.22) 100%)}
   .hero-inner{position:relative;z-index:2;max-width:660px}
   @media(max-width:760px){.hero-overlay{background:linear-gradient(to bottom,rgba(44,56,38,.80),rgba(44,56,38,.93))}}
+  /* Contrastfix: op de donkere foto-overlay leest bosgroen-op-groen bijna niet (contrast ca. 1,7:1).
+     Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
+  .hero h1{color:#FFFFFF;text-shadow:0 2px 14px rgba(0,0,0,.45)}
+  .hero .eyebrow{color:#FFFFFF}
+  .hero .eyebrow::before{background:#FFFFFF}
 
   /* ============ groene balk met logo linksboven (merkgroen, licht logo) ============ */
   header{background:var(--green)}
@@ -621,7 +673,7 @@
     <div class="hero-cta">
       <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold">Bezorgen</a>
       <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold">Afhalen</a>
-      <a href="#contact" class="btn btn-outline">Catering aanvragen</a>
+      <a href="catering.html" class="btn btn-outline">Catering aanvragen</a>
     </div>
     <p class="cta-note">Vers bezorgd in heel Veenendaal, of warm en knapperig zo mee naar huis.</p>
   </div>
@@ -764,7 +816,7 @@
 
     </div>
     <div class="center-cta reveal">
-      <a href="#contact" class="btn btn-gold btn-pulse">Vrijblijvend offerte aanvragen</a>
+      <a href="catering.html" class="btn btn-gold btn-pulse">Vrijblijvend offerte aanvragen</a>
     </div>
   </div>
 </section>
@@ -968,7 +1020,7 @@
         <a href="#contact">Contact</a>
         <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener">Bezorgen</a>
         <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener">Afhalen</a>
-        <a href="#contact">Offerte aanvragen</a>
+        <a href="catering.html">Offerte aanvragen</a>
       </div>
     </div>
     <div class="foot-bottom">
