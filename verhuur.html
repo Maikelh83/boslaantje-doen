@@ -210,6 +210,19 @@
     main{padding-bottom:6rem}
   }
 
+  .faq{padding:3.4rem 0;background:var(--paper-2);border-top:1px solid var(--paper-line)}
+  .faq .faq-head{margin-bottom:1.6rem;max-width:640px}
+  .faq .faq-head h2{margin-bottom:.4rem}
+  .faq .faq-head p{color:#5a5a52;font-size:.98rem}
+  .faq-list{display:flex;flex-direction:column;gap:.7rem;max-width:760px}
+  .faq-item{background:#fff;border:1px solid var(--paper-line);border-radius:var(--r);overflow:hidden}
+  .faq-item summary{cursor:pointer;list-style:none;padding:1rem 1.2rem;font-weight:800;color:var(--green-ink);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .faq-item summary::-webkit-details-marker{display:none}
+  .faq-item summary::after{content:"+";font-size:1.3rem;color:var(--green);flex:none;transition:transform .2s;line-height:1}
+  .faq-item[open] summary::after{transform:rotate(45deg)}
+  .faq-item summary:hover{background:var(--paper-2)}
+  .faq-item .a{margin:0;padding:0 1.2rem 1.1rem;color:#54544c;font-size:.94rem;line-height:1.6}
+
   footer{background:var(--green-ink);color:rgba(255,255,255,.75);padding:2.4rem 0;font-size:.9rem;text-align:center;margin-top:2rem}
   footer a{color:#fff;text-decoration:underline;text-underline-offset:2px}
 
@@ -429,6 +442,41 @@
   </div>
 </main>
 
+<!-- ============ faq ============ -->
+<!-- CONTROLEER: antwoorden hieronder zijn branche-gangbare aannames (borg, schadeafhandeling,
+     reserveringstermijn). Pas aan naar hoe jullie het in de praktijk echt doen. -->
+<section class="faq">
+  <div class="wrap">
+    <div class="faq-head">
+      <span class="eyebrow">Veelgestelde vragen</span>
+      <h2>Vragen over verhuur</h2>
+      <p>Staat je vraag er niet bij? Stel 'm gerust in het opmerkingenveld bij je aanvraag, of app ons.</p>
+    </div>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>Hoe lang van tevoren moet ik reserveren?</summary>
+        <p class="a">Voor een paar statafels of een koelbox volstaat vaak een paar dagen van tevoren. Wil je een tent huren of val je in een druk weekend, reserveer dan bij voorkeur 1 tot 2 weken van tevoren.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Bezorgen en halen jullie de spullen ook op?</summary>
+        <p class="a">Ja, we bezorgen en halen alles weer op tegen een kleine vergoeding in Veenendaal en omgeving. Zelf ophalen en terugbrengen kan ook, in overleg.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Is er een borg?</summary>
+        <p class="a">Voor sommige items, zoals de partytent, vragen we een borg. Die krijg je volledig terug zodra de spullen schoon en onbeschadigd retour komen.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Wat als er iets kapot gaat of beschadigd raakt?</summary>
+        <p class="a">Normale gebruikssporen zijn voor onze rekening. Bij schade of vermissing brengen we de reparatie- of vervangingskosten in rekening — dit bespreken we altijd vooraf met je door.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Voor hoeveel dagen huur ik?</summary>
+        <p class="a">Je huurt standaard per dag. Voor een heel weekend (bijvoorbeeld vrijdag tot en met maandag) rekenen we vaak een gunstiger weekendtarief — vraag ernaar bij je aanvraag.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
 <div class="mobile-bar">
   <span class="sum"><span id="mCount">0</span> in je lijst</span>
   <a class="btn btn-green" href="#cart">Naar aanvraag →</a>
@@ -437,7 +485,7 @@
 <footer>
   <div class="wrap">
     <p style="margin-bottom:.4rem">Met zorg gemaakt door Chantal &amp; het team — een vertrouwd adres in Veenendaal.</p>
-    © 2026 Boslaantje Doen · Feestverhuur in Veenendaal e.o. · <a href="index.html">Naar de homepage</a>
+    © 2026 Boslaantje Doen · Feestverhuur in Veenendaal e.o. · <a href="index.html">Naar de homepage</a> · <a href="solliciteren.html">Werken bij ons</a>
   </div>
 </footer>
 
