@@ -16,6 +16,10 @@
   var WHATSAPP_NUMMER = '31318514916';
   var LABEL = { catering: 'Catering', verhuur: 'Verhuur' };
   var FIELD_IDS = ['datum', 'gasten', 'naam', 'contact', 'opm'];
+  var CROSS_SELL = {
+    catering: { text: 'Ook tafels, een tent of koeling nodig voor je feest?', linkText: 'Bekijk de verhuur', href: 'verhuur.html' },
+    verhuur: { text: 'Ook eten of drinken geregeld voor je feest?', linkText: 'Bekijk de catering', href: 'catering.html' }
+  };
 
   function loadState(){
     try{
@@ -43,11 +47,8 @@
     var g = parseInt(state.fields.gasten || '', 10);
     return (g && g > 0) ? g : 1;
   }
-  function effectiveQty(item){
-    return item.perPerson ? gastenCount() : item.qty;
-  }
   function lineTotal(item){
-    return effectiveQty(item) * item.price;
+    return item.qty * item.price;
   }
   function grandTotal(){
     return Object.keys(state.items).reduce(function(s, k){ return s + lineTotal(state.items[k]); }, 0);
@@ -58,7 +59,7 @@
     if(!itemsEl) return;
 
     var keys = Object.keys(state.items);
-    var totalQty = keys.reduce(function(s, k){ return s + effectiveQty(state.items[k]); }, 0);
+    var totalQty = keys.reduce(function(s, k){ return s + state.items[k].qty; }, 0);
     var countEl = document.getElementById('cartCount'); if(countEl) countEl.textContent = totalQty;
     var mCount = document.getElementById('mCount'); if(mCount) mCount.textContent = totalQty;
 
@@ -77,18 +78,22 @@
         html += '<div class="cart-group-label">' + LABEL[src] + '</div>';
         groups[src].forEach(function(k){
           var item = state.items[k];
-          var qty = effectiveQty(item);
           html += '<div class="cart-item">' +
-            '<span class="nm">' + k + (item.perPerson ? ' <em>(= aantal gasten)</em>' : '') + '</span>' +
-            (item.perPerson
-              ? '<span class="n-fixed">' + qty + '×</span>'
-              : '<div class="qty"><button class="q" type="button" data-m="' + k + '" data-d="-1" aria-label="minder">–</button><span class="n">' + qty + '</span><button class="q" type="button" data-m="' + k + '" data-d="1" aria-label="meer">+</button></div>') +
+            '<span class="nm">' + k + (item.unit ? ' <em>· ' + item.unit + '</em>' : '') + '</span>' +
+            '<div class="qty"><button class="q" type="button" data-m="' + k + '" data-d="-1" aria-label="minder">–</button><span class="n">' + item.qty + '</span><button class="q" type="button" data-m="' + k + '" data-d="1" aria-label="meer">+</button></div>' +
             '<span class="line-price">' + fmt(lineTotal(item)) + '</span>' +
             '</div>';
         });
       });
       html += '<div class="cart-total"><span>Richtprijs totaal</span><span class="amt">' + fmt(grandTotal()) + '</span></div>' +
               '<p class="cart-total-note">Indicatief · definitieve offerte volgt</p>';
+
+      var otherSrc = PAGE_SOURCE === 'catering' ? 'verhuur' : 'catering';
+      if(!groups[otherSrc].length){
+        var cs = CROSS_SELL[PAGE_SOURCE];
+        html += '<p class="cart-crosssell">' + cs.text + ' <a href="' + cs.href + '">' + cs.linkText + ' →</a></p>';
+      }
+
       itemsEl.innerHTML = html;
 
       itemsEl.querySelectorAll('button.q').forEach(function(b){
@@ -118,10 +123,12 @@
       var p = btn.closest('.pkg');
       var nm = p.dataset.name, unit = p.dataset.unit || '';
       var price = parseFloat(p.dataset.price || '0') || 0;
+      var perPerson = unit === 'p.p.';
       if(state.items[nm]){
         delete state.items[nm];
       } else {
-        state.items[nm] = { qty: 1, unit: unit, price: price, source: PAGE_SOURCE, perPerson: unit === 'p.p.' };
+        // bij p.p.-items is 'aantal gasten' een handig startpunt, maar hierna vrij aan te passen
+        state.items[nm] = { qty: perPerson ? gastenCount() : 1, unit: unit, price: price, source: PAGE_SOURCE, perPerson: perPerson };
       }
       saveState(); render();
     });
@@ -136,7 +143,6 @@
       state.fields[id] = el.value;
       saveState();
       el.classList.remove('invalid');
-      if(id === 'gasten') render(); // p.p.-regels herberekenen
     });
   });
 
@@ -153,7 +159,7 @@
       lines.push(LABEL[src] + ':');
       keys.forEach(function(k){
         var item = state.items[k];
-        lines.push('• ' + effectiveQty(item) + '× ' + k + ' (' + fmt(lineTotal(item)) + ')');
+        lines.push('• ' + item.qty + '× ' + k + ' (' + fmt(lineTotal(item)) + ')');
       });
       lines.push('');
     });
