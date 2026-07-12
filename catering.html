@@ -186,6 +186,10 @@
   .wa-alt:hover{color:var(--green)}
   .wa-alt:focus-visible{outline:3px solid var(--green);outline-offset:3px;border-radius:6px}
   .cart-note{font-size:.76rem;color:#9a9a90;text-align:center;margin-top:.7rem}
+  .form-status{font-size:.86rem;text-align:center;margin-top:.6rem;font-weight:700;display:none}
+  .form-status.show{display:block}
+  .form-status.ok{color:var(--green-ink)}
+  .form-status.error{color:#b3261e}
 
   .mobile-bar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:#fff;border-top:1px solid var(--paper-line);padding:.7rem 1rem;display:none;align-items:center;gap:.8rem;box-shadow:0 -8px 24px -18px rgba(0,0,0,.4)}
   .mobile-bar .sum{font-weight:800;font-size:.9rem}
@@ -414,6 +418,7 @@
             <button class="btn btn-green" id="sendMail" type="button">Vraag vrijblijvend je offerte aan</button>
             <a class="wa-alt" id="sendWa" href="#" target="_blank" rel="noopener">Liever appen? Stuur je aanvraag via WhatsApp →</a>
           </div>
+          <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
           <p class="cart-note">Vrijblijvend · reactie binnen 1 werkdag · geen betaling online</p>
         </div>
       </div>
@@ -498,10 +503,47 @@
     return true;
   }
 
+  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvzepvgz';
+  var sendBtn = document.getElementById('sendMail');
+  var sendBtnLabel = sendBtn.textContent;
+  var statusEl = document.getElementById('formStatus');
+
+  function showStatus(msg, kind){
+    statusEl.textContent = msg;
+    statusEl.className = 'form-status show ' + kind;
+  }
+
   document.getElementById('sendMail').addEventListener('click', function(){
     if(!valid()) return;
-    var subject='Cateringaanvraag via website';
-    window.location.href='mailto:'+ORDER_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(buildMessage());
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Versturen…';
+    showStatus('', '');
+    statusEl.className = 'form-status';
+
+    var g = function(id){ return (document.getElementById(id).value || '').trim(); };
+    var payload = {
+      _subject: 'Cateringaanvraag via website — ' + (g('naam') || 'onbekend'),
+      naam: g('naam'),
+      contact: g('contact'),
+      datum: g('datum'),
+      aantal_gasten: g('gasten'),
+      opmerkingen: g('opm'),
+      aanvraag: buildMessage()
+    };
+
+    fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function(res){
+      if (!res.ok) throw new Error('Formspree-fout: ' + res.status);
+      sendBtn.textContent = '✓ Verstuurd';
+      showStatus('Bedankt! Je aanvraag is verstuurd — we reageren binnen één werkdag.', 'ok');
+    }).catch(function(){
+      sendBtn.disabled = false;
+      sendBtn.textContent = sendBtnLabel;
+      showStatus('Er ging iets mis bij het versturen. Probeer het nogmaals, bel 0318 – 514 916, of app ons via de knop hierboven.', 'error');
+    });
   });
   document.getElementById('sendWa').addEventListener('click', function(e){
     if(!valid()){ e.preventDefault(); return; }
