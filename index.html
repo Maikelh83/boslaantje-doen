@@ -412,7 +412,8 @@
   .hours .row.today{background:var(--paper-2);margin:0 -.7rem;padding-left:.7rem;padding-right:.7rem;border-radius:8px}
 
   /* ---- footer ---- */
-  footer{background:var(--ink);color:var(--paper);padding:3.2rem 0 2rem}
+  footer{background:var(--ink);color:var(--paper);padding:3.2rem 0 2rem;position:relative;overflow:hidden}
+  footer .rings{position:absolute;right:-70px;bottom:-70px;width:300px;height:300px;background:var(--boomplak) center/contain no-repeat;opacity:.07;pointer-events:none}
   .foot-grid{display:grid;gap:2rem;margin-bottom:2.4rem}
   @media(min-width:760px){.foot-grid{grid-template-columns:1.6fr 1fr 1fr}}
   .foot-brand .name{font-family:var(--font-display);font-size:1.7rem;margin-bottom:.7rem}
@@ -501,6 +502,7 @@
   .hours-note a{color:var(--green);font-weight:700;text-decoration:underline}
 
   /* ============ hand-geschilderde kwaststreep tussen de blokken ============ */
+  .rings-contact{position:absolute;left:-80px;top:-80px;width:280px;height:280px;background:var(--boomplak) center/contain no-repeat;opacity:.06;pointer-events:none}
   .brush{width:210px;height:18px;margin:0 auto 1.7rem;
     background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20220%2018%27%3E%3Cpath%20fill%3D%27%234A5D3D%27%20d%3D%27M5%2C9%20C40%2C5%2070%2C7%20110%2C8%20C150%2C9%20182%2C5%20215%2C8%20C184%2C12%20150%2C11%20110%2C11%20C70%2C11%2040%2C13%205%2C9%20Z%27/%3E%3Ccircle%20cx%3D%272.4%27%20cy%3D%279%27%20r%3D%271.1%27%20fill%3D%27%234A5D3D%27/%3E%3Ccircle%20cx%3D%27217.5%27%20cy%3D%278.4%27%20r%3D%271%27%20fill%3D%27%234A5D3D%27/%3E%3Cpath%20fill%3D%27%234A5D3D%27%20d%3D%27M120%2C8%20C150%2C7%20175%2C9%20205%2C8%20C176%2C10%20150%2C9.5%20120%2C10%20Z%27%20opacity%3D%27.6%27/%3E%3C/svg%3E") center/contain no-repeat;opacity:.5}
   .brush{opacity:.3}
@@ -971,7 +973,8 @@
   </div>
 </section>
 
-<section id="contact">
+<section id="contact" style="position:relative;overflow:hidden">
+  <span class="rings-contact" aria-hidden="true"></span>
   <div class="wrap">
     <div class="brush" aria-hidden="true"></div>
     <div class="sec-head reveal">
@@ -1050,6 +1053,7 @@
 </section>
 
 <footer>
+  <span class="rings" aria-hidden="true"></span>
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-brand">
