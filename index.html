@@ -312,10 +312,6 @@
     white-space:nowrap;opacity:0;transform:translateX(8px);pointer-events:none;transition:opacity .2s,transform .2s;
     order:-1}
   .wa-float:hover .lbl{opacity:1;transform:translateX(0)}
-  .wa-pulse{position:absolute;right:20px;bottom:20px;width:60px;height:60px;border-radius:50%;
-    background:#25D366;z-index:59;animation:waPulse 2.4s ease-out infinite;pointer-events:none}
-  @keyframes waPulse{0%{transform:scale(1);opacity:.5}70%{transform:scale(1.7);opacity:0}100%{opacity:0}}
-  @media(prefers-reduced-motion:reduce){.wa-pulse{display:none}}
 
   /* ---- diensten-triptiek ---- */
   .cards3{display:grid;gap:1.4rem;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
@@ -711,7 +707,7 @@
     <div class="hero-cta">
       <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold">Bezorgen</a>
       <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold">Afhalen</a>
-      <a href="catering.html" class="btn btn-outline">Catering aanvragen</a>
+      <a href="catering.html" class="btn btn-ghost-light">Catering aanvragen</a>
     </div>
     <p class="cta-note">Vers bezorgd in heel Veenendaal, of warm en knapperig zo mee naar huis.</p>
   </div>
@@ -1237,7 +1233,6 @@
   if(magTonen()) setTimeout(open, ACTIE.vertragingSeconden * 1000);
 })();
 </script>
-<span class="wa-pulse" aria-hidden="true"></span>
 <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Stuur ons een WhatsApp-bericht">
   <span class="lbl">Vragen? App ons!</span>
   <span class="bubble" aria-hidden="true">
