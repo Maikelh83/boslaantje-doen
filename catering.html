@@ -180,6 +180,7 @@
   .cart-fields label{font-weight:700;font-size:.82rem;display:block;margin-bottom:.2rem}
   .cart-fields input,.cart-fields textarea{width:100%;font-family:var(--font-body);font-size:.95rem;padding:.6em .75em;border:1.5px solid var(--paper-line);border-radius:10px;background:var(--paper-2)}
   .cart-fields input:focus,.cart-fields textarea:focus{outline:none;border-color:var(--green);background:#fff}
+  .cart-fields input.invalid,.cart-fields textarea.invalid{border-color:#b3261e;background:#fdf2f1}
   .cart-actions{margin-top:1rem;display:flex;flex-direction:column;gap:.55rem}
   .cart-actions .btn{width:100%;justify-content:center}
   .wa-alt{display:block;text-align:center;font-weight:700;font-size:.88rem;color:var(--green-ink);text-decoration:underline;text-underline-offset:3px;padding:.2rem 0}
@@ -499,7 +500,35 @@
     return lines.join('\n');
   }
   function valid(){
-    if(!Object.keys(cart).length){ alert('Je aanvraaglijst is nog leeg. Kies eerst een of meer pakketten.'); return false; }
+    document.querySelectorAll('.cart-fields .invalid').forEach(function(el){ el.classList.remove('invalid'); });
+
+    if(!Object.keys(cart).length){
+      showStatus('Je aanvraaglijst is nog leeg. Kies eerst een of meer items hierboven.', 'error');
+      return false;
+    }
+
+    var required = [
+      {id:'naam', label:'je naam'},
+      {id:'contact', label:'telefoon of e-mail'},
+      {id:'datum', label:'de datum'}
+    ];
+    var missing = [];
+    var firstInvalid = null;
+    required.forEach(function(r){
+      var el = document.getElementById(r.id);
+      if(!el.value.trim()){
+        el.classList.add('invalid');
+        missing.push(r.label);
+        if(!firstInvalid) firstInvalid = el;
+      }
+    });
+
+    if(missing.length){
+      showStatus('Vul nog in: ' + missing.join(', ') + '.', 'error');
+      firstInvalid.focus();
+      return false;
+    }
+
     return true;
   }
 
@@ -548,6 +577,10 @@
   document.getElementById('sendWa').addEventListener('click', function(e){
     if(!valid()){ e.preventDefault(); return; }
     this.href='https://wa.me/'+WHATSAPP_NUMMER+'?text='+encodeURIComponent(buildMessage());
+  });
+
+  ['naam','contact','datum'].forEach(function(id){
+    document.getElementById(id).addEventListener('input', function(){ this.classList.remove('invalid'); });
   });
 
   render();
