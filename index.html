@@ -1038,8 +1038,9 @@
       navToggle.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
       if (open) {
         mobileMenu.hidden = false;
-        // wacht een frame zodat de overgang start vanaf max-height:0 (anders geen animatie)
-        requestAnimationFrame(() => requestAnimationFrame(() => mobileMenu.classList.add('is-open')));
+        // geforceerde reflow zodat de overgang start vanaf max-height:0 (betrouwbaarder dan requestAnimationFrame)
+        void mobileMenu.offsetHeight;
+        mobileMenu.classList.add('is-open');
       } else {
         mobileMenu.classList.remove('is-open');
         window.setTimeout(() => { mobileMenu.hidden = true; }, 320);
