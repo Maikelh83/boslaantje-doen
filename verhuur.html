@@ -176,6 +176,14 @@
   .cart-item button.q{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--paper-line);background:#fff;cursor:pointer;font-weight:800;color:var(--green);line-height:1}
   .cart-item button.q:hover{border-color:var(--green)}
   .cart-item .n{min-width:20px;text-align:center;font-weight:800}
+  .cart-group-label{font-size:.68rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin:.8rem 0 .3rem}
+  .cart-group-label:first-child{margin-top:0}
+  .cart-item .nm em{font-style:normal;font-weight:600;font-size:.74rem;color:#9a9a90}
+  .cart-item .n-fixed{font-weight:800;font-size:.85rem;color:#8a8a80;white-space:nowrap}
+  .cart-item .line-price{font-weight:800;font-size:.85rem;color:var(--green-ink);white-space:nowrap;margin-left:.5rem}
+  .cart-total{display:flex;justify-content:space-between;align-items:baseline;margin-top:.8rem;padding-top:.7rem;border-top:2px solid var(--paper-line);font-weight:800;font-size:.98rem;color:var(--green-ink)}
+  .cart-total .amt{font-family:var(--font-display);font-size:1.35rem;color:var(--green)}
+  .cart-total-note{font-size:.72rem;font-weight:600;color:#9a9a90;text-align:right;margin-top:.15rem}
   .cart-fields{margin-top:1rem;display:flex;flex-direction:column;gap:.7rem}
   .cart-fields label{font-weight:700;font-size:.82rem;display:block;margin-bottom:.2rem}
   .cart-fields input,.cart-fields textarea{width:100%;font-family:var(--font-body);font-size:.95rem;padding:.6em .75em;border:1.5px solid var(--paper-line);border-radius:10px;background:var(--paper-2)}
@@ -329,7 +337,7 @@
         <p class="sub">Stevig, stabiel en zo neergezet — los te huur of samen met je catering.</p>
         <div class="grid">
 
-          <article class="pkg" data-name="Statafel" data-unit="stuk">
+          <article class="pkg" data-name="Statafel" data-unit="stuk" data-price="7.50">
             <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="8" rx="7" ry="2.4"/><path d="M5 8v3M19 8v3M12 11v9"/></svg><span class="cap">Statafel, ongehoesd</span><span class="hint">Foto · 3:2</span></div>
             <div class="pkg-body">
               <h3>Statafel</h3>
@@ -339,7 +347,7 @@
             </div>
           </article>
 
-          <article class="pkg" data-name="Statafel met rokhoes" data-unit="stuk">
+          <article class="pkg" data-name="Statafel met rokhoes" data-unit="stuk" data-price="12.50">
             <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="8" rx="7" ry="2.4"/><path d="M5 8v11M19 8v11"/></svg><span class="cap">Statafel met rokhoes</span><span class="hint">Foto · 3:2</span></div>
             <div class="pkg-body">
               <h3>Statafel met rokhoes</h3>
@@ -359,7 +367,7 @@
         <p class="sub">Droog staan en koud drinken, wat het weer ook doet.</p>
         <div class="grid">
 
-          <article class="pkg" data-name="Easy-up partytent 3×3 m" data-unit="dag">
+          <article class="pkg" data-name="Easy-up partytent 3×3 m" data-unit="dag" data-price="35.00">
             <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 4l9 15H3z"/><path d="M12 4v15"/></svg><span class="cap">Easy-up tent, opgezet</span><span class="hint">Foto · 3:2</span></div>
             <div class="pkg-body">
               <h3>Easy-up partytent 3×3 m</h3>
@@ -369,7 +377,7 @@
             </div>
           </article>
 
-          <article class="pkg" data-name="Koelbox / drankenkoeling" data-unit="dag">
+          <article class="pkg" data-name="Koelbox / drankenkoeling" data-unit="dag" data-price="15.00">
             <div class="ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M8 7V5h8v2M8 13h8"/></svg><span class="cap">Koelbox voor drank</span><span class="hint">Foto · 3:2</span></div>
             <div class="pkg-body">
               <h3>Koelbox / drankenkoeling</h3>
@@ -432,159 +440,6 @@
   </div>
 </footer>
 
-<script>
-  // ==== CONFIG: vul hier je eigen gegevens in ====
-  var ORDER_EMAIL = "info@boslaantjedoen.nl";          // waar aanvragen heen gaan
-  var WHATSAPP_NUMMER = "31318514916";                  // Boslaantje 0318-514916 (werkt zodra je dit nummer op WhatsApp Business hebt geactiveerd)
-  // ================================================
-
-  var cart = {}; // naam -> {qty, unit}
-
-  function render(){
-    var items = document.getElementById('cartItems');
-    var keys = Object.keys(cart);
-    var total = keys.reduce(function(s,k){return s+cart[k].qty;},0);
-    document.getElementById('cartCount').textContent = total;
-    document.getElementById('mCount').textContent = total;
-    if(!keys.length){ items.innerHTML = '<p class="cart-empty">Nog leeg — kies hierboven wat je nodig hebt.</p>'; return; }
-    items.innerHTML = keys.map(function(k){
-      return '<div class="cart-item"><span class="nm">'+k+'</span>'+
-        '<div class="qty"><button class="q" data-m="'+k+'" data-d="-1" aria-label="minder">–</button>'+
-        '<span class="n">'+cart[k].qty+'</span>'+
-        '<button class="q" data-m="'+k+'" data-d="1" aria-label="meer">+</button></div></div>';
-    }).join('');
-    items.querySelectorAll('button.q').forEach(function(b){
-      b.addEventListener('click', function(){
-        var k=b.dataset.m, d=parseInt(b.dataset.d,10);
-        cart[k].qty += d;
-        if(cart[k].qty<=0) delete cart[k];
-        render(); syncAddButtons();
-      });
-    });
-  }
-
-  function syncAddButtons(){
-    document.querySelectorAll('.pkg').forEach(function(p){
-      var nm=p.dataset.name, btn=p.querySelector('.add');
-      if(cart[nm]){ btn.classList.add('added'); btn.textContent='✓ Toegevoegd'; }
-      else { btn.classList.remove('added'); btn.textContent='+ In aanvraaglijst'; }
-    });
-  }
-
-  document.querySelectorAll('.pkg .add').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var p=btn.closest('.pkg'), nm=p.dataset.name, unit=p.dataset.unit||'';
-      if(cart[nm]){ delete cart[nm]; } else { cart[nm]={qty:1,unit:unit}; }
-      render(); syncAddButtons();
-    });
-  });
-
-  function buildMessage(){
-    var g=function(id){return (document.getElementById(id).value||'').trim();};
-    var lines=['Aanvraag verhuur — Boslaantje Doen',''];
-    lines.push('Gekozen:');
-    Object.keys(cart).forEach(function(k){ lines.push('• '+cart[k].qty+'× '+k); });
-    lines.push('');
-    lines.push('Datum: '+(g('datum')||'-'));
-    lines.push('Aantal gasten: '+(g('gasten')||'-'));
-    lines.push('Naam: '+(g('naam')||'-'));
-    lines.push('Contact: '+(g('contact')||'-'));
-    if(g('opm')) lines.push('Opmerkingen: '+g('opm'));
-    return lines.join('\n');
-  }
-  function valid(){
-    document.querySelectorAll('.cart-fields .invalid').forEach(function(el){ el.classList.remove('invalid'); });
-
-    if(!Object.keys(cart).length){
-      showStatus('Je aanvraaglijst is nog leeg. Kies eerst een of meer items hierboven.', 'error');
-      return false;
-    }
-
-    var required = [
-      {id:'naam', label:'je naam'},
-      {id:'contact', label:'telefoon of e-mail'},
-      {id:'datum', label:'de datum'}
-    ];
-    var missing = [];
-    var firstInvalid = null;
-    required.forEach(function(r){
-      var el = document.getElementById(r.id);
-      if(!el.value.trim()){
-        el.classList.add('invalid');
-        missing.push(r.label);
-        if(!firstInvalid) firstInvalid = el;
-      }
-    });
-
-    if(missing.length){
-      showStatus('Vul nog in: ' + missing.join(', ') + '.', 'error');
-      firstInvalid.focus();
-      return false;
-    }
-
-    return true;
-  }
-
-  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvzepvgz';
-  var sendBtn = document.getElementById('sendMail');
-  var sendBtnLabel = sendBtn.textContent;
-  var statusEl = document.getElementById('formStatus');
-
-  function showStatus(msg, kind){
-    statusEl.textContent = msg;
-    statusEl.className = 'form-status show ' + kind;
-  }
-
-  document.getElementById('sendMail').addEventListener('click', function(){
-    if(!valid()) return;
-    sendBtn.disabled = true;
-    sendBtn.textContent = 'Versturen…';
-    showStatus('', '');
-    statusEl.className = 'form-status';
-
-    var g = function(id){ return (document.getElementById(id).value || '').trim(); };
-    var payload = {
-      _subject: 'Verhuuraanvraag via website — ' + (g('naam') || 'onbekend'),
-      naam: g('naam'),
-      contact: g('contact'),
-      datum: g('datum'),
-      aantal_gasten: g('gasten'),
-      opmerkingen: g('opm'),
-      aanvraag: buildMessage()
-    };
-
-    fetch(FORMSPREE_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(payload)
-    }).then(function(res){
-      if (!res.ok) throw new Error('Formspree-fout: ' + res.status);
-      sendBtn.textContent = '✓ Verstuurd';
-      showStatus('Bedankt! Je aanvraag is verstuurd — we reageren binnen één werkdag.', 'ok');
-    }).catch(function(){
-      sendBtn.disabled = false;
-      sendBtn.textContent = sendBtnLabel;
-      showStatus('Er ging iets mis bij het versturen. Probeer het nogmaals, bel 0318 – 514 916, of app ons via de knop hierboven.', 'error');
-    });
-  });
-  document.getElementById('sendWa').addEventListener('click', function(e){
-    if(!valid()){ e.preventDefault(); return; }
-    this.href='https://wa.me/'+WHATSAPP_NUMMER+'?text='+encodeURIComponent(buildMessage());
-  });
-
-  ['naam','contact','datum'].forEach(function(id){
-    document.getElementById(id).addEventListener('input', function(){ this.classList.remove('invalid'); });
-  });
-
-  render();
-
-  // zwevende WhatsApp-knop → zelfde nummer, met vooringevuld bericht
-  (function(){
-    var wf=document.getElementById('waFloat');
-    if(wf){ wf.href='https://wa.me/'+WHATSAPP_NUMMER+'?text='+encodeURIComponent('Hoi! Ik heb een vraag over feestverhuur van Boslaantje Doen.'); }
-  })();
-</script>
-
 <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Stuur ons een WhatsApp-bericht">
   <span class="lbl">Vragen? App ons!</span>
   <span class="bubble" aria-hidden="true">
@@ -620,6 +475,8 @@
     });
   }
 </script>
+
+<script src="cart.js" data-source="verhuur" data-wa-text="Hoi! Ik heb een vraag over feestverhuur van Boslaantje Doen."></script>
 
 </body>
 </html>
