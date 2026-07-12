@@ -403,7 +403,7 @@
   footer{background:var(--ink);color:var(--paper);padding:3.2rem 0 2rem;position:relative;overflow:hidden}
   footer .rings{position:absolute;right:-70px;bottom:-70px;width:300px;height:300px;background:var(--boomplak) center/contain no-repeat;opacity:.14;filter:invert(1);pointer-events:none}
   .foot-grid{display:grid;gap:2rem;margin-bottom:2.4rem}
-  @media(min-width:760px){.foot-grid{grid-template-columns:1.6fr 1fr 1fr}}
+  @media(min-width:760px){.foot-grid{grid-template-columns:1.3fr 1fr 1fr 1fr}}
   .foot-brand .name{font-family:var(--font-display);font-size:1.7rem;margin-bottom:.7rem}
   .foot-brand .name b{color:var(--gold)}
   .foot-brand p{color:rgba(246,241,231,.72);max-width:34ch;font-size:.96rem}
@@ -550,9 +550,6 @@
 
   /* Terugkerend accent: dezelfde Vers & Belegd-kleur bij elke link ernaartoe,
      zodat het geen eenmalig blokje is maar een herkenbare sub-merkkleur. */
-  .vb-link{position:relative}
-  .vb-link::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;
-    background:#e1b7ab;margin-right:.5em;vertical-align:middle}
   .vb-cross h2{font-family:'Gloria Hallelujah',var(--font-body);font-weight:400;font-size:clamp(1.9rem,4.6vw,2.7rem);
     color:#000;line-height:1.3;letter-spacing:0;margin-bottom:.6rem}
   .vb-cross p{color:#3a2c27;font-size:1.08rem;max-width:52ch}
@@ -656,7 +653,7 @@
     <nav class="nav-links" aria-label="Hoofdmenu">
       <a href="#diensten">Diensten</a>
       <a href="catering.html">Catering</a>
-      <a href="https://maikelh83.github.io/vers-en-belegd/" class="vb-link">Zakelijke lunch</a>
+      <a href="https://maikelh83.github.io/vers-en-belegd/">Zakelijke lunch</a>
       <a href="verhuur.html">Verhuur</a>
       <a href="solliciteren.html">Solliciteren</a>
       <a href="#contact">Contact</a>
@@ -672,7 +669,7 @@
   <nav class="mobile-menu" id="mobileMenu" aria-label="Mobiel hoofdmenu" hidden>
     <a href="#diensten">Diensten</a>
     <a href="catering.html">Catering</a>
-    <a href="https://maikelh83.github.io/vers-en-belegd/" class="vb-link">Zakelijke lunch</a>
+    <a href="https://maikelh83.github.io/vers-en-belegd/">Zakelijke lunch</a>
     <a href="verhuur.html">Verhuur</a>
     <a href="solliciteren.html">Solliciteren</a>
     <a href="#contact">Contact</a>
@@ -1061,15 +1058,18 @@
         <h4>Diensten</h4>
         <a href="#diensten">Snackbar &amp; bezorgen</a>
         <a href="catering.html">Catering voor thuis</a>
-        <a href="https://maikelh83.github.io/vers-en-belegd/" class="vb-link">Zakelijke lunch — Vers &amp; Belegd</a>
+        <a href="https://maikelh83.github.io/vers-en-belegd/">Zakelijke lunch — Vers &amp; Belegd</a>
         <a href="verhuur.html">Feestverhuur</a>
       </div>
       <div class="foot-col">
-        <h4>Boslaantje</h4>
-        <a href="#contact">Contact</a>
+        <h4>Bestellen</h4>
         <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener">Bezorgen</a>
         <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener">Afhalen</a>
         <a href="catering.html">Offerte aanvragen</a>
+      </div>
+      <div class="foot-col">
+        <h4>Over ons</h4>
+        <a href="#contact">Contact</a>
         <a href="solliciteren.html">Werken bij ons</a>
         <a href="voorwaarden.html">Algemene voorwaarden</a>
       </div>
