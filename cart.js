@@ -13,6 +13,9 @@
 
   var STORAGE_KEY = 'boslaantje_aanvraag_v1';
   var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvzepvgz';
+  // Make.com-webhook: stuurt dezelfde aanvraag ook naar de automatisering
+  // (Make → WeFact), los van Formspree — geen betaald Formspree-plan nodig.
+  var MAKE_WEBHOOK = 'https://hook.eu1.make.com/s4jcf81ke9yl4uuqqyoydf52lqivxl7p';
   var WHATSAPP_NUMMER = '31318514916';
   var LABEL = { catering: 'Catering', verhuur: 'Verhuur' };
   var FIELD_IDS = ['datum', 'gasten', 'naam', 'contact', 'opm'];
@@ -251,6 +254,18 @@
         totaal_bedrag: (Math.round(grandTotal() * 100) / 100).toFixed(2),
         items_json: buildItemsJSON()
       };
+
+      // Los, "fire-and-forget" doorsturen naar Make voor automatische verwerking
+      // (WeFact-offerte). Geen invloed op het echte verstuurproces hieronder —
+      // als dit mislukt merkt de bezoeker daar niets van.
+      try{
+        fetch(MAKE_WEBHOOK, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        }).catch(function(){});
+      }catch(e){}
 
       fetch(FORMSPREE_ENDPOINT, {
         method: 'POST',
