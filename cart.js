@@ -173,6 +173,22 @@
     return lines.join('\n');
   }
 
+  // Machineleesbare versie van de aanvraaglijst — voor automatische verwerking
+  // (bijv. via Make.com naar WeFact), naast de leesbare tekst uit buildMessage().
+  function buildItemsJSON(){
+    return JSON.stringify(Object.keys(state.items).map(function(k){
+      var item = state.items[k];
+      return {
+        omschrijving: k,
+        eenheid: item.unit || '',
+        aantal: item.qty,
+        prijs_per_stuk: item.price,
+        totaal: Math.round(lineTotal(item) * 100) / 100,
+        bron: item.source
+      };
+    }));
+  }
+
   function valid(){
     document.querySelectorAll('.cart-fields .invalid').forEach(function(el){ el.classList.remove('invalid'); });
 
@@ -231,7 +247,9 @@
         datum: g('datum'),
         aantal_gasten: g('gasten'),
         opmerkingen: g('opm'),
-        aanvraag: buildMessage()
+        aanvraag: buildMessage(),
+        totaal_bedrag: (Math.round(grandTotal() * 100) / 100).toFixed(2),
+        items_json: buildItemsJSON()
       };
 
       fetch(FORMSPREE_ENDPOINT, {
