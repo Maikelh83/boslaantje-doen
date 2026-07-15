@@ -409,6 +409,8 @@
   .contact-block a.big:hover{color:var(--gold-deep)}
   .contact-cta{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.6rem}
   .hours{background:#fff;border:1.5px solid var(--paper-line);border-radius:var(--r);padding:1.4rem 1.5rem;box-shadow:var(--shadow);color:var(--ink)}
+  .map-embed{grid-column:1/-1;margin-top:.6rem;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+  .map-embed iframe{display:block;width:100%;height:320px;border:0}
   .hours h3{font-family:var(--font-body);font-weight:900;font-size:1.05rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.9rem;color:var(--green-ink)}
   .hours .row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px dashed var(--paper-line);font-size:.98rem}
   .hours .row:last-child{border-bottom:none}
@@ -896,6 +898,10 @@
         <div class="row closed"><span class="d">Zondag</span><span class="t">Gesloten</span></div>
         <p class="hours-note">Telefonisch al een uur vóór openingstijd bereikbaar.</p>
       </div>
+      </div>
+
+      <div class="map-embed reveal">
+        <iframe src="https://www.google.com/maps?q=Oleander+1a,+Veenendaal&output=embed" width="100%" height="320" style="border:0" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Route naar Boslaantje Doen, Oleander 1a Veenendaal"></iframe>
       </div>
     </div>
   </div>
