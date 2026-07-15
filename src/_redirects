@@ -1,14 +1,19 @@
 # Cloudflare Pages redirects — merksplitsing MaCA (juli 2026)
 #
-# FASE 1 (nu): catering.html en verhuur.html staan op "noindex" (zie de
-# meta-tag in catering.njk/verhuur.njk) maar blijven gewoon bereikbaar.
-# Er is hier nog niets actief nodig.
-#
+# FASE 1 (nu actief): oude links naar /catering en /verhuur (bijv. vanuit
+# Google of bookmarks) sturen we met een 301 (permanent) door naar de
+# homepage, zodat bezoekers nooit op een 404-foutpagina komen.
+/catering.html  /  301
+/catering       /  301
+/verhuur.html   /  301
+/verhuur        /  301
+
 # FASE 2 (zodra het MaCA-domein + de definitieve site live staan):
-# verwijder de "#" voor de twee regels hieronder en vul het echte domein in.
-# Dit stuurt bezoekers en Google met een 301 (permanent) door, zodat de
-# SEO-waarde van deze pagina's meegaat naar de nieuwe site i.p.v. verloren
-# te gaan.
+# vervang de vier regels hierboven door de vier regels hieronder (verwijder
+# de "#" en vul het echte domein in). Dan gaat het bezoek + de resterende
+# SEO-waarde naar de juiste pagina op de nieuwe site i.p.v. naar de homepage.
 #
 # /catering.html  https://VERVANG-MET-MACA-DOMEIN.nl/catering  301
+# /catering       https://VERVANG-MET-MACA-DOMEIN.nl/catering  301
 # /verhuur.html   https://VERVANG-MET-MACA-DOMEIN.nl/verhuur   301
+# /verhuur        https://VERVANG-MET-MACA-DOMEIN.nl/verhuur   301
