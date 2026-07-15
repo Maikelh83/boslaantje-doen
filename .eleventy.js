@@ -5,6 +5,9 @@ module.exports = function (eleventyConfig) {
   // data-name/data-unit/data-price-structuur, dus cart.js hoeft niet aangepast.)
   eleventyConfig.addPassthroughCopy("src/cart.js");
   eleventyConfig.addPassthroughCopy("src/robots.txt");
+  // Cloudflare Pages-redirects (voorbereid voor fase 2 van de merksplitsing,
+  // zie NOTES-MORGEN.md en src/_redirects zelf voor uitleg).
+  eleventyConfig.addPassthroughCopy("src/_redirects");
   eleventyConfig.addPassthroughCopy("src/images");
   eleventyConfig.addPassthroughCopy("src/sitemap.xml");
   eleventyConfig.addPassthroughCopy("src/index.html");
