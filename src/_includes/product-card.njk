@@ -1,0 +1,30 @@
+{#
+  Eén productkaart, exact dezelfde HTML-structuur als de huidige
+  handgeschreven .pkg-kaarten in catering.html / verhuur.html.
+  cart.js leest deze structuur direct uit (data-name / data-unit / data-price
+  + de klasse "pkg"/"tofill"), dus hier NIETS aan de klassen/attributen
+  wijzigen zonder cart.js ook te checken.
+
+  Gebruik: {% from "product-card.njk" import card %}  {{ card(product.data) }}
+#}
+{% macro card(p) %}
+{% set placeholder = p.prijs | isPlaceholder %}
+<article class="pkg{% if placeholder %} tofill{% endif %}" data-name="{{ p.naam }}" data-unit="{{ p.eenheid }}" data-price="{{ p.prijs or 0 }}">
+  <div class="ph">
+    {%- if p.foto %}
+    <img src="{{ p.foto }}" alt="{{ p.naam }}" style="width:100%;height:100%;object-fit:cover;display:block">
+    {%- else %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15h16M6 15c0-2 2-4 6-4s6 2 6 4"></path><path d="M9 9h.01M13 8h.01M16 10h.01"></path></svg><span class="cap">Voeg je eigen foto toe</span><span class="hint">Foto · 3:2</span>
+    {%- endif %}
+  </div>
+  <div class="pkg-body">
+    {%- if placeholder %}
+    <span class="tofill-tag">▸ Voorbeeld — vul aan</span>
+    {%- endif %}
+    <h3>{{ p.naam }}</h3>
+    <p>{{ p.omschrijving }}</p>
+    <div class="price"><span class="amt">{% if placeholder %}€ 00,00{% else %}€ {{ p.prijs | euro }}{% endif %}</span><span class="unit">{{ p.eenheid }} · vanaf</span></div>
+    <button class="btn btn-green add" type="button">+ In aanvraaglijst</button>
+  </div>
+</article>
+{% endmacro %}

@@ -1,0 +1,95 @@
+backend:
+  name: github
+  repo: Maikelh83/boslaantje-doen   # PAS AAN indien de repo-naam morgen anders blijkt te zijn
+  branch: main
+  base_url: https://VERVANG-MET-CLOUDFLARE-WORKER-URL.workers.dev   # OAuth-proxy, zie taak "GitHub OAuth instellen"
+
+# Chantal's uploads (foto's) komen hier terecht en worden vanaf hier
+# gewoon door Eleventy meegekopieerd naar de live site.
+media_folder: "src/images/producten"
+public_folder: "/images/producten"
+
+collections:
+  - name: "producten"
+    label: "Producten"
+    label_singular: "Product"
+    folder: "src/producten"
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    identifier_field: naam
+    summary: "{{naam}} — {{categorie}} — € {{prijs}}"
+    fields:
+      - { label: "Naam", name: "naam", widget: "string", hint: "Komt zowel op de kaart als in de aanvraaglijst te staan." }
+      - { label: "Omschrijving", name: "omschrijving", widget: "text" }
+      - { label: "Prijs", name: "prijs", widget: "number", value_type: "float", hint: "Laat op 0 staan om de kaart als 'voorbeeld — vul aan' te tonen (net als nu bij Buffet en Borrelplank)." }
+      - label: "Eenheid"
+        name: "eenheid"
+        widget: "select"
+        options: ["p.p.", "per stuk", "per dag"]
+      - label: "Categorie"
+        name: "categorie"
+        widget: "select"
+        options: ["Catering", "Partyverhuur"]
+      - label: "Subcategorie"
+        name: "subcategorie"
+        widget: "select"
+        hint: "Bepaalt in welk blokje op de pagina de kaart verschijnt."
+        options: ["Feest & BBQ", "Borrel & hapjes", "Tafels & meubilair", "Tent & koeling"]
+      - { label: "Foto", name: "foto", widget: "image", required: false, hint: "Optioneel. Zonder foto verschijnt een neutrale placeholder i.p.v. het huidige handgetekende icoontje." }
+
+  - name: "faq"
+    label: "Veelgestelde vragen"
+    label_singular: "Vraag"
+    folder: "src/faq"
+    create: true
+    delete: true
+    slug: "{{pagina}}-{{volgorde}}-{{slug}}"
+    identifier_field: vraag
+    summary: "[{{pagina}}] {{vraag}}"
+    fields:
+      - label: "Pagina"
+        name: "pagina"
+        widget: "select"
+        options: ["Catering", "Verhuur"]
+      - { label: "Volgorde", name: "volgorde", widget: "number", value_type: "int", hint: "Bepaalt de volgorde op de pagina (laag = bovenaan)." }
+      - { label: "Vraag", name: "vraag", widget: "string" }
+      - { label: "Antwoord", name: "antwoord", widget: "text" }
+
+  - name: "vacatures"
+    label: "Vacatures"
+    label_singular: "Vacature"
+    folder: "src/vacatures"
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    identifier_field: functie
+    summary: "{{functie}}{{#unless actief}} (niet actief){{/unless}}"
+    fields:
+      - { label: "Functie", name: "functie", widget: "string" }
+      - { label: "Omschrijving", name: "omschrijving", widget: "text" }
+      - { label: "Actief", name: "actief", widget: "boolean", default: true, hint: "Uitzetten om een vacature tijdelijk te verbergen zonder 'm te verwijderen." }
+      - { label: "Foto", name: "foto", widget: "image", required: false, hint: "Optioneel. Zonder foto verschijnt een neutraal icoontje." }
+
+  - name: "actie-popup"
+    label: "Actie-pop-up (homepage)"
+    editor:
+      preview: false
+    files:
+      - label: "Actie-pop-up"
+        name: "actie"
+        file: "src/actie.json"
+        format: "json"
+        fields:
+          - { label: "Pop-up actief", name: "actief", widget: "boolean", default: false, hint: "Zet aan om de pop-up te tonen op de homepage, uit om 'm te verbergen (zonder de foto te verwijderen)." }
+          - label: "Foto"
+            name: "foto"
+            widget: "image"
+            media_folder: "src/images/actie"
+            public_folder: "/images/actie"
+            hint: "Je eigen ontwerp uit Canva. Verticaal of vierkant werkt het mooist, bijv. 800×1000 px."
+          - { label: "Alt-tekst (voor schermlezers)", name: "altTekst", widget: "string", required: false, hint: "Korte omschrijving van de foto, bijv. 'Actie: gesloten wegens vakantie van 1 t/m 15 augustus'." }
+          - { label: "Link (optioneel)", name: "link", widget: "string", required: false, hint: "Waar moet iemand naartoe als die op de foto klikt? Bijv. de bestelpagina. Leeg laten = de foto is niet klikbaar, alleen wegklikbaar." }
+          - { label: "Toon na (seconden)", name: "vertragingSeconden", widget: "number", value_type: "int", default: 5, hint: "Hoe lang wachten na het laden van de homepage voordat de pop-up verschijnt." }
+          - { label: "Niet opnieuw tonen (dagen)", name: "opnieuwNaDagen", widget: "number", value_type: "int", default: 7, hint: "Na wegklikken zoveel dagen niet opnieuw tonen aan dezelfde bezoeker." }
+          - { label: "Tonen tot (optioneel)", name: "tonenTot", widget: "date", required: false, format: "YYYY-MM-DD", hint: "Na deze datum verdwijnt de pop-up vanzelf, ook als 'actief' nog aanstaat. Leeg = geen einddatum." }

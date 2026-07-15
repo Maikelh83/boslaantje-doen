@@ -1,0 +1,19 @@
+{#
+  Kaart voor één vacature op solliciteren.html. Zelfde visuele stijl als de
+  .pkg-kaarten, maar zonder prijs/knop (vacatures zijn geen bestelbaar item).
+#}
+{% macro card(v) %}
+<article class="pkg">
+  <div class="ph">
+    {%- if v.foto %}
+    <img src="{{ v.foto }}" alt="{{ v.functie }}" style="width:100%;height:100%;object-fit:cover;display:block">
+    {%- else %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15h16M6 15c0-2 2-4 6-4s6 2 6 4"></path><path d="M9 9h.01M13 8h.01M16 10h.01"></path></svg><span class="cap">Voeg je eigen foto toe</span><span class="hint">Foto · 3:2</span>
+    {%- endif %}
+  </div>
+  <div class="pkg-body">
+    <h3>{{ v.functie }}</h3>
+    <p>{{ v.omschrijving }}</p>
+  </div>
+</article>
+{% endmacro %}

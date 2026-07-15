@@ -1,0 +1,166 @@
+---
+permalink: verhuur.html
+---
+{% from "product-card.njk" import card %}
+{% from "faq-item.njk" import item as faqItem %}
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+<meta name="theme-color" content="#4A5D3D">
+
+<title>Feestverhuur Veenendaal e.o. — Tafels, tenten &amp; koeling | Boslaantje Doen</title>
+<meta name="description" content="Statafels, tenten en koeling huren voor je feest, verjaardag of bedrijfsevent in Veenendaal e.o. Stel je aanvraaglijst samen en vraag vrijblijvend een offerte aan. Van Boslaantje Doen.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://www.boslaantjedoen.nl/verhuur">
+
+<meta property="og:title" content="Feestverhuur Veenendaal e.o. — Tafels, tenten &amp; koeling | Boslaantje Doen">
+<meta property="og:description" content="Stel je aanvraaglijst samen en vraag vrijblijvend een offerte aan voor statafels, tenten en koeling in Veenendaal e.o.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:url" content="https://www.boslaantjedoen.nl/verhuur">
+<meta property="og:site_name" content="Boslaantje Doen">
+<meta property="og:image" content="https://www.boslaantjedoen.nl/images/og-verhuur.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Feestverhuur Veenendaal e.o. — Boslaantje Doen">
+<meta name="twitter:description" content="Statafels, tenten en koeling huren voor feesten en bedrijven. Vraag vrijblijvend een offerte aan.">
+<meta name="twitter:image" content="https://www.boslaantjedoen.nl/images/og-verhuur.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+{% include "shared-style.njk" %}
+
+<script type="application/ld+json">
+{
+"@context": "https://schema.org",
+"@type": "LocalBusiness",
+"name": "Boslaantje Doen — Verhuur",
+"description": "Feestverhuur in Veenendaal en omstreken: statafels, tenten en koeling voor feesten, verjaardagen en bedrijfsevents.",
+"url": "https://www.boslaantjedoen.nl/verhuur",
+"telephone": "+31318514916",
+"priceRange": "€",
+"address": {
+"@type": "PostalAddress",
+"streetAddress": "Oleander 1a",
+"addressLocality": "Veenendaal",
+"addressCountry": "NL"
+},
+"areaServed": {
+"@type": "GeoCircle",
+"geoMidpoint": { "@type": "GeoCoordinates", "latitude": 52.0286, "longitude": 5.5581 },
+"geoRadius": "15000"
+},
+"hasOfferCatalog": {
+"@type": "OfferCatalog",
+"name": "Verhuuraanbod",
+"itemListElement": [
+{ "@type": "OfferCatalog", "name": "Tafels & meubilair" },
+{ "@type": "OfferCatalog", "name": "Tent & koeling" }
+]
+}
+}
+</script>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Direct naar de inhoud</a>
+
+{% include "shared-header.njk" %}
+
+<section class="hero">
+<div class="wrap">
+<span class="eyebrow" style="color:#fff">Feestverhuur · Veenendaal e.o.</span>
+<h1>Alles erbij, tot in de puntjes geregeld.</h1>
+<p>Statafels, tenten en koeling — kies wat je nodig hebt, zet het in je aanvraaglijst en vraag vrijblijvend een offerte aan. Bezorgen en ophalen regelen we voor je in Veenendaal en omgeving.</p>
+<div class="steps">
+<span class="step"><b>1</b> Kies je spullen</span>
+<span class="step"><b>2</b> Vul datum &amp; aantal in</span>
+<span class="step"><b>3</b> Vraag je offerte aan</span>
+</div>
+</div>
+</section>
+
+{% include "shared-trust.njk" %}
+
+<main id="main">
+<div class="wrap layout">
+<!-- ================= CATALOGUS (uit Producten-collectie, categorie: Partyverhuur) ================= -->
+<div class="catalog">
+
+<!-- Categorie: Tafels & meubilair -->
+<section class="cat">
+<span class="eyebrow">Tafels &amp; meubilair</span>
+<h2>Statafels huren in Veenendaal</h2>
+<p class="sub">Stevig, stabiel en zo neergezet — los te huur of samen met je catering.</p>
+<div class="grid">
+{%- for item in collections.producten %}
+  {%- if item.data.categorie == "Partyverhuur" and item.data.subcategorie == "Tafels & meubilair" %}
+{{ card(item.data) }}
+  {%- endif %}
+{%- endfor %}
+</div>
+</section>
+
+<!-- Categorie: Tent & koeling -->
+<section class="cat">
+<span class="eyebrow">Tent &amp; koeling</span>
+<h2>Partytent &amp; drankenkoeling huren</h2>
+<p class="sub">Droog staan en koud drinken, wat het weer ook doet.</p>
+<div class="grid">
+{%- for item in collections.producten %}
+  {%- if item.data.categorie == "Partyverhuur" and item.data.subcategorie == "Tent & koeling" %}
+{{ card(item.data) }}
+  {%- endif %}
+{%- endfor %}
+</div>
+</section>
+
+<p class="note-box">
+<strong>Zoek je iets anders?</strong> Vertel het ons gewoon in het opmerkingenveld hieronder — we breiden ons aanbod graag uit en denken mee over wat bij je feest past.
+</p>
+
+<p class="note-box note-biz">
+<strong>Meteen ook je eten geregeld?</strong> Bekijk onze <a href="catering.html">catering</a> — BBQ, buffet en hapjes, direct te combineren met je verhuuraanvraag.
+</p>
+</div>
+
+<!-- ================= AANVRAAGLIJST ================= -->
+{% include "shared-cart.njk" %}
+</div>
+</main>
+
+<!-- ============ faq ============ -->
+<section class="faq">
+<div class="wrap">
+<div class="faq-head">
+<span class="eyebrow">Veelgestelde vragen</span>
+<h2>Vragen over verhuur</h2>
+<p>Staat je vraag er niet bij? Stel 'm gerust in het opmerkingenveld bij je aanvraag, of app ons.</p>
+</div>
+<div class="faq-list">
+{%- for f in collections.faq %}
+  {%- if f.data.pagina == "Verhuur" %}
+{{ faqItem(f.data) }}
+  {%- endif %}
+{%- endfor %}
+</div>
+</div>
+</section>
+
+<div class="mobile-bar">
+<span class="sum"><span id="mCount">0</span> in je lijst</span>
+<a class="btn btn-green" href="#cart">Naar aanvraag →</a>
+</div>
+
+{% include "shared-footer.njk" %}
+
+<script src="cart.js" data-source="verhuur" data-wa-text="Hoi! Ik heb een vraag over feestverhuur van Boslaantje Doen."></script>
+
+</body>
+</html>

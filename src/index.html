@@ -561,12 +561,10 @@
   .vb-cross .vb-tag{display:inline-block;font-size:.78rem;font-weight:700;color:#9c6355;margin-top:.8rem}
 
   /* ===================================================================
-     ACTIE-POP-UP (homepage) — in de stijl van de "Winterspecials"-poster
-     Bosgroen kaart, witte kwaststreek-banner met handgeschreven kop en
-     specials met prijskaartjes. Verschijnt bewust met vertraging (niet
-     direct bij het laden → geen mobiele SEO-straf) en is na wegklikken een
-     ingesteld aantal dagen weg. Inhoud + timing regel je in het script
-     onderaan de pagina. Alle kleuren/lettertypes komen uit de merk-tokens.
+     ACTIE-POP-UP (homepage) — foto-gebaseerd. De foto, link, aan/uit en
+     timing komen uit actie.json (via de CMS "Actie-pop-up" aan te passen).
+     Verschijnt bewust met vertraging en is na wegklikken een ingesteld
+     aantal dagen weg.
      =================================================================== */
   .bd-actie-overlay{
     position:fixed; inset:0; z-index:1200;
@@ -578,66 +576,31 @@
   .bd-actie-overlay.is-open{opacity:1; visibility:visible}
 
   .bd-actie-kaart{
-    position:relative; width:100%; max-width:400px;
-    max-height:calc(100dvh - 2.5rem); overflow:auto;
-    background:var(--green); color:#fff;
+    position:relative; width:100%; max-width:420px;
+    max-height:calc(100dvh - 2.5rem); overflow:hidden;
+    background:transparent;
     border-radius:var(--r); box-shadow:var(--shadow);
-    padding:1.4rem 1.5rem 1.6rem; text-align:center;
     transform:translateY(14px) scale(.98); transition:transform .28s ease;
   }
   .bd-actie-overlay.is-open .bd-actie-kaart{transform:none}
 
-  /* Witte kwaststreek-banner met handgeschreven kop (zwart, brandbook-accent) */
-  .bd-actie-banner{
-    display:inline-block; background:#fff; color:var(--ink);
-    padding:.5rem 1.4rem .6rem; margin:.2rem 0 1.1rem;
-    border-radius:22px 16px 24px 14px / 16px 22px 14px 24px;
-    transform:rotate(-1.5deg);
-  }
-  .bd-actie-kop{
-    font-family:var(--font-display); font-size:2rem; line-height:1;
-    margin:0; letter-spacing:.5px;
-  }
-
-  /* Specials */
-  .bd-actie-lijst{text-align:left; margin:0 0 1.3rem}
-  .bd-actie-item{padding:.65rem 0; border-top:1px solid rgba(255,255,255,.16)}
-  .bd-actie-item:first-child{border-top:none; padding-top:.2rem}
-  .bd-actie-regel{display:flex; align-items:center; justify-content:space-between; gap:.75rem}
-  .bd-actie-naam{
-    font-family:var(--font-display); color:#fff; font-size:1.2rem; line-height:1.05;
-    text-decoration:underline; text-decoration-thickness:2px; text-underline-offset:3px;
-  }
-  .bd-actie-prijs{
-    flex:none; font-family:var(--font-display); color:var(--ink);
-    background:#fff; padding:.15rem .6rem; font-size:1.05rem; white-space:nowrap;
-    border-radius:12px 8px 12px 8px / 8px 12px 8px 12px; transform:rotate(-1.5deg);
-  }
-  .bd-actie-omschr{
-    font-family:var(--font-body); color:rgba(255,255,255,.9);
-    font-size:.85rem; line-height:1.4; margin:.3rem 0 0;
-  }
+  .bd-actie-link{display:block; line-height:0}
+  .bd-actie-link.is-clickable{cursor:pointer}
+  .bd-actie-foto{width:100%; height:auto; display:block; border-radius:var(--r)}
 
   .bd-actie-sluit{
     position:absolute; top:.5rem; right:.55rem;
     width:38px; height:38px; border:none; border-radius:50%;
-    background:transparent; color:#fff;
+    background:rgba(0,0,0,.45); color:#fff;
     font-size:1.6rem; line-height:1; cursor:pointer;
   }
-  .bd-actie-sluit:hover{background:rgba(255,255,255,.16)}
-  .bd-actie-sluit:focus-visible{background:rgba(255,255,255,.16); outline:3px solid #fff; outline-offset:2px}
+  .bd-actie-sluit:hover{background:rgba(0,0,0,.65)}
+  .bd-actie-sluit:focus-visible{background:rgba(0,0,0,.65); outline:3px solid #fff; outline-offset:2px}
 
-  @media (max-width:400px){
-    .bd-actie-kaart{padding:1.25rem 1.15rem 1.4rem}
-    .bd-actie-kop{font-size:1.7rem}
-    .bd-actie-naam{font-size:1.1rem}
-  }
   @media (prefers-reduced-motion:reduce){
     .bd-actie-overlay,
     .bd-actie-overlay .bd-actie-kaart{transition:none}
-    .bd-actie-kaart,
-    .bd-actie-banner,
-    .bd-actie-prijs{transform:none}
+    .bd-actie-kaart{transform:none}
   }
 </style>
 </head>
@@ -1134,96 +1097,81 @@
 </script>
 
 <!-- ===================================================================
-     ACTIE-POP-UP (homepage) — de inhoud wordt gevuld vanuit het script
-     hieronder, dus je hoeft hier niets te wijzigen.
+     ACTIE-POP-UP (homepage) — foto + link + aan/uit komen uit actie.json.
+     Pas de foto en instellingen aan via de CMS ("Actie-pop-up"), niet hier.
      =================================================================== -->
 <div class="bd-actie-overlay" id="bdActieOverlay" role="dialog" aria-modal="true"
-     aria-labelledby="bdActieKop" hidden>
+     aria-label="Actie" hidden>
   <div class="bd-actie-kaart">
     <button class="bd-actie-sluit" id="bdActieSluit" type="button" aria-label="Sluiten">&times;</button>
-    <div class="bd-actie-banner"><h2 class="bd-actie-kop" id="bdActieKop"></h2></div>
-    <div class="bd-actie-lijst" id="bdActieLijst"></div>
-    <a class="btn btn-ghost-light" id="bdActieKnop" href="#" target="_blank" rel="noopener"></a>
+    <a class="bd-actie-link" id="bdActieLink" href="#" target="_blank" rel="noopener" tabindex="-1">
+      <img class="bd-actie-foto" id="bdActieFoto" src="" alt="">
+    </a>
   </div>
 </div>
 
 <script>
-/* ACTIE-POP-UP — pas alleen het blok ACTIE hieronder aan. */
+/* ACTIE-POP-UP — foto-gebaseerd. Inhoud komt uit actie.json, dat je via
+   de CMS ("Actie-pop-up") aanpast. Hier hoef je niets te wijzigen. */
 (function () {
-  const ACTIE = {
-    actief: true,                 // false = pop-up helemaal uit
-    kop: "Winterspecials",
-    items: [
-      { naam:"Loaded fries stoofvlees", prijs:"\u20AC9,50", omschrijving:"Verse friet met huisgemaakt stoofvlees en gesmolten kaas." },
-      { naam:"Winterburger",            prijs:"\u20AC7,95", omschrijving:"Rundburger met romige brie en frisse cranberrysaus." },
-      { naam:"Milkshake appeltaart",    prijs:"\u20AC7,95", omschrijving:"Romige shake met appel, kaneel en een vleugje vanille." }
-    ],
-    knopTekst: "Bestel online",
-    knopLink:  "https://www.boslaantjedoen.nl/bestel",  // jouw CashDesk-bestelpagina
-    vertragingSeconden: 5,        // wachttijd voor de pop-up verschijnt
-    opnieuwNaDagen:     7,        // na wegklikken zoveel dagen niet opnieuw tonen
-    tonenTot:           ""        // optioneel, bv "2026-03-01": daarna verdwijnt de pop-up vanzelf (leeg = geen einddatum)
-  };
-  /* ---------- hieronder niets aanpassen ---------- */
   const SLEUTEL = "bd_actie_gezien";
-  const verlopen = ACTIE.tonenTot && new Date() > new Date(ACTIE.tonenTot + "T23:59:59");
   function magTonen(){ try{ const t=localStorage.getItem(SLEUTEL); if(t && Date.now()<Number(t)) return false; }catch(e){} return true; }
-  function onthoud(){ try{ localStorage.setItem(SLEUTEL, String(Date.now()+ACTIE.opnieuwNaDagen*864e5)); }catch(e){} }
 
-  const overlay = document.getElementById("bdActieOverlay");
-  if(!overlay || !ACTIE.actief || verlopen) return;
-  const sluit = document.getElementById("bdActieSluit");
-  const knop  = document.getElementById("bdActieKnop");
-  let vorige  = null;
+  fetch("actie.json", { cache: "no-store" }).then(r => r.json()).then(ACTIE => {
+    const verlopen = ACTIE.tonenTot && new Date() > new Date(ACTIE.tonenTot + "T23:59:59");
+    const overlay = document.getElementById("bdActieOverlay");
+    if(!overlay || !ACTIE.actief || !ACTIE.foto || verlopen) return;
 
-  // Kop invullen
-  document.getElementById("bdActieKop").textContent = ACTIE.kop;
-  // Specials opbouwen uit de items-lijst
-  const lijst = document.getElementById("bdActieLijst");
-  ACTIE.items.forEach(it => {
-    const item  = document.createElement("div"); item.className = "bd-actie-item";
-    const regel = document.createElement("div"); regel.className = "bd-actie-regel";
-    const naam  = document.createElement("span"); naam.className = "bd-actie-naam"; naam.textContent = it.naam;
-    const prijs = document.createElement("span"); prijs.className = "bd-actie-prijs"; prijs.textContent = it.prijs;
-    regel.append(naam, prijs); item.append(regel);
-    if(it.omschrijving){
-      const o = document.createElement("p"); o.className = "bd-actie-omschr"; o.textContent = it.omschrijving; item.append(o);
+    function onthoud(){ try{ localStorage.setItem(SLEUTEL, String(Date.now()+(ACTIE.opnieuwNaDagen||7)*864e5)); }catch(e){} }
+
+    const sluit = document.getElementById("bdActieSluit");
+    const link  = document.getElementById("bdActieLink");
+    const foto  = document.getElementById("bdActieFoto");
+    let vorige  = null;
+
+    foto.src = ACTIE.foto;
+    foto.alt = ACTIE.altTekst || ACTIE.kop || "Actie";
+    if(ACTIE.link){
+      link.href = ACTIE.link;
+      link.tabIndex = 0;
+      link.classList.add("is-clickable");
+      link.addEventListener("click", onthoud);
+    } else {
+      link.removeAttribute("href");
+      link.tabIndex = -1;
     }
-    lijst.append(item);
-  });
-  knop.textContent = ACTIE.knopTekst;
-  knop.href = ACTIE.knopLink;
 
-  function open(){
-    vorige = document.activeElement;
-    overlay.hidden = false;
-    requestAnimationFrame(() => overlay.classList.add("is-open"));
-    document.body.style.overflow = "hidden";
-    sluit.focus();
-    document.addEventListener("keydown", opToets);
-  }
-  function dicht(){
-    overlay.classList.remove("is-open");
-    document.body.style.overflow = "";
-    document.removeEventListener("keydown", opToets);
-    onthoud();
-    setTimeout(() => { overlay.hidden = true; }, 260);
-    if(vorige && vorige.focus) vorige.focus();
-  }
-  function opToets(e){
-    if(e.key === "Escape"){ dicht(); return; }
-    if(e.key === "Tab"){
-      const f=[sluit,knop], eerste=f[0], laatste=f[f.length-1];
-      if(e.shiftKey && document.activeElement===eerste){ e.preventDefault(); laatste.focus(); }
-      else if(!e.shiftKey && document.activeElement===laatste){ e.preventDefault(); eerste.focus(); }
+    function open(){
+      vorige = document.activeElement;
+      overlay.hidden = false;
+      requestAnimationFrame(() => overlay.classList.add("is-open"));
+      document.body.style.overflow = "hidden";
+      sluit.focus();
+      document.addEventListener("keydown", opToets);
     }
-  }
+    function dicht(){
+      overlay.classList.remove("is-open");
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", opToets);
+      onthoud();
+      setTimeout(() => { overlay.hidden = true; }, 260);
+      if(vorige && vorige.focus) vorige.focus();
+    }
+    function opToets(e){
+      if(e.key === "Escape"){ dicht(); return; }
+      if(e.key === "Tab"){
+        const f = ACTIE.link ? [sluit, link] : [sluit];
+        const eerste=f[0], laatste=f[f.length-1];
+        if(e.shiftKey && document.activeElement===eerste){ e.preventDefault(); laatste.focus(); }
+        else if(!e.shiftKey && document.activeElement===laatste){ e.preventDefault(); eerste.focus(); }
+      }
+    }
 
-  sluit.addEventListener("click", dicht);
-  overlay.addEventListener("click", e => { if(e.target === overlay) dicht(); });
-  knop.addEventListener("click", onthoud);   // na doorklikken niet opnieuw tonen
+    sluit.addEventListener("click", dicht);
+    overlay.addEventListener("click", e => { if(e.target === overlay) dicht(); });
 
-  if(magTonen()) setTimeout(open, ACTIE.vertragingSeconden * 1000);
+    if(magTonen()) setTimeout(open, (ACTIE.vertragingSeconden||5) * 1000);
+  }).catch(() => {});
 })();
 </script>
 <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Stuur ons een WhatsApp-bericht">

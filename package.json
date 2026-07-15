@@ -1,0 +1,13 @@
+{
+  "name": "boslaantje-doen-cms",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Statische site + Decap CMS voor Boslaantje Doen (Producten-collectie: catering & partyverhuur).",
+  "scripts": {
+    "build": "eleventy",
+    "dev": "eleventy --serve"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^2.0.1"
+  }
+}
