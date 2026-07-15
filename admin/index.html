@@ -4,8 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Manager — Boslaantje Doen</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+  <meta name="theme-color" content="#4A5D3D" />
 </head>
 <body>
+  <!-- Decap CMS laadt zichzelf hier volledig; config.yml in dezelfde map bepaalt de velden.
+       Het script staat bewust HELEMAAL ONDERAAN de body: decap-cms.js probeert bij het laden
+       meteen in document.body te schrijven, en dat bestaat nog niet als het script in <head>
+       staat (vandaar de "appendChild"-foutmelding die we net op de live site zagen). -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 </body>
 </html>
