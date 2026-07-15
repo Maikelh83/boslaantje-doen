@@ -2,7 +2,7 @@ backend:
   name: github
   repo: Maikelh83/boslaantje-doen   # PAS AAN indien de repo-naam morgen anders blijkt te zijn
   branch: main
-  base_url: https://VERVANG-MET-CLOUDFLARE-WORKER-URL.workers.dev   # OAuth-proxy, zie taak "GitHub OAuth instellen"
+  base_url: https://boslaantje-cms-auth.maikelhuijzer.workers.dev   # OAuth-proxy Worker
 
 # Chantal's uploads (foto's) komen hier terecht en worden vanaf hier
 # gewoon door Eleventy meegekopieerd naar de live site.
