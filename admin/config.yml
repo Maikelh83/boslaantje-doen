@@ -10,33 +10,6 @@ media_folder: "src/images/producten"
 public_folder: "/images/producten"
 
 collections:
-  - name: "producten"
-    label: "Producten"
-    label_singular: "Product"
-    folder: "src/producten"
-    create: true
-    delete: true
-    slug: "{{slug}}"
-    identifier_field: naam
-    summary: "{{naam}} — {{categorie}} — € {{prijs}}"
-    fields:
-      - { label: "Naam", name: "naam", widget: "string", hint: "Komt zowel op de kaart als in de aanvraaglijst te staan." }
-      - { label: "Omschrijving", name: "omschrijving", widget: "text" }
-      - { label: "Prijs", name: "prijs", widget: "number", value_type: "float", hint: "Laat op 0 staan om de kaart als 'voorbeeld — vul aan' te tonen (net als nu bij Buffet en Borrelplank)." }
-      - label: "Eenheid"
-        name: "eenheid"
-        widget: "select"
-        options: ["p.p.", "per stuk", "per dag"]
-      - label: "Categorie"
-        name: "categorie"
-        widget: "select"
-        options: ["Catering", "Partyverhuur"]
-      - label: "Subcategorie"
-        name: "subcategorie"
-        widget: "select"
-        hint: "Bepaalt in welk blokje op de pagina de kaart verschijnt."
-        options: ["Feest & BBQ", "Borrel & hapjes", "Tafels & meubilair", "Tent & koeling"]
-      - { label: "Foto", name: "foto", widget: "image", required: false, hint: "Optioneel. Zonder foto verschijnt een neutrale placeholder i.p.v. het huidige handgetekende icoontje." }
 
   - name: "faq"
     label: "Veelgestelde vragen"
