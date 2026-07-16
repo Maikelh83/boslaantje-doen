@@ -6,8 +6,13 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.boslaantjedoen.nl/catering</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://www.boslaantjedoen.nl/solliciteren.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.boslaantjedoen.nl/voorwaarden.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>
