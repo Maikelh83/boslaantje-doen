@@ -121,7 +121,6 @@ permalink: solliciteren.html
 </div>
 <div class="cart-actions">
 <button class="btn btn-green" id="sendMail" type="button">Verstuur sollicitatie</button>
-<a class="wa-alt" id="sendWa" href="#" target="_blank" rel="noopener">Liever appen? Verstuur je sollicitatie via WhatsApp →</a>
 </div>
 <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
 </div>
@@ -136,7 +135,6 @@ permalink: solliciteren.html
 <script>
 (function(){
 var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvzepvgz';
-var WHATSAPP_NUMMER = '31318514916';
 
 function g(id){ return document.getElementById(id); }
 
@@ -153,23 +151,7 @@ function valid(){
 return g('naam').value.trim() !== '' && g('contact').value.trim() !== '';
 }
 
-var wf = document.getElementById('waFloat');
-if(wf){ wf.href = 'https://wa.me/' + WHATSAPP_NUMMER + '?text=' + encodeURIComponent('Hoi! Ik heb een vraag over werken bij Boslaantje Doen.'); }
-
-var sendWaBtn = g('sendWa');
-if(sendWaBtn){
-sendWaBtn.addEventListener('click', function(e){
-if(!valid()){
-e.preventDefault();
-var status = g('formStatus');
-if(status){ status.textContent = 'Vul in ieder geval je naam en contactgegevens in.'; }
-return;
-}
-this.href = 'https://wa.me/' + WHATSAPP_NUMMER + '?text=' + encodeURIComponent(buildMessage());
-});
-}
-
-var sendMailBtn = g('sendMail');
+sendMailBtn = g('sendMail');
 if(sendMailBtn){
 sendMailBtn.addEventListener('click', function(){
 var status = g('formStatus');
