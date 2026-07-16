@@ -11,24 +11,6 @@ public_folder: "/images/producten"
 
 collections:
 
-  - name: "faq"
-    label: "Veelgestelde vragen"
-    label_singular: "Vraag"
-    folder: "src/faq"
-    create: true
-    delete: true
-    slug: "{{pagina}}-{{volgorde}}-{{slug}}"
-    identifier_field: vraag
-    summary: "[{{pagina}}] {{vraag}}"
-    fields:
-      - label: "Pagina"
-        name: "pagina"
-        widget: "select"
-        options: ["Catering", "Verhuur"]
-      - { label: "Volgorde", name: "volgorde", widget: "number", value_type: "int", hint: "Bepaalt de volgorde op de pagina (laag = bovenaan)." }
-      - { label: "Vraag", name: "vraag", widget: "string" }
-      - { label: "Antwoord", name: "antwoord", widget: "text" }
-
   - name: "vacatures"
     label: "Vacatures"
     label_singular: "Vacature"
