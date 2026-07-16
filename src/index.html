@@ -402,6 +402,16 @@
   .hours{background:#fff;border:1.5px solid var(--paper-line);border-radius:var(--r);padding:1.4rem 1.5rem;box-shadow:var(--shadow);color:var(--ink)}
   .map-embed{grid-column:1/-1;margin-top:.6rem;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
   .map-embed iframe{display:block;width:100%;height:320px;border:0}
+  .contact-form-card{grid-column:1/-1;background:#fff;border:1.5px solid var(--paper-line);border-radius:var(--r);padding:1.6rem 1.8rem;box-shadow:var(--shadow);color:var(--ink);margin-top:.6rem}
+  .contact-form-card h3{font-family:var(--font-body);font-weight:900;font-size:1.3rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;color:var(--green-ink)}
+  .contact-form-card .contact-form-sub{margin:0 0 1rem;color:var(--ink);opacity:.75;font-size:.95rem}
+  .contact-form-card label{display:block;font-weight:700;font-size:.85rem;margin:.7rem 0 .3rem}
+  .contact-form-card input,.contact-form-card textarea{width:100%;padding:.65rem .8rem;border:1.5px solid var(--paper-line);border-radius:8px;font:inherit;box-sizing:border-box}
+  .contact-form-card .cf-row{display:grid;gap:1rem}
+  @media(min-width:640px){.contact-form-card .cf-row{grid-template-columns:1fr 1fr}}
+  .contact-form-card button[type=submit]{margin-top:1.2rem;background:#9C6355;color:#fff;border:none;padding:.75rem 1.6rem;border-radius:999px;font-weight:700;cursor:pointer;font-size:1rem}
+  .contact-form-card button[type=submit]:hover{opacity:.9}
+  #contactFormStatus{margin-top:.6rem;font-size:.85rem;color:var(--green-ink);min-height:1.2em}
   .hours h3{font-family:var(--font-body);font-weight:900;font-size:1.3rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.9rem;color:var(--green-ink)}
   .hours .row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px dashed var(--paper-line);font-size:.98rem}
   .hours .row:last-child{border-bottom:none}
@@ -868,6 +878,27 @@
       <div class="map-embed reveal">
         <iframe src="https://www.google.com/maps?q=Oleander+1a,+Veenendaal&output=embed" width="100%" height="320" style="border:0" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Route naar Boslaantje Doen, Oleander 1a Veenendaal"></iframe>
       </div>
+
+      <div class="contact-form-card reveal">
+        <h3>Stel je vraag</h3>
+        <p class="contact-form-sub">Liever typen dan bellen? Vul het formulier in, dan reageren we via e-mail.</p>
+        <form id="contactForm" novalidate>
+          <div class="cf-row">
+            <div>
+              <label for="cNaam">Naam</label>
+              <input type="text" id="cNaam" name="naam" required>
+            </div>
+            <div>
+              <label for="cContact">E-mailadres of telefoonnummer</label>
+              <input type="text" id="cContact" name="contact" required>
+            </div>
+          </div>
+          <label for="cBericht">Je vraag</label>
+          <textarea id="cBericht" name="bericht" rows="4" required></textarea>
+          <button type="submit" id="cSend">Versturen</button>
+          <p id="contactFormStatus" aria-live="polite"></p>
+        </form>
+      </div>
     </div>
   </div>
 </section>
@@ -1053,6 +1084,46 @@
   }).catch(() => {});
 })();
 </script>
+<script>
+(function(){
+  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvzepvgz';
+  var form = document.getElementById('contactForm');
+  var status = document.getElementById('contactFormStatus');
+  if(form){
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var naam = document.getElementById('cNaam').value.trim();
+      var contact = document.getElementById('cContact').value.trim();
+      var bericht = document.getElementById('cBericht').value.trim();
+      if(!naam || !contact || !bericht){
+        status.textContent = 'Vul alle velden in.';
+        return;
+      }
+      status.textContent = 'Bezig met versturen...';
+      fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          _subject: 'Nieuw bericht via contactformulier op de website',
+          naam: naam,
+          contact: contact,
+          bericht: bericht
+        })
+      }).then(function(r){
+        if(r.ok){
+          status.textContent = 'Bedankt! Je bericht is verstuurd.';
+          form.reset();
+        } else {
+          status.textContent = 'Er ging iets mis. Probeer het later opnieuw.';
+        }
+      }).catch(function(){
+        status.textContent = 'Er ging iets mis. Probeer het later opnieuw.';
+      });
+    });
+  }
+})();
+</script>
+
 <script id="leat-widget" data-widget-id="3751" account-uuid="8d320520-0f61-4e46-992e-b63828279653" src="https://widget.leat.com/widget.js" defer></script>
 
 </body>
