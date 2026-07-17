@@ -171,8 +171,8 @@
   /* Primaire knop — brandbook: groene achtergrond, witte tekst, afgerond.
      .btn-gold behoudt zijn klassenaam (zodat de HTML ongewijzigd blijft),
      maar is nu de groene merkknop. */
-  .btn-gold{background:var(--green);color:#fff;box-shadow:0 8px 20px -12px rgba(74,93,61,.7)}
-  .btn-gold:hover{background:var(--green-ink);transform:translateY(-2px);box-shadow:0 12px 24px -12px rgba(74,93,61,.75)}
+  .btn-gold{background:var(--green);color:#fff;box-shadow:0 10px 24px -10px rgba(74,93,61,.75)}
+  .btn-gold:hover{background:var(--green-ink);transform:translateY(-3px);box-shadow:0 14px 28px -10px rgba(74,93,61,.8)}
   .btn-green{background:var(--green);color:#fff;box-shadow:0 8px 20px -12px rgba(74,93,61,.7)}
   .btn-green:hover{background:var(--green-ink);transform:translateY(-2px);box-shadow:0 12px 24px -12px rgba(74,93,61,.75)}
 
@@ -226,7 +226,7 @@
   .nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
 
   /* In de groene header: bestelknop wit met groene tekst (anders groen-op-groen) */
-  .nav .btn-gold.nav-order{background:#fff;color:var(--green);box-shadow:0 6px 16px -10px rgba(0,0,0,.35)}
+  .nav .btn-gold.nav-order{background:#fff;color:var(--green);box-shadow:0 6px 16px -10px rgba(0,0,0,.35);padding:.6em 1.1em;font-size:.92rem}
   .nav .btn-gold.nav-order:hover{background:var(--paper-2);color:var(--green-ink)}
   .brand .name b{color:#fff}
 
@@ -250,7 +250,7 @@
   .mobile-menu .mobile-order:hover{background:var(--paper-2);color:var(--green-ink)}
 
   /* Op desktop: gewone nav zichtbaar, hamburger + mobiel menu verborgen */
-  @media(min-width:900px){
+  @media(min-width:1120px){
     .nav-links{display:flex}
     .nav-toggle{display:none}
     .mobile-menu{display:none !important}
@@ -741,7 +741,8 @@ Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
       <a href="#contact">Contact</a>
       <a href="veelgestelde-vragen.html">Veelgestelde vragen</a>
     </nav>
-    <a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-gold nav-order">Bestellen</a>
+    <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold nav-order">Bezorgen</a>
+    <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold nav-order">Afhalen</a>
     <!-- Hamburgerknop: alleen zichtbaar op mobiel/tablet, opent het menu -->
     <button class="nav-toggle" id="navToggle" aria-label="Menu openen" aria-expanded="false" aria-controls="mobileMenu">
       <span></span><span></span><span></span>
@@ -753,7 +754,8 @@ Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
     <a href="solliciteren.html">Solliciteren</a>
     <a href="#contact">Contact</a>
     <a href="veelgestelde-vragen.html">Veelgestelde vragen</a>
-    <a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-gold mobile-order">Bestellen</a>
+    <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold mobile-order">Bezorgen</a>
+    <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold mobile-order">Afhalen</a>
   </nav>
 </header>
 
@@ -768,7 +770,8 @@ Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
 <h1>Friet, Burgers &amp; Meer…<span class="hero-h1-sub">in Veenendaal</span></h1>
 <p class="lead">Zin in friet, burgers, loaded fries, snacks of wraps? Bestel eenvoudig online voor afhalen of bezorgen bij Boslaantje Doen.</p>
 <div class="hero-cta">
-<a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-gold">Bestellen</a>
+<a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold">Bezorgen</a>
+<a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold">Afhalen</a>
 <a href="#contact" class="btn btn-ghost-light"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Route &amp; openingstijden</a>
 </div>
 <p class="hero-slogan"><img src="images/slogan_small.png" width="900" height="358" alt="Wat eet jij vandaag? #boslaantjedoen" class="hero-slogan-img" loading="lazy"></p>
