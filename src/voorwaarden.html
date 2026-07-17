@@ -171,8 +171,8 @@
   /* Primaire knop — brandbook: groene achtergrond, witte tekst, afgerond.
      .btn-gold behoudt zijn klassenaam (zodat de HTML ongewijzigd blijft),
      maar is nu de groene merkknop. */
-  .btn-gold{background:var(--green);color:#fff;box-shadow:0 8px 20px -12px rgba(74,93,61,.7)}
-  .btn-gold:hover{background:var(--green-ink);transform:translateY(-2px);box-shadow:0 12px 24px -12px rgba(74,93,61,.75)}
+  .btn-gold{background:var(--green);color:#fff;box-shadow:0 10px 24px -10px rgba(74,93,61,.75)}
+  .btn-gold:hover{background:var(--green-ink);transform:translateY(-3px);box-shadow:0 14px 28px -10px rgba(74,93,61,.8)}
   .btn-green{background:var(--green);color:#fff;box-shadow:0 8px 20px -12px rgba(74,93,61,.7)}
   .btn-green:hover{background:var(--green-ink);transform:translateY(-2px);box-shadow:0 12px 24px -12px rgba(74,93,61,.75)}
 
@@ -226,7 +226,7 @@
   .nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg)}
 
   /* In de groene header: bestelknop wit met groene tekst (anders groen-op-groen) */
-  .nav .btn-gold.nav-order{background:#fff;color:var(--green);box-shadow:0 6px 16px -10px rgba(0,0,0,.35)}
+  .nav .btn-gold.nav-order{background:#fff;color:var(--green);box-shadow:0 6px 16px -10px rgba(0,0,0,.35);padding:.6em 1.1em;font-size:.92rem}
   .nav .btn-gold.nav-order:hover{background:var(--paper-2);color:var(--green-ink)}
   .brand .name b{color:#fff}
 
@@ -250,7 +250,7 @@
   .mobile-menu .mobile-order:hover{background:var(--paper-2);color:var(--green-ink)}
 
   /* Op desktop: gewone nav zichtbaar, hamburger + mobiel menu verborgen */
-  @media(min-width:900px){
+  @media(min-width:1120px){
     .nav-links{display:flex}
     .nav-toggle{display:none}
     .mobile-menu{display:none !important}
@@ -778,7 +778,8 @@ Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
       <a href="solliciteren.html">Solliciteren</a>
       <a href="index.html#contact">Contact</a>
       <a href="veelgestelde-vragen.html">Veelgestelde vragen</a>
-      <a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-gold nav-order">Bestellen</a>
+      <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold nav-order">Bezorgen</a>
+    <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold nav-order">Afhalen</a>
     </nav>
     <!-- Hamburgerknop: alleen zichtbaar op mobiel/tablet, opent het menu -->
     <button class="nav-toggle" id="navToggle" aria-label="Menu openen" aria-expanded="false" aria-controls="mobileMenu">
@@ -791,7 +792,8 @@ Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
     <a href="solliciteren.html">Solliciteren</a>
     <a href="index.html#contact">Contact</a>
     <a href="veelgestelde-vragen.html">Veelgestelde vragen</a>
-    <a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-gold mobile-order">Bestellen</a>
+    <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold mobile-order">Bezorgen</a>
+    <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold mobile-order">Afhalen</a>
   </nav>
 </header><main id="main">
 <div class="wrap" style="max-width:760px;padding-top:2.8rem;padding-bottom:1rem">
