@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.boslaantjedoen.nl/</loc>
+    <loc>https://www.boslaantjedoen.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.boslaantjedoen.nl/solliciteren.html</loc>
+    <loc>https://www.boslaantjedoen.com/menu.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.boslaantjedoen.com/veelgestelde-vragen.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.boslaantjedoen.com/solliciteren.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.boslaantjedoen.nl/voorwaarden.html</loc>
+    <loc>https://www.boslaantjedoen.com/voorwaarden.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-<url>
-<loc>https://www.boslaantjedoen.nl/veelgestelde-vragen.html</loc>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
 </urlset>
