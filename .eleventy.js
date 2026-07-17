@@ -9,6 +9,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('src/sitemap.xml');
   eleventyConfig.addPassthroughCopy('src/index.html');
   eleventyConfig.addPassthroughCopy('src/voorwaarden.html');
+  eleventyConfig.addPassthroughCopy('src/menu.html');
   eleventyConfig.addPassthroughCopy('src/veelgestelde-vragen.html');
 
   // Actie-pop-up (homepage): platte JSON-databestand, door Decap CMS
