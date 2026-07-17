@@ -1,44 +1,34 @@
 <footer>
 <div class="wrap">
-<p style="margin-bottom:.4rem">Met zorg gemaakt door Chantal &amp; het team — een vertrouwd adres in Veenendaal.</p>
-{%- if page.url == "/solliciteren.html" %}
-© 2026 Boslaantje Doen · Werken bij ons in Veenendaal e.o. · <a href="index.html">Naar de homepage</a> · <a href="veelgestelde-vragen.html">Veelgestelde vragen</a>
-{%- else %}
-© 2026 Boslaantje Doen · Snackbar in Veenendaal e.o. · <a href="index.html">Naar de homepage</a> · <a href="solliciteren.html">Werken bij ons</a> · <a href="veelgestelde-vragen.html">Veelgestelde vragen</a>
-{%- endif %}
-<!-- Subtiele verwijzing naar het nieuwe MaCA-label — placeholder-naam/link,
-     invullen zodra de definitieve merknaam en het domein vaststaan. -->
-<p class="foot-maca-note" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(0,0,0,.08);font-size:.85rem;opacity:.7">
-Op zoek naar catering, verhuur of een zakelijk event? Dat verzorgen we voortaan via <a href="#">MaCA [Naam invulling] →</a>
-</p>
+<div class="foot-grid">
+<div class="foot-brand">
+<span class="foot-logo" role="img" aria-label="Boslaantje Doen — friet, burgers en meer"></span>
+<p>Jouw vertrouwde snackbar in Veenendaal — vers gebakken, elke dag opnieuw.</p>
+<div class="socials">
+<a class="social" href="https://www.facebook.com/BoslaantjeDoen/" target="_blank" rel="noopener" aria-label="Boslaantje Doen op Facebook">
+<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21v-8h2.7l.4-3.1h-3.1V7.9c0-.9.25-1.5 1.55-1.5H16.7V3.6c-.3-.04-1.3-.13-2.46-.13-2.44 0-4.11 1.49-4.11 4.22v2.35H7.4V13h2.73v8h3.37z"></path></svg>
+</a>
+<a class="social" href="https://www.instagram.com/boslaantjedoen/" target="_blank" rel="noopener" aria-label="Boslaantje Doen op Instagram">
+<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.3" cy="6.7" r="1.1"></circle></svg>
+</a>
+</div>
+</div>
+<div class="foot-col">
+<h4>Bestellen</h4>
+<a href="index.html#diensten">Seizoensspecials</a>
+<a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener">Bezorgen</a>
+<a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener">Afhalen</a>
+</div>
+<div class="foot-col">
+<h4>Over ons</h4>
+<a href="index.html#contact">Contact</a>
+<a href="solliciteren.html">Werken bij ons</a>
+<a href="veelgestelde-vragen.html">Veelgestelde vragen</a>
+</div>
+</div>
+<div class="foot-bottom">
+<span>&copy; 2026 Boslaantje Doen &middot; Oleander 1a, Veenendaal</span>
+<span>Verse friet, burgers &amp; snacks &mdash; al 20+ jaar in Veenendaal</span>
+</div>
 </div>
 </footer>
-
-<script>
-// mobiel hamburgermenu — zelfde betrouwbare geforceerde-reflow-aanpak als op de homepage
-const navToggle = document.getElementById('navToggle');
-const mobileMenu = document.getElementById('mobileMenu');
-if (navToggle && mobileMenu) {
-const setMenu = (open) => {
-navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-navToggle.setAttribute('aria-label', open ? 'Menu sluiten' : 'Menu openen');
-if (open) {
-mobileMenu.hidden = false;
-void mobileMenu.offsetHeight;
-mobileMenu.classList.add('is-open');
-} else {
-mobileMenu.classList.remove('is-open');
-window.setTimeout(() => { mobileMenu.hidden = true; }, 320);
-}
-};
-navToggle.addEventListener('click', () => {
-setMenu(navToggle.getAttribute('aria-expanded') !== 'true');
-});
-mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
-document.addEventListener('keydown', e => {
-if (e.key === 'Escape' && navToggle.getAttribute('aria-expanded') === 'true') {
-setMenu(false); navToggle.focus();
-}
-});
-}
-</script>
