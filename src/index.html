@@ -227,6 +227,7 @@
 
   /* In de groene header: bestelknop wit met groene tekst (anders groen-op-groen) */
   .nav .btn-gold.nav-order{background:#fff;color:var(--green);box-shadow:0 6px 16px -10px rgba(0,0,0,.35);padding:.6em 1.1em;font-size:.92rem}
+  .nav-order-group{display:flex;gap:.5rem;align-items:center}
   .nav .btn-gold.nav-order:hover{background:var(--paper-2);color:var(--green-ink)}
   .brand .name b{color:#fff}
 
@@ -741,8 +742,10 @@ Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
       <a href="#contact">Contact</a>
       <a href="veelgestelde-vragen.html">Veelgestelde vragen</a>
     </nav>
+    <div class="nav-order-group">
     <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold nav-order">Bezorgen</a>
     <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold nav-order">Afhalen</a>
+    </div>
     <!-- Hamburgerknop: alleen zichtbaar op mobiel/tablet, opent het menu -->
     <button class="nav-toggle" id="navToggle" aria-label="Menu openen" aria-expanded="false" aria-controls="mobileMenu">
       <span></span><span></span><span></span>
