@@ -663,33 +663,68 @@ Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
   }
 
 </style>
-<!-- Meta Pixel Code -->
+<!-- Cookiebanner + toestemming-gated Meta Pixel & Google Analytics -->
 <script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1042044348475596');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1042044348475596&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-VJS3Q1LRKM"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+(function(){
+  var CONSENT_KEY = 'bd_cookie_consent';
 
-  gtag('config', 'G-VJS3Q1LRKM');
-</script>
-</head>
+  function loadAnalytics(){
+    if (window.__bdAnalyticsLoaded) return;
+    window.__bdAnalyticsLoaded = true;
+
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1042044348475596');
+    fbq('track', 'PageView');
+
+    var gtagScript = document.createElement('script');
+    gtagScript.async = true;
+    gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-VJS3Q1LRKM';
+    document.head.appendChild(gtagScript);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', 'G-VJS3Q1LRKM');
+  }
+
+  window.bdCookieSettings = function(){
+    localStorage.removeItem(CONSENT_KEY);
+    location.reload();
+  };
+
+  var consent = localStorage.getItem(CONSENT_KEY);
+  if (consent === 'accepted') { loadAnalytics(); }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    if (consent === 'accepted' || consent === 'declined') return;
+
+    var banner = document.createElement('div');
+    banner.id = 'cookie-banner';
+    banner.setAttribute('role', 'dialog');
+    banner.setAttribute('aria-label', 'Cookiemelding');
+    banner.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#4a5d3d;color:#fff;padding:16px 20px;display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:center;font-family:"Open Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;box-shadow:0 -2px 12px rgba(0,0,0,.15);';
+    banner.innerHTML = '<p style="margin:0;flex:1 1 320px;font-size:.95rem;line-height:1.5;max-width:640px;">We gebruiken cookies voor websiteanalyse (Google Analytics) en advertenties (Meta Pixel). Ga je hiermee akkoord? <a href="voorwaarden.html" style="color:#fff;text-decoration:underline;">Meer info</a></p><div style="display:flex;gap:10px;flex:0 0 auto;"><button type="button" id="cookie-decline" style="background:transparent;color:#fff;border:1px solid #fff;border-radius:999px;padding:10px 20px;font-size:.9rem;cursor:pointer;">Weigeren</button><button type="button" id="cookie-accept" style="background:#fff;color:#4a5d3d;border:1px solid #fff;border-radius:999px;padding:10px 20px;font-size:.9rem;font-weight:600;cursor:pointer;">Accepteren</button></div>';
+    document.body.appendChild(banner);
+
+    document.getElementById('cookie-accept').addEventListener('click', function(){
+      localStorage.setItem(CONSENT_KEY, 'accepted');
+      loadAnalytics();
+      banner.remove();
+    });
+    document.getElementById('cookie-decline').addEventListener('click', function(){
+      localStorage.setItem(CONSENT_KEY, 'declined');
+      banner.remove();
+    });
+  });
+})();
+</script></head>
 <body>
 
 <!-- ============ boomplak-merkteken (herbruikbaar) ============ -->
@@ -989,7 +1024,7 @@ src="https://www.facebook.com/tr?id=1042044348475596&ev=PageView&noscript=1"
       </div>
     </div>
     <div class="foot-bottom">
-      <span>© 2026 Boslaantje Doen · Oleander 1a, Veenendaal · <a href="voorwaarden.html">Algemene voorwaarden</a></span>
+      <span>© 2026 Boslaantje Doen · Oleander 1a, Veenendaal · <a href="voorwaarden.html">Algemene voorwaarden</a> · <a href="#" onclick="window.bdCookieSettings&&window.bdCookieSettings();return false;">Cookie-instellingen</a></span>
       <span class="tagline">Verse friet, burgers &amp; snacks — al 20+ jaar in Veenendaal</span>
     </div>
     <!-- Subtiele verwijzing voor bezoekers die eigenlijk catering, verhuur of een
