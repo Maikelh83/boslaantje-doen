@@ -32,8 +32,8 @@ h2{font-size:clamp(1.9rem,5vw,2.9rem)}
 
 .btn{display:inline-flex;align-items:center;gap:.5em;font-weight:800;font-size:1rem;padding:.85em 1.5em;border-radius:999px;border:2px solid transparent;cursor:pointer;transition:transform .15s,background .15s,color .15s;line-height:1;font-family:var(--font-body)}
 .btn:focus-visible{outline:3px solid var(--green);outline-offset:3px}
-.btn-green{background:var(--green);color:#fff}
-.btn-green:hover{background:var(--green-deep);transform:translateY(-2px)}
+.btn-green{background:var(--green);color:#fff;box-shadow:0 10px 24px -10px rgba(74,93,61,.75)}
+.btn-green:hover{background:var(--green-deep);transform:translateY(-3px);box-shadow:0 14px 28px -10px rgba(74,93,61,.8)}
 .btn-outline{background:transparent;color:var(--green-ink);border-color:var(--green)}
 .btn-outline:hover{background:var(--green);color:#fff}
 .btn-ghost{background:#fff;color:var(--green-ink);border:1.5px solid var(--paper-line)}
@@ -72,7 +72,7 @@ border-bottom:1px solid var(--paper-line)}
 .mobile-menu a:last-of-type{border-bottom:none}
 .mobile-menu .mobile-order{margin-top:.8rem;justify-content:center;border-bottom:none}
 
-@media(min-width:900px){
+@media(min-width:1120px){
 .nav-links{display:flex}
 .nav-toggle{display:none}
 .mobile-menu{display:none !important}
