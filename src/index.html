@@ -308,9 +308,6 @@
   .trust b{display:block;font-weight:800;color:var(--green-ink);font-size:.92rem}
   .trust span{color:#5a5a52}
 
-  /* ---- zwevende WhatsApp-knop (zelfde als op catering.html) ---- */
-  
-
   /* ---- diensten-triptiek ---- */
   .cards3{display:grid;gap:1.4rem;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
   .svc{
@@ -885,6 +882,7 @@ src="https://www.facebook.com/tr?id=1042044348475596&ev=PageView&noscript=1"
           <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold">Afhalen</a>
         </div>
         <p class="cta-note">Bij online bestellen kies je zelf afhalen of bezorgen.</p>
+<p class="contact-sub">Vraag over bestellen, openingstijden of iets anders? Bekijk onze <a href="voorwaarden.html">veelgestelde vragen</a>.</p>
       </div>
 
       <div class="hours-col">
@@ -899,27 +897,6 @@ src="https://www.facebook.com/tr?id=1042044348475596&ev=PageView&noscript=1"
         <div class="row closed"><span class="d">Zondag</span><span class="t">Gesloten</span></div>
         <p class="hours-note">Telefonisch al een uur vóór openingstijd bereikbaar.</p>
       </div>
-      </div>
-
-      <div class="contact-form-card reveal">
-        <h3>Stel je vraag</h3>
-        <p class="contact-form-sub">Liever typen dan bellen? Vul het formulier in, dan reageren we via e-mail.</p>
-        <form id="contactForm" novalidate>
-          <div class="cf-row">
-            <div>
-              <label for="cNaam">Naam</label>
-              <input type="text" id="cNaam" name="naam" required>
-            </div>
-            <div>
-              <label for="cContact">E-mailadres of telefoonnummer</label>
-              <input type="text" id="cContact" name="contact" required>
-            </div>
-          </div>
-          <label for="cBericht">Je vraag</label>
-          <textarea id="cBericht" name="bericht" rows="4" required></textarea>
-          <button type="submit" id="cSend">Versturen</button>
-          <p id="contactFormStatus" aria-live="polite"></p>
-        </form>
       </div>
 
       <div class="map-embed reveal">
@@ -1110,45 +1087,7 @@ src="https://www.facebook.com/tr?id=1042044348475596&ev=PageView&noscript=1"
   }).catch(() => {});
 })();
 </script>
-<script>
-(function(){
-  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvzepvgz';
-  var form = document.getElementById('contactForm');
-  var status = document.getElementById('contactFormStatus');
-  if(form){
-    form.addEventListener('submit', function(e){
-      e.preventDefault();
-      var naam = document.getElementById('cNaam').value.trim();
-      var contact = document.getElementById('cContact').value.trim();
-      var bericht = document.getElementById('cBericht').value.trim();
-      if(!naam || !contact || !bericht){
-        status.textContent = 'Vul alle velden in.';
-        return;
-      }
-      status.textContent = 'Bezig met versturen...';
-      fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          _subject: 'Nieuw bericht via contactformulier op de website',
-          naam: naam,
-          contact: contact,
-          bericht: bericht
-        })
-      }).then(function(r){
-        if(r.ok){
-          status.textContent = 'Bedankt! Je bericht is verstuurd.';
-          form.reset();
-        } else {
-          status.textContent = 'Er ging iets mis. Probeer het later opnieuw.';
-        }
-      }).catch(function(){
-        status.textContent = 'Er ging iets mis. Probeer het later opnieuw.';
-      });
-    });
-  }
-})();
-</script>
+
 
 <script id="leat-widget" data-widget-id="3751" account-uuid="8d320520-0f61-4e46-992e-b63828279653" src="https://widget.leat.com/widget.js" defer></script>
 
