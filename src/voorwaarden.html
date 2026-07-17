@@ -214,20 +214,16 @@
   footer{background:var(--green-ink);color:rgba(255,255,255,.75);padding:2.4rem 0;font-size:.9rem;text-align:center;margin-top:2rem}
   footer a{color:#fff;text-decoration:underline;text-underline-offset:2px}
 
-  /* zwevende WhatsApp-knop */
-  .wa-float{position:fixed;right:20px;bottom:20px;z-index:60;display:flex;align-items:center;gap:0;
-    text-decoration:none;transition:transform .18s}
-  .wa-float:hover{transform:translateY(-3px)}
-  .wa-float .bubble{background:#25D366;color:#fff;width:60px;height:60px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;box-shadow:0 10px 26px -8px rgba(0,0,0,.45)}
-  .wa-float .bubble svg{width:34px;height:34px}
-  .wa-float .lbl{background:#fff;color:#1a1a1a;font-weight:700;font-size:.9rem;padding:.6rem .9rem;
-    border-radius:999px;box-shadow:0 8px 22px -10px rgba(0,0,0,.4);margin-right:.6rem;
-    white-space:nowrap;opacity:0;transform:translateX(8px);pointer-events:none;transition:opacity .2s,transform .2s;
-    order:-1}
-  .wa-float:hover .lbl{opacity:1;transform:translateX(0)}
-  @media(max-width:959px){.wa-float{bottom:80px}}
-
+  .contact-form-card{grid-column:1/-1;background:#fff;border:1.5px solid var(--paper-line);border-radius:var(--r);padding:1.6rem 1.8rem;box-shadow:var(--shadow);color:var(--ink);margin-top:.6rem}
+  .contact-form-card h3{font-family:var(--font-body);font-weight:900;font-size:1.3rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;color:var(--green-ink)}
+  .contact-form-card .contact-form-sub{margin:0 0 1rem;color:var(--ink);opacity:.75;font-size:.95rem}
+  .contact-form-card label{display:block;font-weight:700;font-size:.85rem;margin:.7rem 0 .3rem}
+  .contact-form-card input,.contact-form-card textarea{width:100%;padding:.65rem .8rem;border:1.5px solid var(--paper-line);border-radius:8px;font:inherit;box-sizing:border-box}
+  .contact-form-card .cf-row{display:grid;gap:1rem}
+  @media(min-width:640px){.contact-form-card .cf-row{grid-template-columns:1fr 1fr}}
+  .contact-form-card button[type=submit]{margin-top:1.2rem;background:#9C6355;color:#fff;border:none;padding:.75rem 1.6rem;border-radius:999px;font-weight:700;cursor:pointer;font-size:1rem}
+  .contact-form-card button[type=submit]:hover{opacity:.9}
+  #contactFormStatus{margin-top:.6rem;font-size:.85rem;color:var(--green-ink);min-height:1.2em}
 </style>
 </head>
 
@@ -293,7 +289,32 @@
 
       </div>
 
-      <div class="note-box" style="margin:2.4rem 0 0">
+      <div style="margin-top:2rem">
+<div class="contact-form-card reveal">
+        <h3>Stel je vraag</h3>
+        <p class="contact-form-sub">Liever typen dan bellen? Vul het formulier in, dan reageren we via e-mail.</p>
+        <form id="contactForm" novalidate>
+          <div class="cf-row">
+            <div>
+              <label for="cNaam">Naam</label>
+              <input type="text" id="cNaam" name="naam" required>
+            </div>
+            <div>
+              <label for="cContact">E-mailadres of telefoonnummer</label>
+              <input type="text" id="cContact" name="contact" required>
+            </div>
+          </div>
+          <label for="cBericht">Je vraag</label>
+          <textarea id="cBericht" name="bericht" rows="4" required></textarea>
+          <button type="submit" id="cSend">Versturen</button>
+          <p id="contactFormStatus" aria-live="polite"></p>
+        </form>
+      </div>
+
+      
+</div>
+
+<div class="note-box" style="margin:2.4rem 0 0">
         <strong>Korte voorwaarden</strong><br>
         Onze algemene voorwaarden zijn gebaseerd op de <a href="https://www.khn.nl/tools/uniforme-voorwaarden-horeca-nederlands" target="_blank" rel="noopener" style="color:var(--green-ink);font-weight:800;text-decoration:underline;text-underline-offset:2px">Uniforme Voorwaarden Horeca (UVH)</a> van Koninklijke Horeca Nederland. Prijzen op de kaart en in de bestelmodule kunnen tussentijds wijzigen. Op online bestellingen via onze bestelmodule kunnen aanvullend de voorwaarden van dat bestelsysteem van toepassing zijn. Heb je een klacht? Neem binnen redelijke termijn contact met ons op, dan lossen we het samen op.
       </div>
@@ -320,13 +341,6 @@
     </p>
   </div>
 </footer>
-<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Stuur ons een WhatsApp-bericht">
-  <span class="lbl">Vragen? App ons!</span>
-  <span class="bubble" aria-hidden="true">
-    <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 3C9 3 3.5 8.5 3.5 15.5c0 2.4.7 4.7 1.9 6.7L3 29l7-1.8c1.9 1 4 1.6 6 1.6 7 0 12.5-5.5 12.5-12.5S23 3 16 3zm0 22.8c-1.8 0-3.6-.5-5.1-1.4l-.4-.2-4.2 1.1 1.1-4.1-.2-.4c-1-1.6-1.5-3.4-1.5-5.3C5.7 9.8 10.3 5.2 16 5.2s10.3 4.6 10.3 10.3S21.7 25.8 16 25.8zm5.7-7.7c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2c-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-1.8-.9-3-1.6-4.2-3.6-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5 0-.2-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.2 4.6 1.9.8 2.7.9 3.6.8.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4-.1-.2-.3-.2-.6-.4z"/></svg>
-  </span>
-</a>
-
 <script>
   // mobiel hamburgermenu — zelfde betrouwbare geforceerde-reflow-aanpak als op de homepage
   const navToggle = document.getElementById('navToggle');
@@ -356,10 +370,46 @@
   }
 </script>
 
-<script>
-  var wf = document.getElementById('waFloat');
-  if (wf) { wf.href = 'https://wa.me/31318514916?text=' + encodeURIComponent('Hoi! Ik heb een vraag over de algemene voorwaarden van Boslaantje Doen.'); }
-</script>
 
+
+<script>
+(function(){
+  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mvzepvgz';
+  var form = document.getElementById('contactForm');
+  var status = document.getElementById('contactFormStatus');
+  if(form){
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var naam = document.getElementById('cNaam').value.trim();
+      var contact = document.getElementById('cContact').value.trim();
+      var bericht = document.getElementById('cBericht').value.trim();
+      if(!naam || !contact || !bericht){
+        status.textContent = 'Vul alle velden in.';
+        return;
+      }
+      status.textContent = 'Bezig met versturen...';
+      fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          _subject: 'Nieuw bericht via contactformulier op de website',
+          naam: naam,
+          contact: contact,
+          bericht: bericht
+        })
+      }).then(function(r){
+        if(r.ok){
+          status.textContent = 'Bedankt! Je bericht is verstuurd.';
+          form.reset();
+        } else {
+          status.textContent = 'Er ging iets mis. Probeer het later opnieuw.';
+        }
+      }).catch(function(){
+        status.textContent = 'Er ging iets mis. Probeer het later opnieuw.';
+      });
+    });
+  }
+})();
+</script>
 </body>
         </html>
