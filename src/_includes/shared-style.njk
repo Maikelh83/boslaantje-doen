@@ -203,4 +203,19 @@ order:-1}
 .wa-float:hover .lbl{opacity:1;transform:translateX(0)}
 @media(max-width:959px){.wa-float{bottom:80px}}
 
+
+  /* ---- footer (homepage-stijl, toegevoegd voor consistentie met index.html) ---- */
+  footer{background:var(--ink);color:var(--paper);padding:3.2rem 0 2rem;position:relative;overflow:hidden}
+  .foot-grid{display:grid;gap:2rem;margin-bottom:2.4rem}
+  @media(min-width:760px){.foot-grid{grid-template-columns:1.4fr 1fr 1fr}}
+  .foot-brand p{color:rgba(246,241,231,.72);max-width:34ch;font-size:.96rem}
+  .foot-logo{width:170px;height:54px;background:var(--logo) left center/contain no-repeat;display:block;margin-bottom:.8rem}
+  .socials{display:flex;gap:.7rem;margin-top:1.2rem}
+  .social{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;border:1.5px solid rgba(246,241,231,.4);color:var(--paper);transition:background .15s,color .15s,border-color .15s,transform .15s}
+  .social svg{width:20px;height:20px}
+  .social:hover{background:var(--paper);color:var(--ink);border-color:var(--paper);transform:translateY(-2px)}
+  .foot-col h4{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:.9rem;font-weight:900}
+  .foot-col a{display:block;color:rgba(246,241,231,.82);padding:.28rem 0;font-weight:600;font-size:.96rem}
+  .foot-col a:hover{color:#fff}
+  .foot-bottom{border-top:1px solid rgba(246,241,231,.16);padding-top:1.5rem;display:flex;flex-wrap:wrap;gap:.6rem;justify-content:space-between;font-size:.85rem;color:rgba(246,241,231,.6)}
 </style>
