@@ -205,7 +205,7 @@
   .nav{display:flex;align-items:center;justify-content:space-between;height:68px}
   /* Zorgt dat een anker-sprong (menu of directe link) de kop niet onder de sticky header laat vallen. */
   #diensten,#catering,#verhuur,#contact,#bestellen,#reviews,#sfeer{scroll-margin-top:92px}
-  #nieuw,#patat,#loaded-fries,#kindermenu-s,#menu-s,#hamburgers,#kipburgers,#broodjes,#wraps,#snacks,#mini-snacks,#glutenvrije-snacks,#salade,#bittergarnituur,#ijs,#milkshakes,#dranken{scroll-margin-top:92px}
+  #nieuw,#patat,#loaded-fries,#kindermenu-s,#menu-s,#sauzen,#snacks,#broodjes,#mini-snacks,#glutenvrije-snacks,#hamburgers,#kipburgers,#wraps,#salade,#bittergarnituur,#ijs,#milkshakes,#dranken{scroll-margin-top:92px}
   .brand{display:flex;align-items:center;gap:.6rem}
   .brand .mark{width:38px;height:38px;flex:none}
   .brand .name{font-family:var(--font-display);font-size:1.5rem;letter-spacing:.5px;color:var(--paper)}
@@ -821,94 +821,124 @@ Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
 </section>
 
 <section class="menu-categories">
-<nav aria-label="Snelnavigatie menukaart" style="margin-bottom:2rem"><p style="font-weight:800;margin-bottom:.6rem;color:var(--green-ink)">Direct naar:</p><div style="display:flex;flex-wrap:wrap;gap:.5rem"><a href="#nieuw" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Seizoensspecials</a><a href="#patat" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Patat</a><a href="#loaded-fries" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Loaded fries</a><a href="#kindermenu-s" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Kindermenu's</a><a href="#menu-s" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Menu's</a><a href="#hamburgers" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Hamburgers</a><a href="#kipburgers" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Kipburgers</a><a href="#broodjes" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Broodjes</a><a href="#wraps" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Wraps</a><a href="#snacks" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Snacks</a><a href="#mini-snacks" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Mini snacks</a><a href="#glutenvrije-snacks" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Glutenvrije snacks</a><a href="#salade" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Salade</a><a href="#bittergarnituur" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Bittergarnituur</a><a href="#ijs" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">IJs</a><a href="#milkshakes" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Milkshakes</a><a href="#dranken" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Dranken</a></div></nav>
+<nav aria-label="Snelnavigatie menukaart" style="margin-bottom:1.5rem"><p style="font-weight:800;margin-bottom:.6rem;color:var(--green-ink)">Direct naar:</p><div style="display:flex;flex-wrap:wrap;gap:.5rem"><a href="#nieuw" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Seizoensspecials</a><a href="#patat" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Patat</a><a href="#loaded-fries" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Loaded fries</a><a href="#kindermenu-s" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Kindermenu's</a><a href="#menu-s" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Menu's</a><a href="#sauzen" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Sauzen</a><a href="#snacks" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Snacks</a><a href="#broodjes" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Broodjes</a><a href="#mini-snacks" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Mini snacks</a><a href="#glutenvrije-snacks" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Glutenvrije snacks</a><a href="#hamburgers" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Hamburgers</a><a href="#kipburgers" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Kipburgers</a><a href="#wraps" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Wraps</a><a href="#salade" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Salade</a><a href="#bittergarnituur" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Bittergarnituur</a><a href="#ijs" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">IJs</a><a href="#milkshakes" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Milkshakes</a><a href="#dranken" style="display:inline-block;padding:.45em 1.1em;border-radius:999px;border:2px solid var(--green);color:var(--green-ink);font-weight:700;font-size:.9rem;text-decoration:none">Dranken</a></div></nav>
+<div style="max-width:700px;margin:0 0 2.5rem;padding:1rem 1.25rem;background:#fff8e6;border:1px solid #e8d9a8;border-radius:12px;font-size:.9rem;color:#6a5a20">
+<strong>Let op bij afhalen:</strong> vanwege eerdere no-shows kan een afhaalbestelling online alleen nog vooraf worden betaald via iDEAL. Liever bij afhalen betalen? Bel ons dan even om je bestelling telefonisch door te geven.
+</div>
 <h2 id="nieuw">Seizoensspecials</h2>
 <ul class="menu-list">
-  <li><span class="menu-item-name">Loaded Fries Hete Kip<br><small>Een royale portie knapperige friet, belegd met hete kip, huisgemaakte jamballasaus, geroosterde ui en bosui</small></span><span class="menu-item-price">&euro; 9,95</span></li>
-  <li><span class="menu-item-name">Wrap Hete Kip<br><small>Een wrap gevuld met reepjes van hete kip, sla, komkommer, tomaat, rode ui en huisgemaakte jamballasaus</small></span><span class="menu-item-price">&euro; 5,95</span></li>
-  <li><span class="menu-item-name">Chili Chicken Burger<br><small>Een sappige kipburger op een brioche broodje belegd met sla, cheddar, tomaat, chilimayonaise en een gefrituurd uiennest</small></span><span class="menu-item-price">&euro; 7,95</span></li>
-  <li><span class="menu-item-name">Milkshake Mango Passievrucht<br><small>Romige milkshake met de frisse smaak van mango en passievrucht</small></span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">Loaded Fries Hete Kip<br><small>Een royale portie knapperige friet, belegd met hete kip, huisgemaakte jamballasaus, geroosterde ui en bosui</small></span><span class="menu-item-price">&euro; 9,95</span></li>
+<li><span class="menu-item-name">Wrap Hete Kip<br><small>Een wrap gevuld met reepjes van hete kip, sla, komkommer, tomaat, rode ui en huisgemaakte jamballasaus</small></span><span class="menu-item-price">&euro; 5,95</span></li>
+<li><span class="menu-item-name">Chili Chicken Burger<br><small>Een sappige kipburger op een brioche broodje belegd met sla, cheddar, tomaat, chilimayonaise en een gefrituurd uiennest</small></span><span class="menu-item-price">&euro; 7,95</span></li>
+<li><span class="menu-item-name">Milkshake Mango Passievrucht<br><small>Romige milkshake met de frisse smaak van mango en passievrucht</small></span><span class="menu-item-price">&euro; 3,50</span></li>
 </ul>
 
 <h2 id="patat">Patat</h2>
-<ul class="menu-list">
-  <li><span class="menu-item-name">Kleine patat</span><span class="menu-item-price">vanaf &euro; 2,50</span></li>
-  <li><span class="menu-item-name">Middel patat</span><span class="menu-item-price">vanaf &euro; 3,00</span></li>
-  <li><span class="menu-item-name">Grote patat</span><span class="menu-item-price">vanaf &euro; 4,25</span></li>
-  <li><span class="menu-item-name">Gezinszak (per persoon)</span><span class="menu-item-price">vanaf &euro; 5,00</span></li>
-  <li><span class="menu-item-name">Gezinspakket (4 pers. + 4 snacks)</span><span class="menu-item-price">vanaf &euro; 18,50</span></li>
-  <li><span class="menu-item-name">Waterfiets (friet + 2 frikandellen)</span><span class="menu-item-price">vanaf &euro; 7,50</span></li>
-  <li><span class="menu-item-name">Patat Boslaan Deluxe (friet + Boslaanstick)</span><span class="menu-item-price">vanaf &euro; 7,50</span></li>
+<p style="font-size:.85rem;color:#6a6258;margin:0 0 1rem">* vanaf-prijzen zijn afhankelijk van het gekozen formaat of aantal personen.</p><ul class="menu-list">
+<li><span class="menu-item-name">Kleine patat</span><span class="menu-item-price">vanaf &euro; 2,50</span></li>
+<li><span class="menu-item-name">Middel patat</span><span class="menu-item-price">vanaf &euro; 3,00</span></li>
+<li><span class="menu-item-name">Grote patat</span><span class="menu-item-price">vanaf &euro; 4,25</span></li>
+<li><span class="menu-item-name">Gezinszak (per persoon)<br><small>Kies zelf je aantal personen.</small></span><span class="menu-item-price">vanaf &euro; 5,00</span></li>
+<li><span class="menu-item-name">Gezinspakket (4 pers. + 4 snacks)<br><small>Friet voor 4 personen met 4 snacks naar keuze: kroket, frikandel of kaassoufflé.</small></span><span class="menu-item-price">vanaf &euro; 18,50</span></li>
+<li><span class="menu-item-name">Waterfiets (friet + 2 frikandellen)<br><small>Een royale portie friet met saus naar keuze en 2 frikandellen.</small></span><span class="menu-item-price">vanaf &euro; 7,50</span></li>
+<li><span class="menu-item-name">Patat Boslaan Deluxe (friet + Boslaanstick)<br><small>Een royale portie friet met saus naar keuze en een Boslaanstick: een stokje met 5 stukjes snack (frikandel, viandel, mexicano, kipcorn en gehaktstaaf).</small></span><span class="menu-item-price">vanaf &euro; 7,50</span></li>
 </ul>
 
 <h2 id="loaded-fries">Loaded fries</h2>
-<ul class="menu-list">
-  <li><span class="menu-item-name">Loaded Fries Hete Kip</span><span class="menu-item-price">&euro; 9,95</span></li>
-  <li><span class="menu-item-name">Loaded Fries Pulled Porc</span><span class="menu-item-price">&euro; 9,95</span></li>
-  <li><span class="menu-item-name">Loaded Fries Stoofvlees</span><span class="menu-item-price">&euro; 9,95</span></li>
-  <li><span class="menu-item-name">Loaded Fries Kip-Kapsalon</span><span class="menu-item-price">&euro; 9,95</span></li>
-  <li><span class="menu-item-name">Loaded Fries Warm Vlees</span><span class="menu-item-price">&euro; 7,95</span></li>
-  <li><span class="menu-item-name">Loaded Fries Warm Vlees Speciaal</span><span class="menu-item-price">&euro; 9,95</span></li>
-  <li><span class="menu-item-name">Loaded Fries Boeren</span><span class="menu-item-price">&euro; 9,95</span></li>
+<p style="font-size:.85rem;color:#6a6258;margin:0 0 1rem;font-style:italic">Loaded Fries Hete Kip vind je bij Seizoensspecials (bovenaan de kaart).</p><ul class="menu-list">
+<li><span class="menu-item-name">Loaded Fries Pulled Porc<br><small>Een royale portie knapperige friet, rijkelijk belegd met malse pulled porc in rokerige barbecuesaus, fritessaus, gesmolten cheddar en gebakken bacon.</small></span><span class="menu-item-price">&euro; 9,95</span></li>
+<li><span class="menu-item-name">Loaded Fries Stoofvlees<br><small>Een royale portie knapperige friet, rijkelijk belegd met onze huisgemaakte stoofvlees.</small></span><span class="menu-item-price">&euro; 9,95</span></li>
+<li><span class="menu-item-name">Loaded Fries Kip-Kapsalon<br><small>Een royale portie knapperige friet, rijkelijk belegd met cheddar cheese, kipreepjes, huisgemaakte aioli, komkommer, tomaat, rode ui en ijsbergsla.</small></span><span class="menu-item-price">&euro; 9,95</span></li>
+<li><span class="menu-item-name">Loaded Fries Warm Vlees<br><small>Een royale portie knapperige friet, rijkelijk belegd met gebakken fricandeau en pindasaus.</small></span><span class="menu-item-price">&euro; 7,95</span></li>
+<li><span class="menu-item-name">Loaded Fries Warm Vlees Speciaal<br><small>Een royale portie knapperige friet, rijkelijk belegd met gebakken fricandeau, pindasaus, gebakken uien, champignons en een gebakken ei.</small></span><span class="menu-item-price">&euro; 9,95</span></li>
+<li><span class="menu-item-name">Loaded Fries Boeren<br><small>Een royale portie knapperige friet, rijkelijk belegd met gebakken champignons, rode uien en spekreepjes.</small></span><span class="menu-item-price">&euro; 9,95</span></li>
 </ul>
 
 <h2 id="kindermenu-s">Kindermenu's</h2>
 <ul class="menu-list">
-  <li><span class="menu-item-name">Kindermenu</span><span class="menu-item-price">&euro; 7,50</span></li>
+<li><span class="menu-item-name">Kindermenu<br><small>Een feestelijke maaltijd voor de kleintjes: een klein patatje, fritessaus, snack naar keuze, appelmoes, Capri-Sun en een leuke verrassing.</small></span><span class="menu-item-price">&euro; 7,50</span></li>
 </ul>
 
 <h2 id="menu-s">Menu's</h2>
 <ul class="menu-list">
-  <li><span class="menu-item-name">Varkensschnitzelmenu</span><span class="menu-item-price">&euro; 13,95</span></li>
-  <li><span class="menu-item-name">Kipspiezen Menu</span><span class="menu-item-price">&euro; 13,95</span></li>
-  <li><span class="menu-item-name">Kipschnitzel Menu</span><span class="menu-item-price">&euro; 13,95</span></li>
+<li><span class="menu-item-name">Varkensschnitzelmenu<br><small>Een huisgemaakte varkensschnitzel, inclusief een portie knapperige friet met saus naar keuze en dagverse salade.</small></span><span class="menu-item-price">&euro; 13,95</span></li>
+<li><span class="menu-item-name">Kipspiezen Menu<br><small>Twee stokjes kipspiezen met pindasaus, ongezouten pinda's en geroosterde uitjes, inclusief een portie knapperige friet met saus naar keuze en dagverse salade.</small></span><span class="menu-item-price">&euro; 13,95</span></li>
+<li><span class="menu-item-name">Kipschnitzel Menu<br><small>Een malse kipschnitzel, inclusief een portie knapperige friet met saus naar keuze en dagverse salade.</small></span><span class="menu-item-price">&euro; 13,95</span></li>
 </ul>
 
-<h2 id="hamburgers">Hamburgers</h2>
-<ul class="menu-list">
-  <li><span class="menu-item-name">Basic Burger</span><span class="menu-item-price">&euro; 6,95</span></li>
-  <li><span class="menu-item-name">Speciaal Burger</span><span class="menu-item-price">&euro; 7,25</span></li>
-  <li><span class="menu-item-name">Italian Burger</span><span class="menu-item-price">&euro; 7,95</span></li>
-  <li><span class="menu-item-name">Boeren Burger</span><span class="menu-item-price">&euro; 8,25</span></li>
+<h2 id="sauzen">Sauzen</h2>
+<p style="font-size:.85rem;color:#6a6258;margin:0 0 1rem">Saus bij friet is inbegrepen — kies je portie. Extra uitjes, stoofvlees of appelmoes reken je los af.</p><ul class="menu-list">
+<li><span class="menu-item-name">Portie Saus (1 persoon)</span><span class="menu-item-price">inbegrepen</span></li>
+<li><span class="menu-item-name">Bakje Saus (2-3 personen)</span><span class="menu-item-price">inbegrepen</span></li>
+<li><span class="menu-item-name">Beker Saus (3-4 personen)</span><span class="menu-item-price">inbegrepen</span></li>
+<li><span class="menu-item-name">Bakje Uitjes</span><span class="menu-item-price">&euro; 1,50</span></li>
+<li><span class="menu-item-name">Beker Uitjes</span><span class="menu-item-price">&euro; 2,00</span></li>
+<li><span class="menu-item-name">Beker Stoofvlees<br><small>Heerlijke huisgemaakte stoofvlees.</small></span><span class="menu-item-price">&euro; 4,50</span></li>
+<li><span class="menu-item-name">Bakje Appelmoes</span><span class="menu-item-price">&euro; 1,50</span></li>
 </ul>
 
-<h2 id="kipburgers">Kipburgers</h2>
+<h2 id="snacks">Snacks</h2>
 <ul class="menu-list">
-  <li><span class="menu-item-name">Chili Chicken Burger</span><span class="menu-item-price">&euro; 7,95</span></li>
-  <li><span class="menu-item-name">Chicken Basic Burger</span><span class="menu-item-price">&euro; 6,95</span></li>
-  <li><span class="menu-item-name">Chicken Speciaal Burger</span><span class="menu-item-price">&euro; 7,25</span></li>
-  <li><span class="menu-item-name">Chicken Italian Burger</span><span class="menu-item-price">&euro; 7,95</span></li>
-  <li><span class="menu-item-name">Chicken Joppie Burger</span><span class="menu-item-price">&euro; 7,50</span></li>
-  <li><span class="menu-item-name">Spicy Mexican Burger</span><span class="menu-item-price">&euro; 7,95</span></li>
+<li><span class="menu-item-name">Frikandel<br><small>De populairste snack van Nederland: een langwerpige, sappige vleessnack, perfect gefrituurd tot goudbruin.</small></span><span class="menu-item-price">&euro; 2,50</span></li>
+<li><span class="menu-item-name">Frikandel speciaal<br><small>Een klassieker met een twist: opengesneden en rijkelijk belegd met romige mayonaise, curry en vers gesnipperde uitjes.</small></span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">XXL frikandel<br><small>Onze extra grote, sappige vleessnack van 250 gram en 35 centimeter lang, perfect gefrituurd tot goudbruin.</small></span><span class="menu-item-price">&euro; 4,50</span></li>
+<li><span class="menu-item-name">XXL frikandel speciaal<br><small>Een extra grote frikandel van 250 gram en 35 centimeter lang, opengesneden en rijkelijk belegd met romige mayonaise, pittige curry en vers gesnipperde uitjes.</small></span><span class="menu-item-price">&euro; 5,50</span></li>
+<li><span class="menu-item-name">Kaassoufflé<br><small>Knapperig van buiten, romig van binnen: gepaneerd met een gesmolten kaasvulling.</small></span><span class="menu-item-price">&euro; 2,75</span></li>
+<li><span class="menu-item-name">Kroket<br><small>Een Nederlandse klassieker: een krokant gefrituurde kroket.</small></span><span class="menu-item-price">&euro; 2,50</span></li>
+<li><span class="menu-item-name">Rundvleeskroket<br><small>Een ambachtelijke kroket met rundvlees in een romige ragout, met een extra krokant jasje.</small></span><span class="menu-item-price">&euro; 3,25</span></li>
+<li><span class="menu-item-name">Kalfskroket<br><small>Een ambachtelijke kroket met zacht kalfsvlees in een romige ragout, met een extra krokant jasje.</small></span><span class="menu-item-price">&euro; 3,25</span></li>
+<li><span class="menu-item-name">Satékroket<br><small>Krokant gefrituurd, met een romige, licht pittige vulling van pindasaus en stukjes kip.</small></span><span class="menu-item-price">&euro; 3,25</span></li>
+<li><span class="menu-item-name">Goulashkroket<br><small>Gevuld met een smeuïge ragout van rundvlees, paprika en ui in goulashsaus.</small></span><span class="menu-item-price">&euro; 3,25</span></li>
+<li><span class="menu-item-name">Groentekroket<br><small>Vegetarische kroket met een romige ragout van diverse groenten en kruiden.</small></span><span class="menu-item-price">&euro; 3,25</span></li>
+<li><span class="menu-item-name">Berehap<br><small>Grote gehaktbal in plakjes aan een stok, afgewisseld met uienringen en krokant gefrituurd.</small></span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">Mexicano<br><small>Een pittige vleessnack met een kenmerkende geribbelde vorm, perfect gefrituurd tot goudbruin.</small></span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">Hamburger (los)<br><small>Een verse rundvleesburger, bereid en gebakken op onze warme bakplaat.</small></span><span class="menu-item-price">&euro; 4,95</span></li>
+<li><span class="menu-item-name">Gehaktstaaf<br><small>Sappige gehaktstaaf van gekruid gehakt, omhuld met een krokant laagje.</small></span><span class="menu-item-price">&euro; 3,25</span></li>
+<li><span class="menu-item-name">Gehaktbal<br><small>Ambachtelijke, huisgemaakte gehaktbal van half-om-half gehakt, zachtjes gegaard in huisgemaakte jus.</small></span><span class="menu-item-price">&euro; 4,25</span></li>
+<li><span class="menu-item-name">Knakworst<br><small>Sappige, mild gekruide knakworst met een klassieke rooksmaak.</small></span><span class="menu-item-price">&euro; 3,25</span></li>
+<li><span class="menu-item-name">Kipcorn<br><small>Krokant gepaneerde snack met smeuïg kippenvlees van binnen.</small></span><span class="menu-item-price">&euro; 2,95</span></li>
+<li><span class="menu-item-name">Kipspiezen<br><small>Twee stokjes malse kipdijfilet, gekruid en gegrild, geserveerd met satésaus, pinda's en geroosterde uitjes.</small></span><span class="menu-item-price">&euro; 5,95</span></li>
+<li><span class="menu-item-name">Kipschnitzel<br><small>Een malse kipfiletschnitzel, vol van smaak en sappig van binnen.</small></span><span class="menu-item-price">&euro; 6,50</span></li>
+<li><span class="menu-item-name">Nasischijf<br><small>Krokante snack met een hartige vulling van gekruide nasi, groenten en rijst.</small></span><span class="menu-item-price">&euro; 2,75</span></li>
+<li><span class="menu-item-name">Bamischijf<br><small>Krokante snack gevuld met kruidige bami, omhuld door een knapperig paneerlaagje.</small></span><span class="menu-item-price">&euro; 2,75</span></li>
+<li><span class="menu-item-name">Bamischijf pittig<br><small>Vegetarische snack gevuld met pittige bami van noedels en groenten.</small></span><span class="menu-item-price">&euro; 2,75</span></li>
+<li><span class="menu-item-name">Loempia<br><small>Goudbruin gefrituurde loempia gevuld met kip, ham, groenten en tauge.</small></span><span class="menu-item-price">&euro; 4,50</span></li>
+<li><span class="menu-item-name">Loempia speciaal<br><small>Loempia gevuld met kip, ham, groenten en tauge, geserveerd met pindasaus, geroosterde uitjes en een gebakken eitje.</small></span><span class="menu-item-price">&euro; 5,95</span></li>
+<li><span class="menu-item-name">Sitostick<br><small>Knapperig gepaneerd kalkoenvlees en ui, op een stokje.</small></span><span class="menu-item-price">&euro; 3,95</span></li>
+<li><span class="menu-item-name">Viandel<br><small>Luchtige, krokante snack met gekruid vlees in een geribbeld jasje.</small></span><span class="menu-item-price">&euro; 2,95</span></li>
+<li><span class="menu-item-name">Boslaanstick<br><small>Stokje met 5 stukjes snack: frikandel, viandel, mexicano, gehaktstaaf en kipcorn.</small></span><span class="menu-item-price">&euro; 3,95</span></li>
+<li><span class="menu-item-name">Varkensschnitzel<br><small>Onze huisgemaakte varkensschnitzel.</small></span><span class="menu-item-price">&euro; 6,50</span></li>
 </ul>
 
 <h2 id="broodjes">Broodjes</h2>
 <ul class="menu-list">
-  <li><span class="menu-item-name">Broodje warm vlees</span><span class="menu-item-price">&euro; 5,95</span></li>
-  <li><span class="menu-item-name">Broodje warm vlees speciaal</span><span class="menu-item-price">&euro; 7,25</span></li>
-  <li><span class="menu-item-name">Broodje kaassoufflé</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">Broodje frikandel</span><span class="menu-item-price">&euro; 3,25</span></li>
-  <li><span class="menu-item-name">Broodje kroket</span><span class="menu-item-price">&euro; 3,25</span></li>
-  <li><span class="menu-item-name">Broodje rundvleeskroket</span><span class="menu-item-price">&euro; 4,00</span></li>
-  <li><span class="menu-item-name">Broodje kalfskroket</span><span class="menu-item-price">&euro; 4,00</span></li>
-  <li><span class="menu-item-name">Broodje satékroket</span><span class="menu-item-price">&euro; 4,00</span></li>
-  <li><span class="menu-item-name">Broodje goulashkroket</span><span class="menu-item-price">&euro; 4,00</span></li>
-  <li><span class="menu-item-name">Broodje groentekroket</span><span class="menu-item-price">&euro; 4,00</span></li>
-  <li><span class="menu-item-name">Broodje kipcorn</span><span class="menu-item-price">&euro; 3,70</span></li>
-  <li><span class="menu-item-name">Broodje mexicano</span><span class="menu-item-price">&euro; 4,25</span></li>
-  <li><span class="menu-item-name">Broodje gehaktstaaf</span><span class="menu-item-price">&euro; 4,00</span></li>
-  <li><span class="menu-item-name">Broodje gehaktbal</span><span class="menu-item-price">&euro; 5,00</span></li>
-  <li><span class="menu-item-name">Broodje bamischijf</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">Broodje bamischijf pittig</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">Broodje viandel</span><span class="menu-item-price">&euro; 3,70</span></li>
+<li><span class="menu-item-name">Broodje warm vlees<br><small>Vers wit bolletje belegd met huisgebraden fricandeau en pindasaus.</small></span><span class="menu-item-price">&euro; 5,95</span></li>
+<li><span class="menu-item-name">Broodje warm vlees speciaal<br><small>Vers wit bolletje met slamelange, tomaat, komkommer, wortel, mais, huisgebraden fricandeau met pindasaus, gebakken rode uien, champignons en een gebakken eitje.</small></span><span class="menu-item-price">&euro; 7,25</span></li>
+<li><span class="menu-item-name">Broodje kaassoufflé<br><small>Vers wit bolletje met een kaassoufflé.</small></span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">Broodje frikandel<br><small>Vers wit bolletje met een frikandel.</small></span><span class="menu-item-price">&euro; 3,25</span></li>
+<li><span class="menu-item-name">Broodje kroket<br><small>Vers wit bolletje met een kroket.</small></span><span class="menu-item-price">&euro; 3,25</span></li>
+<li><span class="menu-item-name">Broodje rundvleeskroket<br><small>Vers wit bolletje met een rundvleeskroket, boordevol ragout en stukjes rundvlees.</small></span><span class="menu-item-price">&euro; 4,00</span></li>
+<li><span class="menu-item-name">Broodje kalfskroket<br><small>Vers wit bolletje met een kalfskroket, gevuld met ragout en stukjes kalfsvlees.</small></span><span class="menu-item-price">&euro; 4,00</span></li>
+<li><span class="menu-item-name">Broodje satékroket<br><small>Vers wit bolletje met een satékroket.</small></span><span class="menu-item-price">&euro; 4,00</span></li>
+<li><span class="menu-item-name">Broodje goulashkroket<br><small>Vers wit bolletje met een goulashkroket.</small></span><span class="menu-item-price">&euro; 4,00</span></li>
+<li><span class="menu-item-name">Broodje groentekroket<br><small>Vers wit bolletje met een groentekroket.</small></span><span class="menu-item-price">&euro; 4,00</span></li>
+<li><span class="menu-item-name">Broodje kipcorn<br><small>Vers wit bolletje met een kipcorn.</small></span><span class="menu-item-price">&euro; 3,70</span></li>
+<li><span class="menu-item-name">Broodje mexicano<br><small>Vers wit bolletje met een mexicano.</small></span><span class="menu-item-price">&euro; 4,25</span></li>
+<li><span class="menu-item-name">Broodje gehaktstaaf<br><small>Vers wit bolletje met een gehaktstaaf.</small></span><span class="menu-item-price">&euro; 4,00</span></li>
+<li><span class="menu-item-name">Broodje gehaktbal<br><small>Huisgemaakte gehaktbal op een vers wit bolletje.</small></span><span class="menu-item-price">&euro; 5,00</span></li>
+<li><span class="menu-item-name">Broodje bamischijf<br><small>Vers wit bolletje met een bamischijf.</small></span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">Broodje bamischijf pittig<br><small>Lichtpittige, vegetarische bamischijf op een vers wit bolletje.</small></span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">Broodje viandel<br><small>Vers wit bolletje met een viandel.</small></span><span class="menu-item-price">&euro; 3,70</span></li>
 </ul>
 
-<h2 id="wraps">Wraps</h2>
+<h2 id="mini-snacks">Mini snacks</h2>
 <ul class="menu-list">
-  <li><span class="menu-item-name">Wrap hete kip</span><span class="menu-item-price">&euro; 5,95</span></li>
-  <li><span class="menu-item-name">Wrap joppie</span><span class="menu-item-price">&euro; 5,50</span></li>
-  <li><span class="menu-item-name">Wrap spicy</span><span class="menu-item-price">&euro; 5,50</span></li>
-  <li><span class="menu-item-name">Wrap pesto</span><span class="menu-item-price">&euro; 5,50</span></li>
+<li><span class="menu-item-name">Kipnuggets (6 stuks)<br><small>Malse kipnuggets (halal) in een krokant goudbruin jasje.</small></span><span class="menu-item-price">&euro; 3,75</span></li>
+<li><span class="menu-item-name">Kipfingers (6 stuks)<br><small>Krokant gepaneerde reepjes malse kipfilet.</small></span><span class="menu-item-price">&euro; 3,75</span></li>
+<li><span class="menu-item-name">Bitterballen (6 stuks)<br><small>Goudbruine bitterballen met een romige rundvleesragout.</small></span><span class="menu-item-price">&euro; 3,75</span></li>
+<li><span class="menu-item-name">Mini loempia (6 st.) + chilisaus<br><small>Vegetarische mini-loempia's met groenten en glasnoedels, geserveerd met zoete chilisaus.</small></span><span class="menu-item-price">&euro; 3,75</span></li>
+<li><span class="menu-item-name">Chickenstrips (3 stuks)<br><small>Sappig mals kipfilet, omhuld in een krokant paneerjasje.</small></span><span class="menu-item-price">&euro; 4,95</span></li>
+<li><span class="menu-item-name">Kaasloempia's (6 stuks)<br><small>Krokant gefrituurde loempia's gevuld met smeuïge gesmolten kaas.</small></span><span class="menu-item-price">&euro; 4,75</span></li>
 </ul>
 
 <div style="text-align:center;margin:3rem 0;padding:1.75rem;border:2px solid var(--green);border-radius:16px">
@@ -919,98 +949,78 @@ Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
 </div>
 </div>
 
-<h2 id="snacks">Snacks</h2>
-<ul class="menu-list">
-  <li><span class="menu-item-name">Frikandel</span><span class="menu-item-price">&euro; 2,50</span></li>
-  <li><span class="menu-item-name">Frikandel speciaal</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">XXL frikandel</span><span class="menu-item-price">&euro; 4,50</span></li>
-  <li><span class="menu-item-name">XXL frikandel speciaal</span><span class="menu-item-price">&euro; 5,50</span></li>
-  <li><span class="menu-item-name">Kaassoufflé</span><span class="menu-item-price">&euro; 2,75</span></li>
-  <li><span class="menu-item-name">Kroket</span><span class="menu-item-price">&euro; 2,50</span></li>
-  <li><span class="menu-item-name">Rundvleeskroket</span><span class="menu-item-price">&euro; 3,25</span></li>
-  <li><span class="menu-item-name">Kalfskroket</span><span class="menu-item-price">&euro; 3,25</span></li>
-  <li><span class="menu-item-name">Satékroket</span><span class="menu-item-price">&euro; 3,25</span></li>
-  <li><span class="menu-item-name">Goulashkroket</span><span class="menu-item-price">&euro; 3,25</span></li>
-  <li><span class="menu-item-name">Groentekroket</span><span class="menu-item-price">&euro; 3,25</span></li>
-  <li><span class="menu-item-name">Berehap</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">Mexicano</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">Hamburger (los)</span><span class="menu-item-price">&euro; 4,95</span></li>
-  <li><span class="menu-item-name">Gehaktstaaf</span><span class="menu-item-price">&euro; 3,25</span></li>
-  <li><span class="menu-item-name">Gehaktbal</span><span class="menu-item-price">&euro; 4,25</span></li>
-  <li><span class="menu-item-name">Knakworst</span><span class="menu-item-price">&euro; 3,25</span></li>
-  <li><span class="menu-item-name">Kipcorn</span><span class="menu-item-price">&euro; 2,95</span></li>
-  <li><span class="menu-item-name">Kipspiezen</span><span class="menu-item-price">&euro; 5,95</span></li>
-  <li><span class="menu-item-name">Kipschnitzel</span><span class="menu-item-price">&euro; 6,50</span></li>
-  <li><span class="menu-item-name">Nasischijf</span><span class="menu-item-price">&euro; 2,75</span></li>
-  <li><span class="menu-item-name">Bamischijf</span><span class="menu-item-price">&euro; 2,75</span></li>
-  <li><span class="menu-item-name">Bamischijf pittig</span><span class="menu-item-price">&euro; 2,75</span></li>
-  <li><span class="menu-item-name">Loempia</span><span class="menu-item-price">&euro; 4,50</span></li>
-  <li><span class="menu-item-name">Loempia speciaal</span><span class="menu-item-price">&euro; 5,95</span></li>
-  <li><span class="menu-item-name">Sitostick</span><span class="menu-item-price">&euro; 3,95</span></li>
-  <li><span class="menu-item-name">Viandel</span><span class="menu-item-price">&euro; 2,95</span></li>
-  <li><span class="menu-item-name">Boslaanstick</span><span class="menu-item-price">&euro; 3,95</span></li>
-  <li><span class="menu-item-name">Varkensschnitzel</span><span class="menu-item-price">&euro; 6,50</span></li>
-</ul>
-
-<h2 id="mini-snacks">Mini snacks</h2>
-<ul class="menu-list">
-  <li><span class="menu-item-name">Kipnuggets (6 stuks)</span><span class="menu-item-price">&euro; 3,75</span></li>
-  <li><span class="menu-item-name">Kipfingers (6 stuks)</span><span class="menu-item-price">&euro; 3,75</span></li>
-  <li><span class="menu-item-name">Bitterballen (6 stuks)</span><span class="menu-item-price">&euro; 3,75</span></li>
-  <li><span class="menu-item-name">Mini loempia (6 st.) + chilisaus</span><span class="menu-item-price">&euro; 3,75</span></li>
-  <li><span class="menu-item-name">Chickenstrips (3 stuks)</span><span class="menu-item-price">&euro; 4,95</span></li>
-  <li><span class="menu-item-name">Kaasloempia's (6 stuks)</span><span class="menu-item-price">&euro; 4,75</span></li>
-</ul>
-
 <h2 id="glutenvrije-snacks">Glutenvrije snacks</h2>
 <ul class="menu-list">
-  <li><span class="menu-item-name">Glutenvrije frikandel</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">Glutenvrije kroket</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">Glutenvrije kaassoufflé</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">Glutenvrije bitterballen (6 st.)</span><span class="menu-item-price">&euro; 5,95</span></li>
+<li><span class="menu-item-name">Glutenvrije frikandel</span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">Glutenvrije kroket</span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">Glutenvrije kaassoufflé</span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">Glutenvrije bitterballen (6 st.)</span><span class="menu-item-price">&euro; 5,95</span></li>
+</ul>
+
+<h2 id="hamburgers">Hamburgers</h2>
+<ul class="menu-list">
+<li><span class="menu-item-name">Basic Burger<br><small>Op een brioche broodje met slamelange, mosterd, tomatenketchup en augurkenchutney.</small></span><span class="menu-item-price">&euro; 6,95</span></li>
+<li><span class="menu-item-name">Speciaal Burger<br><small>Op een brioche broodje met slamelange, mayonaise, currysaus en gesnipperde uitjes.</small></span><span class="menu-item-price">&euro; 7,25</span></li>
+<li><span class="menu-item-name">Italian Burger<br><small>Op een brioche broodje met slamelange, truffelmayonaise, tomaat, gebakken rode uien en Parmezaanse kaas.</small></span><span class="menu-item-price">&euro; 7,95</span></li>
+<li><span class="menu-item-name">Boeren Burger<br><small>Op een brioche broodje met slamelange, gebakken rode uien, champignons, gebakken bacon, mayonaise en curry.</small></span><span class="menu-item-price">&euro; 8,25</span></li>
+</ul>
+
+<h2 id="kipburgers">Kipburgers</h2>
+<p style="font-size:.85rem;color:#6a6258;margin:0 0 1rem;font-style:italic">Chili Chicken Burger vind je bij Seizoensspecials (bovenaan de kaart).</p><ul class="menu-list">
+<li><span class="menu-item-name">Chicken Basic Burger<br><small>Malse kipfiletburger op een brioche broodje met slamelange, mosterd, tomatenketchup en augurkenchutney.</small></span><span class="menu-item-price">&euro; 6,95</span></li>
+<li><span class="menu-item-name">Chicken Speciaal Burger<br><small>Malse kipfiletburger op een brioche broodje met slamelange, mayonaise, currysaus en gesnipperde uitjes.</small></span><span class="menu-item-price">&euro; 7,25</span></li>
+<li><span class="menu-item-name">Chicken Italian Burger<br><small>Malse kipfiletburger op een brioche broodje met slamelange, truffelmayonaise, tomaat, gebakken rode ui en Parmezaanse kaas.</small></span><span class="menu-item-price">&euro; 7,95</span></li>
+<li><span class="menu-item-name">Chicken Joppie Burger<br><small>Malse kipfiletburger op een brioche broodje met slamelange, cheddar cheese, tomaat, joppiesaus en geroosterde uitjes.</small></span><span class="menu-item-price">&euro; 7,50</span></li>
+<li><span class="menu-item-name">Spicy Mexican Burger<br><small>Malse kipfiletburger op een brioche broodje met slamelange, cheddar cheese, salsasaus, mais en een gefrituurd uiennest.</small></span><span class="menu-item-price">&euro; 7,95</span></li>
+</ul>
+
+<h2 id="wraps">Wraps</h2>
+<p style="font-size:.85rem;color:#6a6258;margin:0 0 1rem;font-style:italic">Wrap Hete Kip vind je bij Seizoensspecials (bovenaan de kaart).</p><ul class="menu-list">
+<li><span class="menu-item-name">Wrap joppie<br><small>Gevuld met slamelange, rode ui, komkommer, tomaat, joppiesaus en een kipcorn.</small></span><span class="menu-item-price">&euro; 5,50</span></li>
+<li><span class="menu-item-name">Wrap spicy<br><small>Gevuld met slamelange, rode ui, komkommer, tomaat, mais, pittige salsasaus en een kipcorn.</small></span><span class="menu-item-price">&euro; 5,50</span></li>
+<li><span class="menu-item-name">Wrap pesto<br><small>Gevuld met slamelange, rode ui, komkommer, tomaat, Parmezaanse kaas, pestomayonaise en een kipcorn.</small></span><span class="menu-item-price">&euro; 5,50</span></li>
 </ul>
 
 <h2 id="salade">Salade</h2>
 <ul class="menu-list">
-  <li><span class="menu-item-name">Huzarenslaatje</span><span class="menu-item-price">&euro; 3,95</span></li>
-  <li><span class="menu-item-name">Salade kip truffel</span><span class="menu-item-price">&euro; 6,95</span></li>
+<li><span class="menu-item-name">Huzarenslaatje<br><small>Opgemaakt met diverse rauwkost.</small></span><span class="menu-item-price">&euro; 3,95</span></li>
+<li><span class="menu-item-name">Salade kip truffel<br><small>Salade bowl met slamelange, komkommer, tomaat, rode ui, Parmezaanse kaas, truffeldressing en mals kipdijfilet.</small></span><span class="menu-item-price">&euro; 6,95</span></li>
 </ul>
 
 <h2 id="bittergarnituur">Bittergarnituur</h2>
 <ul class="menu-list">
-  <li><span class="menu-item-name">Bittergarnituur 30 stuks</span><span class="menu-item-price">&euro; 22,50</span></li>
-  <li><span class="menu-item-name">Bittergarnituur 50 stuks</span><span class="menu-item-price">&euro; 35,50</span></li>
+<li><span class="menu-item-name">Bittergarnituur 30 stuks<br><small>Een mix van 10 verschillende soorten mini hapjes, inclusief mayonaise, currysaus en pindasaus.</small></span><span class="menu-item-price">&euro; 22,50</span></li>
+<li><span class="menu-item-name">Bittergarnituur 50 stuks<br><small>Een mix van 10 verschillende soorten mini hapjes, inclusief mayonaise, currysaus en pindasaus.</small></span><span class="menu-item-price">&euro; 35,50</span></li>
 </ul>
 
 <h2 id="ijs">IJs</h2>
 <ul class="menu-list">
-  <li><span class="menu-item-name">IJsbeker 300ml</span><span class="menu-item-price">&euro; 4,00</span></li>
-  <li><span class="menu-item-name">IJsbeker 400ml</span><span class="menu-item-price">&euro; 5,00</span></li>
-  <li><span class="menu-item-name">IJsbeker 500ml</span><span class="menu-item-price">&euro; 6,00</span></li>
-  <li><span class="menu-item-name">Sundae</span><span class="menu-item-price">&euro; 3,00</span></li>
+<li><span class="menu-item-name">IJsbeker 300ml<br><small>Softijs met eventueel saus of dip naar keuze.</small></span><span class="menu-item-price">&euro; 4,00</span></li>
+<li><span class="menu-item-name">IJsbeker 400ml<br><small>Softijs met eventueel saus of dip naar keuze.</small></span><span class="menu-item-price">&euro; 5,00</span></li>
+<li><span class="menu-item-name">IJsbeker 500ml<br><small>Softijs met eventueel saus of dip naar keuze.</small></span><span class="menu-item-price">&euro; 6,00</span></li>
+<li><span class="menu-item-name">Sundae<br><small>Zacht softijs met een topping naar keuze, zoals aardbei, chocolade of karamelsaus.</small></span><span class="menu-item-price">&euro; 3,00</span></li>
 </ul>
 
 <h2 id="milkshakes">Milkshakes</h2>
-<ul class="menu-list">
-  <li><span class="menu-item-name">Milkshake vanille</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">Milkshake aardbei</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">Milkshake banaan</span><span class="menu-item-price">&euro; 3,50</span></li>
-  <li><span class="menu-item-name">Milkshake mango passievrucht (seizoen)</span><span class="menu-item-price">&euro; 3,50</span></li>
+<p style="font-size:.85rem;color:#6a6258;margin:0 0 1rem;font-style:italic">Milkshake Mango Passievrucht vind je bij Seizoensspecials (bovenaan de kaart).</p><ul class="menu-list">
+<li><span class="menu-item-name">Milkshake vanille<br><small>Romige, ijskoude milkshake met een zachte vanillesmaak.</small></span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">Milkshake aardbei<br><small>Romige, ijskoude milkshake met aardbeismaak.</small></span><span class="menu-item-price">&euro; 3,50</span></li>
+<li><span class="menu-item-name">Milkshake banaan<br><small>Romige milkshake met de zoete, zachte smaak van banaan.</small></span><span class="menu-item-price">&euro; 3,50</span></li>
 </ul>
 
 <h2 id="dranken">Dranken</h2>
 <ul class="menu-list">
-  <li><span class="menu-item-name">Coca-Cola</span><span class="menu-item-price">&euro; 2,65</span></li>
-  <li><span class="menu-item-name">Coca-Cola Zero Sugar</span><span class="menu-item-price">&euro; 2,65</span></li>
-  <li><span class="menu-item-name">Fanta Orange</span><span class="menu-item-price">&euro; 2,65</span></li>
-  <li><span class="menu-item-name">Fanta Cassis</span><span class="menu-item-price">&euro; 2,65</span></li>
-  <li><span class="menu-item-name">Sprite Zero Sugar</span><span class="menu-item-price">&euro; 2,65</span></li>
-  <li><span class="menu-item-name">Fuze Tea Sparkling</span><span class="menu-item-price">&euro; 2,65</span></li>
-  <li><span class="menu-item-name">Fuze Tea Green</span><span class="menu-item-price">&euro; 2,65</span></li>
-  <li><span class="menu-item-name">Spa Blauw</span><span class="menu-item-price">&euro; 2,65</span></li>
-  <li><span class="menu-item-name">Fristi</span><span class="menu-item-price">&euro; 3,15</span></li>
-  <li><span class="menu-item-name">Redbull</span><span class="menu-item-price">&euro; 3,65</span></li>
-  <li><span class="menu-item-name">Capri-Sun Multivitamine</span><span class="menu-item-price">&euro; 1,75</span></li>
+<li><span class="menu-item-name">Coca-Cola<br><small>Koolzuurhoudende frisdrank met de iconische colasmaak.</small></span><span class="menu-item-price">&euro; 2,65</span></li>
+<li><span class="menu-item-name">Coca-Cola Zero Sugar<br><small>De vertrouwde Coca-Cola smaak, zonder suiker.</small></span><span class="menu-item-price">&euro; 2,65</span></li>
+<li><span class="menu-item-name">Fanta Orange<br><small>Fruitige frisdrank met sinaasappelsmaak.</small></span><span class="menu-item-price">&euro; 2,65</span></li>
+<li><span class="menu-item-name">Fanta Cassis</span><span class="menu-item-price">&euro; 2,65</span></li>
+<li><span class="menu-item-name">Sprite Zero Sugar</span><span class="menu-item-price">&euro; 2,65</span></li>
+<li><span class="menu-item-name">Fuze Tea Sparkling<br><small>Bruisende ijsthee met een blend van zwarte thee en perzik.</small></span><span class="menu-item-price">&euro; 2,65</span></li>
+<li><span class="menu-item-name">Fuze Tea Green<br><small>Groene ijsthee met een zachte, lichtzoete smaak.</small></span><span class="menu-item-price">&euro; 2,65</span></li>
+<li><span class="menu-item-name">Spa Blauw<br><small>Puur, natuurlijk mineraalwater zonder koolzuur.</small></span><span class="menu-item-price">&euro; 2,65</span></li>
+<li><span class="menu-item-name">Fristi<br><small>Lichtzoete zuiveldrank met de smaak van rood fruit.</small></span><span class="menu-item-price">&euro; 3,15</span></li>
+<li><span class="menu-item-name">Redbull<br><small>Energiedrank die lichaam en geest stimuleert.</small></span><span class="menu-item-price">&euro; 3,65</span></li>
+<li><span class="menu-item-name">Capri-Sun Multivitamine<br><small>Vruchtendrank met een mix van fruitsmaken.</small></span><span class="menu-item-price">&euro; 1,75</span></li>
 </ul>
 
 <div style="text-align:center;margin:3rem 0;padding:1.75rem;border:2px solid var(--green);border-radius:16px">
