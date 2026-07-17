@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.boslaantjedoen.nl/sitemap.xml
+Sitemap: https://www.boslaantjedoen.com/sitemap.xml
