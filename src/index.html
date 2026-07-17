@@ -334,26 +334,20 @@
   .svc .btn{margin-top:auto;align-self:flex-start}
   .tag-new{background:var(--red);color:#fff;padding:.12em .6em;border-radius:999px;font-size:.62rem;
     letter-spacing:.1em;vertical-align:middle;margin-left:.5em}
-/* ============ seizoensspecials ============ */
-.cards4{display:grid;gap:1.6rem;grid-template-columns:repeat(4,1fr)}
-@media(max-width:980px){.cards4{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:640px){
-.cards4{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -22px;padding:.2rem 22px .8rem;scrollbar-width:none}
-.cards4::-webkit-scrollbar{display:none}
-.cards4 .special{scroll-snap-align:start;flex:0 0 78%;min-width:78%}
-}
-.special{background:var(--paper);border:1.5px solid var(--paper-line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .3s ease,box-shadow .3s ease}
-.special:hover{transform:translateY(-6px);box-shadow:0 24px 44px -22px rgba(33,30,23,.5)}
+.special{cursor:pointer;background:var(--paper);border:1.5px solid var(--paper-line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow);transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease}
+.special:hover{transform:translateY(-6px);box-shadow:0 24px 44px -22px rgba(33,30,23,.5);border-color:var(--green)}
 .special-photo{position:relative;aspect-ratio:1/1;overflow:hidden}
-.special-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease}
-.special:hover .special-photo img{transform:scale(1.06)}
+.special-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
+.special:hover .special-photo img{transform:scale(1.05)}
 .special-photo .tag-new{position:absolute;top:.7rem;left:.7rem;margin-left:0;box-shadow:0 6px 14px -6px rgba(0,0,0,.5)}
+.special-arrow{position:absolute;top:.7rem;right:.7rem;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;color:var(--green-ink);opacity:0;transform:translate(-4px,4px);transition:opacity .3s ease,transform .3s ease;box-shadow:0 6px 14px -6px rgba(0,0,0,.45)}
+.special-arrow svg{width:16px;height:16px}
+.special:hover .special-arrow{opacity:1;transform:translate(0,0)}
 .special-body{padding:1.2rem 1.3rem 1.4rem;display:flex;flex-direction:column;flex:1;gap:.5rem}
 .special-body h3{font-family:var(--font-body);font-weight:900;font-size:1.1rem;color:var(--ink)}
 .special-body p{font-size:.92rem;color:#4a4338;flex:1}
-.special-foot{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin-top:.4rem}
-.special-price{font-weight:900;color:var(--green-ink);font-size:1.05rem}
-.btn-sm{padding:.62em 1.25em;font-size:.88rem}
+.special-price{font-weight:900;color:var(--green-ink);font-size:1.05rem;margin-top:.4rem}
+.specials-cta{text-align:center;margin-top:2.4rem}
 
   /* ---- groene band ---- */
   .band{background:var(--gold);color:var(--ink);position:relative;overflow:hidden}
@@ -771,66 +765,61 @@ src="https://www.facebook.com/tr?id=1042044348475596&ev=PageView&noscript=1"
 </div>
 <div class="cards4">
 
-<article class="special reveal">
+<a class="special reveal" href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" aria-label="Bestel Loaded Fries Hete Kip">
 <div class="special-photo">
 <img src="images/loaded-fries-hete-kip.jpg" alt="Loaded Fries Hete Kip" loading="lazy">
 <span class="tag-new">Nieuw</span>
+<span class="special-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
 </div>
 <div class="special-body">
 <h3>Loaded Fries Hete Kip</h3>
 <p>Krokante friet met pittige kip, huisgemaakte jamballasaus, geroosterde ui en bosui.</p>
-<div class="special-foot">
 <span class="special-price">&euro; 9,95</span>
-<a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-green btn-sm">Bestel</a>
 </div>
-</div>
-</article>
+</a>
 
-<article class="special reveal">
+<a class="special reveal" href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" aria-label="Bestel Wrap Hete Kip">
 <div class="special-photo">
 <img src="images/wrap-hete-kip.jpg" alt="Wrap Hete Kip" loading="lazy">
 <span class="tag-new">Nieuw</span>
+<span class="special-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
 </div>
 <div class="special-body">
 <h3>Wrap Hete Kip</h3>
 <p>Wrap gevuld met hete kip, frisse groenten en huisgemaakte jamballasaus.</p>
-<div class="special-foot">
 <span class="special-price">&euro; 5,95</span>
-<a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-green btn-sm">Bestel</a>
 </div>
-</div>
-</article>
+</a>
 
-<article class="special reveal">
+<a class="special reveal" href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" aria-label="Bestel Chili Chicken Burger">
 <div class="special-photo">
 <img src="images/chili-chicken-burger.jpg" alt="Chili Chicken Burger" loading="lazy">
 <span class="tag-new">Nieuw</span>
+<span class="special-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
 </div>
 <div class="special-body">
 <h3>Chili Chicken Burger</h3>
 <p>Sappige kipburger met cheddar, chilimayonaise en een krokant uiennest.</p>
-<div class="special-foot">
 <span class="special-price">&euro; 7,95</span>
-<a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-green btn-sm">Bestel</a>
 </div>
-</div>
-</article>
+</a>
 
-<article class="special reveal">
+<a class="special reveal" href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" aria-label="Bestel Milkshake Mango Passievrucht">
 <div class="special-photo">
 <img src="images/milkshake-mango-passievrucht.jpg" alt="Milkshake Mango Passievrucht" loading="lazy">
 <span class="tag-new">Nieuw</span>
+<span class="special-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
 </div>
 <div class="special-body">
 <h3>Milkshake Mango Passievrucht</h3>
 <p>Romige milkshake met de frisse smaak van mango en passievrucht.</p>
-<div class="special-foot">
 <span class="special-price">Vanaf &euro; 3,50</span>
-<a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-green btn-sm">Bestel</a>
 </div>
-</div>
-</article>
+</a>
 
+</div>
+<div class="specials-cta reveal">
+<a href="https://www.boslaantjedoen.nl/bestel" target="_blank" rel="noopener" class="btn btn-green">Bekijk alle seizoensspecials &rarr;</a>
 </div>
 </div>
 </section>
