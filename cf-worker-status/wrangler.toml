@@ -11,3 +11,4 @@ crons = ["*/5 * * * *"]
 
 [vars]
 TRIGGER_KEY = "dd3f5385bedf960a7da62448fe983348"
+MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/fubsfyk0lc76kt72ncfpfetckfkyr27s"
