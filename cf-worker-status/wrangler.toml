@@ -9,4 +9,5 @@ id = "59ec8744aac44818b0fcb09a0724b5fb"
 [triggers]
 crons = ["*/5 * * * *"]
 
-# trigger first build
+[vars]
+TRIGGER_KEY = "dd3f5385bedf960a7da62448fe983348"
