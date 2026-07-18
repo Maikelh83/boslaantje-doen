@@ -732,6 +732,35 @@ Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
 <!-- ============ boomplak-merkteken (herbruikbaar) ============ -->
 
 <!-- ============ header ============ -->
+<div id="storing-banner" class="storing-banner" role="alert" hidden>
+<div class="wrap">
+<span class="storing-banner__text">Onze online bestelsite ligt er momenteel uit. Wil je <strong>afhalen</strong>? Bel ons even op <a href="tel:0318514916">0318-514916</a>. Wil je laten <strong>bezorgen</strong>? Bestel dan via <a href="https://www.thuisbezorgd.nl/menu/boslaantje" target="_blank" rel="noopener">Thuisbezorgd</a>.</span>
+</div>
+</div>
+<style>
+.storing-banner{background:#4A5D3D;color:#fff;font-size:.95rem;line-height:1.5;text-align:center;padding:.65rem 1rem}
+.storing-banner .wrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap}
+.storing-banner a{color:#fff;text-decoration:underline;font-weight:600}
+.storing-banner a:hover{opacity:.85}
+</style>
+<script>
+(function(){
+var STATUS_URL = "https://boslaantje-status.maikelhuijzer.workers.dev/status.json";
+function checkStatus(){
+var banner = document.getElementById("storing-banner");
+if (!banner) return;
+fetch(STATUS_URL, { cache: "no-store" })
+.then(function(r){ return r.ok ? r.json() : null; })
+.then(function(data){
+if (!data) return;
+banner.hidden = !data.down;
+})
+.catch(function(){});
+}
+checkStatus();
+setInterval(checkStatus, 5 * 60 * 1000);
+})();
+</script>
 <header id="header">
   <div class="wrap nav">
     <a href="#top" class="brand" aria-label="Boslaantje Doen, naar boven">
