@@ -51,55 +51,29 @@ async function saveState(env, state) {
   await env.STATUS_KV.put("state", JSON.stringify(state));
 }
 
-async function postToMeta(env, message) {
-  const results = {};
-
-  if (env.FB_PAGE_ID && env.FB_PAGE_TOKEN) {
-    try {
-      const fbRes = await fetch(`https://graph.facebook.com/v21.0/${env.FB_PAGE_ID}/feed`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ message, access_token: env.FB_PAGE_TOKEN }),
-      });
-      results.facebook = await fbRes.json();
-    } catch (e) {
-      results.facebook = { error: String(e) };
-    }
-  } else {
-    results.facebook = { skipped: "FB_PAGE_ID / FB_PAGE_TOKEN nog niet ingesteld" };
+// Post-route: deze Worker roept alleen de Make.com-webhook aan (event/message/timestamp).
+// Make.com regelt vervolgens zelf de branded Facebook- en Instagram-posts (met plaatje).
+// Er wordt hier NIET meer rechtstreeks naar de Facebook/Instagram Graph API gepost,
+// om te voorkomen dat berichten dubbel geplaatst worden.
+async function postToMakeWebhook(env, event, message) {
+  if (!env.MAKE_WEBHOOK_URL) {
+    return { skipped: "MAKE_WEBHOOK_URL nog niet ingesteld" };
   }
-
-  if (env.IG_USER_ID && env.FB_PAGE_TOKEN) {
-    try {
-      const imageUrl = env.IG_STATUS_IMAGE_URL || FALLBACK_IMAGE;
-      const createRes = await fetch(`https://graph.facebook.com/v21.0/${env.IG_USER_ID}/media`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          image_url: imageUrl,
-          caption: message,
-          access_token: env.FB_PAGE_TOKEN,
-        }),
-      });
-      const createJson = await createRes.json();
-      if (createJson.id) {
-        const pubRes = await fetch(`https://graph.facebook.com/v21.0/${env.IG_USER_ID}/media_publish`, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({ creation_id: createJson.id, access_token: env.FB_PAGE_TOKEN }),
-        });
-        results.instagram = await pubRes.json();
-      } else {
-        results.instagram = createJson;
-      }
-    } catch (e) {
-      results.instagram = { error: String(e) };
-    }
-  } else {
-    results.instagram = { skipped: "IG_USER_ID / FB_PAGE_TOKEN nog niet ingesteld" };
+  try {
+    const res = await fetch(env.MAKE_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event,
+        message,
+        timestamp: new Date().toISOString(),
+      }),
+    });
+    const text = await res.text();
+    return { status: res.status, body: text };
+  } catch (e) {
+    return { error: String(e) };
   }
-
-  return results;
 }
 
 async function handleTick(env) {
@@ -116,7 +90,7 @@ async function handleTick(env) {
       state.downSince = null;
       const msg =
         "Update: onze online bestelsite is weer bereikbaar! Je kunt weer gewoon bestellen voor bezorgen en afhalen via de website. Bedankt voor je geduld!";
-      socialResult = await postToMeta(env, msg);
+      socialResult = await postToMakeWebhook(env, "up", msg);
     }
   } else {
     state.consecutiveFail += 1;
@@ -126,7 +100,7 @@ async function handleTick(env) {
       state.downSince = state.downSince || new Date().toISOString();
       const msg =
         "Let op: onze online bestelsite ligt er momenteel uit. Wil je afhalen? Bel ons even op 0318-514916. Wil je laten bezorgen? Bestel dan via Thuisbezorgd: https://www.thuisbezorgd.nl/menu/boslaantje. Excuses voor het ongemak!";
-      socialResult = await postToMeta(env, msg);
+      socialResult = await postToMakeWebhook(env, "down", msg);
     }
   }
 
@@ -168,6 +142,11 @@ export default {
       return new Response(JSON.stringify(result, null, 2), { headers: CORS_HEADERS });
     }
 
+    // simulate-down/up zetten niet alleen de state (voor de banner op de site),
+    // maar roepen ook echt de Make-webhook aan, zodat je de volledige keten
+    // (Worker -> Make -> Facebook/Instagram) kan testen zonder op een echte
+    // storing te hoeven wachten. Voeg ?post=0 toe om alléén de state te zetten
+    // zonder de webhook aan te roepen (bv. om alleen de banner te testen).
     if (url.pathname === "/simulate-down" && authorized) {
       const state = await getState(env);
       state.down = true;
@@ -175,7 +154,13 @@ export default {
       state.consecutiveFail = FAIL_THRESHOLD;
       state.consecutiveOk = 0;
       await saveState(env, state);
-      return new Response(JSON.stringify(state, null, 2), { headers: CORS_HEADERS });
+      let socialResult = null;
+      if (url.searchParams.get("post") !== "0") {
+        const msg =
+          "Let op: onze online bestelsite ligt er momenteel uit. Wil je afhalen? Bel ons even op 0318-514916. Wil je laten bezorgen? Bestel dan via Thuisbezorgd: https://www.thuisbezorgd.nl/menu/boslaantje. Excuses voor het ongemak!";
+        socialResult = await postToMakeWebhook(env, "down", msg);
+      }
+      return new Response(JSON.stringify({ state, socialResult }, null, 2), { headers: CORS_HEADERS });
     }
 
     if (url.pathname === "/simulate-up" && authorized) {
@@ -185,7 +170,13 @@ export default {
       state.consecutiveFail = 0;
       state.consecutiveOk = OK_THRESHOLD;
       await saveState(env, state);
-      return new Response(JSON.stringify(state, null, 2), { headers: CORS_HEADERS });
+      let socialResult = null;
+      if (url.searchParams.get("post") !== "0") {
+        const msg =
+          "Update: onze online bestelsite is weer bereikbaar! Je kunt weer gewoon bestellen voor bezorgen en afhalen via de website. Bedankt voor je geduld!";
+        socialResult = await postToMakeWebhook(env, "up", msg);
+      }
+      return new Response(JSON.stringify({ state, socialResult }, null, 2), { headers: CORS_HEADERS });
     }
 
     return new Response("Boslaantje status monitor", {
