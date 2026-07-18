@@ -1,0 +1,11 @@
+name = "boslaantje-status"
+main = "src/index.js"
+compatibility_date = "2026-07-18"
+
+[[kv_namespaces]]
+binding = "STATUS_KV"
+id = "59ec8744aac44818b0fcb09a0724b5fb"
+
+[triggers]
+crons = ["*/5 * * * *"]
+
