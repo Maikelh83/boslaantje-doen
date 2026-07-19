@@ -809,6 +809,76 @@ checkStatus();
 setInterval(checkStatus, 5 * 60 * 1000);
 })();
 </script>
+
+<div id="vacation-banner" class="vacation-banner" role="alert" hidden>
+<div class="wrap"><span class="vacation-banner__text" id="vacation-banner-text"></span></div>
+</div>
+<style>
+.vacation-banner{background:#4A5D3D;color:#fff;font-size:.95rem;line-height:1.5;text-align:center;padding:.65rem 1rem}
+.vacation-banner .wrap{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap}
+</style>
+<script>
+(function(){
+var VACATIONS = [
+{ schoonmaakZaterdag: "2026-08-01", dichtVanaf: "2026-08-03", dichtTotEnMet: "2026-08-16", weerOpen: "2026-08-17" },
+{ schoonmaakZaterdag: "2027-07-31", dichtVanaf: "2027-08-02", dichtTotEnMet: "2027-08-15", weerOpen: "2027-08-16" },
+{ schoonmaakZaterdag: "2028-07-22", dichtVanaf: "2028-07-24", dichtTotEnMet: "2028-08-06", weerOpen: "2028-08-07" }
+];
+var DAGEN_VOORAF = 7;
+function parseDatum(s){
+var d = s.split("-");
+return new Date(parseInt(d[0],10), parseInt(d[1],10)-1, parseInt(d[2],10));
+}
+function formatDatum(d){
+return d.toLocaleDateString("nl-NL",{ day:"numeric", month:"long" });
+}
+function vandaagAmsterdam(){
+var debug = null;
+try {
+var params = new URLSearchParams(window.location.search);
+debug = params.get("debugDatum");
+} catch(e){}
+if (debug) return parseDatum(debug);
+var now = new Date();
+var parts = new Intl.DateTimeFormat("en-CA",{ timeZone:"Europe/Amsterdam", year:"numeric", month:"2-digit", day:"2-digit" }).formatToParts(now);
+var map = {};
+parts.forEach(function(p){ map[p.type] = p.value; });
+return new Date(parseInt(map.year,10), parseInt(map.month,10)-1, parseInt(map.day,10));
+}
+function checkVakantie(){
+var banner = document.getElementById("vacation-banner");
+var tekstEl = document.getElementById("vacation-banner-text");
+if (!banner || !tekstEl) return;
+var vandaag = vandaagAmsterdam();
+for (var i = 0; i < VACATIONS.length; i++){
+var v = VACATIONS[i];
+var schoonmaak = parseDatum(v.schoonmaakZaterdag);
+var dichtVanaf = parseDatum(v.dichtVanaf);
+var dichtTot = parseDatum(v.dichtTotEnMet);
+var weerOpen = parseDatum(v.weerOpen);
+var vooraf = new Date(schoonmaak);
+vooraf.setDate(vooraf.getDate() - DAGEN_VOORAF);
+if (vandaag >= dichtVanaf && vandaag <= dichtTot) {
+tekstEl.textContent = "We zijn t/m " + formatDatum(dichtTot) + " gesloten wegens onze jaarlijkse zomervakantie. Vanaf " + formatDatum(weerOpen) + " staan we weer voor je klaar!";
+banner.hidden = false;
+return;
+}
+if (vandaag.getTime() === schoonmaak.getTime()) {
+tekstEl.textContent = "Let op: vandaag zijn we i.v.m. schoonmaak tot 19:30 open. Vanaf morgen gaan we 2 weken op zomervakantie, weer open op " + formatDatum(weerOpen) + ".";
+banner.hidden = false;
+return;
+}
+if (vandaag >= vooraf && vandaag < schoonmaak) {
+tekstEl.textContent = "Let op: we gaan van " + formatDatum(dichtVanaf) + " t/m " + formatDatum(dichtTot) + " op zomervakantie. Laatste dag open: " + formatDatum(schoonmaak) + " (tot 19:30 i.v.m. schoonmaak).";
+banner.hidden = false;
+return;
+}
+}
+banner.hidden = true;
+}
+checkVakantie();
+})();
+</script>
 <header id="header">
   <div class="wrap nav">
     <a href="#top" class="brand" aria-label="Boslaantje Doen, naar boven">
