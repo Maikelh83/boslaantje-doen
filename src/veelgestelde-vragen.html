@@ -829,17 +829,17 @@ var dichtTot = parseDatum(v.dichtTotEnMet);
 var weerOpen = parseDatum(v.weerOpen);
 var vooraf = new Date(schoonmaak);
 vooraf.setDate(vooraf.getDate() - DAGEN_VOORAF);
-if (vandaag >= dichtVanaf && vandaag <= dichtTot) {
-tekstEl.textContent = "We zijn t/m " + formatDatum(dichtTot) + " gesloten wegens onze jaarlijkse zomervakantie. Vanaf " + formatDatum(weerOpen) + " staan we weer voor je klaar!";
+if (vandaag >= vooraf && vandaag <= dichtTot) {
+tekstEl.textContent = "Wij zijn " + (dichtVanaf.getMonth() === dichtTot.getMonth() ? dichtVanaf.getDate() : formatDatum(dichtVanaf)) + " t/m " + formatDatum(dichtTot) + " gesloten vanwege onze jaarlijkse vakantie. Zaterdag " + formatDatum(schoonmaak) + " sluiten wij om 19:30. Maandag " + formatDatum(weerOpen) + " zijn wij weer geopend.";
 banner.hidden = false;
 return;
 }
-if (vandaag.getTime() === schoonmaak.getTime()) {
+if (false) {
 tekstEl.textContent = "Let op: vandaag zijn we i.v.m. schoonmaak tot 19:30 open. Vanaf morgen gaan we 2 weken op zomervakantie, weer open op " + formatDatum(weerOpen) + ".";
 banner.hidden = false;
 return;
 }
-if (vandaag >= vooraf && vandaag < schoonmaak) {
+if (false) {
 tekstEl.textContent = "Let op: we gaan van " + formatDatum(dichtVanaf) + " t/m " + formatDatum(dichtTot) + " op zomervakantie. Laatste dag open: " + formatDatum(schoonmaak) + " (tot 19:30 i.v.m. schoonmaak).";
 banner.hidden = false;
 return;
