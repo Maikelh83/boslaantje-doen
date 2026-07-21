@@ -11,6 +11,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('src/voorwaarden.html');
   eleventyConfig.addPassthroughCopy('src/menu.html');
   eleventyConfig.addPassthroughCopy('src/veelgestelde-vragen.html');
+  eleventyConfig.addPassthroughCopy('src/storing-paneel.html');
 
   // Actie-pop-up (homepage): platte JSON-databestand, door Decap CMS
   // rechtstreeks in dit formaat weggeschreven (geen Eleventy-verwerking
