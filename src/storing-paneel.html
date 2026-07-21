@@ -113,7 +113,7 @@
 
 <script>
 (function () {
-  var UNLOCK_STORAGE_KEY = "storingPaneelUnlocked";
+  var UNLOCK_STORAGE_KEY = "storingPaneelUnlockedDate";
   var PASS_HASH = "aaea3b7be76abe9c597c1fb192a5fb6cc463678e1d519bdbb2c0626af00df650";
 
   var lockPanel = document.getElementById("lockPanel");
@@ -121,6 +121,12 @@
   var pinInput = document.getElementById("pinInput");
   var btnUnlock = document.getElementById("btnUnlock");
   var lockFeedback = document.getElementById("lockFeedback");
+
+  function todayStr() {
+    var d = new Date();
+    function pad(n) { return String(n).padStart(2, "0"); }
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
 
   function sha256Hex(text) {
     var enc = new TextEncoder().encode(text);
@@ -141,7 +147,7 @@
     if (!val) return;
     sha256Hex(val).then(function (hash) {
       if (hash === PASS_HASH) {
-        try { localStorage.setItem(UNLOCK_STORAGE_KEY, "1"); } catch (e) {}
+        try { localStorage.setItem(UNLOCK_STORAGE_KEY, todayStr()); } catch (e) {}
         showMain();
       } else {
         lockFeedback.textContent = "Onjuiste code, probeer opnieuw.";
@@ -152,7 +158,7 @@
   }
 
   var alreadyUnlocked = false;
-  try { alreadyUnlocked = localStorage.getItem(UNLOCK_STORAGE_KEY) === "1"; } catch (e) {}
+  try { alreadyUnlocked = localStorage.getItem(UNLOCK_STORAGE_KEY) === todayStr(); } catch (e) {}
   if (alreadyUnlocked) {
     showMain();
   }
