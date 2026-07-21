@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Storing-paneel · Boslaantje Doen (alleen personeel)</title>
+<style>
+  :root { --green: #4A5D3D; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f4f4f2;
+    color: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+  .panel {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(0,0,0,.12);
+    max-width: 480px;
+    width: 100%;
+    padding: 2rem;
+    text-align: center;
+  }
+  h1 {
+    font-size: 1.4rem;
+    margin: 0 0 .25rem;
+    color: var(--green);
+  }
+  .sub {
+    color: #666;
+    font-size: .9rem;
+    margin: 0 0 1.5rem;
+  }
+  .status {
+    border-radius: 10px;
+    padding: .9rem 1rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+  }
+  .status.ok { background: #e6f0e2; color: var(--green); }
+  .status.down { background: #fbe3e0; color: #a13327; }
+  .status.loading { background: #eee; color: #777; }
+  .btn {
+    display: block;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 1rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: .9rem;
+    color: #fff;
+  }
+  .btn:disabled { opacity: .6; cursor: not-allowed; }
+  .btn-down { background: #c0392b; }
+  .btn-up { background: var(--green); }
+  .feedback {
+    margin-top: 1rem;
+    font-size: .9rem;
+    min-height: 1.2em;
+  }
+  .feedback.error { color: #a13327; }
+  .feedback.success { color: var(--green); }
+  .meta {
+    margin-top: 1.5rem;
+    font-size: .78rem;
+    color: #999;
+  }
+</style>
+</head>
+<body>
+<div class="panel">
+  <h1>Storing-paneel</h1>
+  <p class="sub">Alleen voor personeel &mdash; meldt de storingsbanner op de website en plaatst automatisch een bericht op Facebook/Instagram.</p>
+
+  <div id="status" class="status loading">Status ophalen&hellip;</div>
+
+  <button id="btnDown" class="btn btn-down">Storing melden</button>
+  <button id="btnUp" class="btn btn-up">Storing opgelost</button>
+
+  <div id="feedback" class="feedback"></div>
+  <div class="meta">Laatst gecontroleerd: <span id="lastChecked">&ndash;</span></div>
+</div>
+
+<script>
+(function () {
+  var BASE = "https://boslaantje-status.maikelhuijzer.workers.dev";
+  var KEY = "dd3f5385bedf960a7da62448fe983348";
+
+  var statusEl = document.getElementById("status");
+  var lastCheckedEl = document.getElementById("lastChecked");
+  var feedbackEl = document.getElementById("feedback");
+  var btnDown = document.getElementById("btnDown");
+  var btnUp = document.getElementById("btnUp");
+
+  function fmtTime(iso) {
+    if (!iso) return "-";
+    try {
+      return new Date(iso).toLocaleString("nl-NL", { dateStyle: "short", timeStyle: "medium" });
+    } catch (e) {
+      return iso;
+    }
+  }
+
+  function refreshStatus() {
+    fetch(BASE + "/status.json", { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.down) {
+          statusEl.className = "status down";
+          statusEl.textContent = "Storing actief — banner staat AAN";
+        } else {
+          statusEl.className = "status ok";
+          statusEl.textContent = "Alles werkt — geen storing gemeld";
+        }
+        lastCheckedEl.textContent = fmtTime(data.lastChecked);
+      })
+      .catch(function () {
+        statusEl.className = "status loading";
+        statusEl.textContent = "Status kon niet worden opgehaald";
+      });
+  }
+
+  function setButtonsDisabled(disabled) {
+    btnDown.disabled = disabled;
+    btnUp.disabled = disabled;
+  }
+
+  function trigger(path, confirmText, successText) {
+    if (!window.confirm(confirmText)) return;
+    setButtonsDisabled(true);
+    feedbackEl.className = "feedback";
+    feedbackEl.textContent = "Bezig…";
+    fetch(BASE + path + "?key=" + encodeURIComponent(KEY), { cache: "no-store" })
+      .then(function (r) { return r.json(); })
+      .then(function () {
+        feedbackEl.className = "feedback success";
+        feedbackEl.textContent = successText;
+        refreshStatus();
+      })
+      .catch(function () {
+        feedbackEl.className = "feedback error";
+        feedbackEl.textContent = "Er ging iets mis. Probeer het opnieuw.";
+      })
+      .finally(function () {
+        setButtonsDisabled(false);
+      });
+  }
+
+  btnDown.addEventListener("click", function () {
+    trigger(
+      "/simulate-down",
+      "Weet je zeker dat je een storing wilt melden? Dit zet de banner op de website aan en plaatst direct een bericht op Facebook/Instagram.",
+      "Storing gemeld. Banner staat aan en het bericht is geplaatst."
+    );
+  });
+
+  btnUp.addEventListener("click", function () {
+    trigger(
+      "/simulate-up",
+      "Weet je zeker dat de storing is opgelost? Dit zet de banner op de website uit en plaatst een herstelbericht op Facebook/Instagram.",
+      "Storing opgelost gemeld. Banner staat uit en het herstelbericht is geplaatst."
+    );
+  });
+
+  refreshStatus();
+  setInterval(refreshStatus, 30000);
+})();
+</script>
+</body>
+</html>
