@@ -48,6 +48,17 @@
   .status.ok { background: #e6f0e2; color: var(--green); }
   .status.down { background: #fbe3e0; color: #a13327; }
   .status.loading { background: #eee; color: #777; }
+  .pin-input {
+    width: 100%;
+    font-size: 1.1rem;
+    padding: .9rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    text-align: center;
+    letter-spacing: .05em;
+  }
+  .pin-input:focus { outline: none; border-color: var(--green); }
   .btn {
     display: block;
     width: 100%;
@@ -78,9 +89,18 @@
 </style>
 </head>
 <body>
-<div class="panel">
+
+<div class="panel" id="lockPanel">
   <h1>Storing-paneel</h1>
-  <p class="sub">Alleen voor personeel &mdash; meldt de storingsbanner op de website en plaatst automatisch een bericht op Facebook/Instagram.</p>
+  <p class="sub">Alleen voor personeel. Voer de code in om verder te gaan.</p>
+  <input type="password" id="pinInput" class="pin-input" placeholder="Code" autocomplete="off" inputmode="text">
+  <button id="btnUnlock" class="btn btn-up">Ontgrendelen</button>
+  <div id="lockFeedback" class="feedback error"></div>
+</div>
+
+<div class="panel" id="mainPanel" style="display:none">
+  <h1>Storing-paneel</h1>
+  <p class="sub">Meldt de storingsbanner op de website en plaatst automatisch een bericht op Facebook/Instagram.</p>
 
   <div id="status" class="status loading">Status ophalen&hellip;</div>
 
@@ -90,6 +110,59 @@
   <div id="feedback" class="feedback"></div>
   <div class="meta">Laatst gecontroleerd: <span id="lastChecked">&ndash;</span></div>
 </div>
+
+<script>
+(function () {
+  var UNLOCK_STORAGE_KEY = "storingPaneelUnlocked";
+  var PASS_HASH = "aaea3b7be76abe9c597c1fb192a5fb6cc463678e1d519bdbb2c0626af00df650";
+
+  var lockPanel = document.getElementById("lockPanel");
+  var mainPanel = document.getElementById("mainPanel");
+  var pinInput = document.getElementById("pinInput");
+  var btnUnlock = document.getElementById("btnUnlock");
+  var lockFeedback = document.getElementById("lockFeedback");
+
+  function sha256Hex(text) {
+    var enc = new TextEncoder().encode(text);
+    return crypto.subtle.digest("SHA-256", enc).then(function (buf) {
+      return Array.prototype.map
+        .call(new Uint8Array(buf), function (b) { return b.toString(16).padStart(2, "0"); })
+        .join("");
+    });
+  }
+
+  function showMain() {
+    lockPanel.style.display = "none";
+    mainPanel.style.display = "block";
+  }
+
+  function tryUnlock() {
+    var val = pinInput.value;
+    if (!val) return;
+    sha256Hex(val).then(function (hash) {
+      if (hash === PASS_HASH) {
+        try { localStorage.setItem(UNLOCK_STORAGE_KEY, "1"); } catch (e) {}
+        showMain();
+      } else {
+        lockFeedback.textContent = "Onjuiste code, probeer opnieuw.";
+        pinInput.value = "";
+        pinInput.focus();
+      }
+    });
+  }
+
+  var alreadyUnlocked = false;
+  try { alreadyUnlocked = localStorage.getItem(UNLOCK_STORAGE_KEY) === "1"; } catch (e) {}
+  if (alreadyUnlocked) {
+    showMain();
+  }
+
+  btnUnlock.addEventListener("click", tryUnlock);
+  pinInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") tryUnlock();
+  });
+})();
+</script>
 
 <script>
 (function () {
