@@ -7,7 +7,7 @@ binding = "STATUS_KV"
 id = "59ec8744aac44818b0fcb09a0724b5fb"
 
 [triggers]
-crons = ["*/5 * * * *"]
+crons = [] # uitgeschakeld: personeel meldt storing/herstel nu handmatig via /storing-paneel.html (zie /simulate-down en /simulate-up)
 
 [vars]
 TRIGGER_KEY = "dd3f5385bedf960a7da62448fe983348"
