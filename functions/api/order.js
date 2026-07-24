@@ -15,7 +15,7 @@ export async function onRequestPost(context) {
 
   try {
     const body = await request.json();
-    const { items, customer, levering, couponCode } = body || {};
+    const { items, customer, levering, couponCode, loyaliteitsCode } = body || {};
 
     if (!Array.isArray(items) || items.length === 0) {
       return json({ error: "Winkelwagen is leeg." }, 400);
@@ -157,6 +157,35 @@ export async function onRequestPost(context) {
       totaal = Math.round((totaal - korting) * 100) / 100;
     }
 
+    // Loyaliteitscode — alleen van toepassing als er daadwerkelijk
+    // beschikbare korting op de spaarkaart staat. Nooit de klant zelf laten
+    // opgeven hoeveel korting er staat: dat halen we hier zelf op uit D1.
+    let loyaliteitsKorting = 0;
+    let loyaliteitsCodeGeldig = null;
+    if (loyaliteitsCode && env.DB) {
+      const code = String(loyaliteitsCode).trim().toUpperCase();
+      try {
+        const account = await env.DB.prepare(`SELECT code, beschikbare_korting FROM loyalty_accounts WHERE code = ?`)
+          .bind(code)
+          .first();
+        if (!account) {
+          return json({ error: "Loyaliteitscode niet gevonden." }, 400);
+        }
+        if (account.beschikbare_korting > 0) {
+          // Nooit het totaal onder de Mollie-minimumgrens (€0,50) laten zakken.
+          loyaliteitsKorting = Math.min(account.beschikbare_korting, Math.max(0, totaal - 0.5));
+          loyaliteitsKorting = Math.round(loyaliteitsKorting * 100) / 100;
+          loyaliteitsCodeGeldig = code;
+          totaal = Math.round((totaal - loyaliteitsKorting) * 100) / 100;
+        } else {
+          loyaliteitsCodeGeldig = code; // code is geldig, alleen nog niets te verzilveren
+        }
+      } catch (loyErr) {
+        console.error("order.js: kon loyaliteitscode niet controleren", loyErr);
+        return json({ error: "Kon loyaliteitscode niet controleren." }, 500);
+      }
+    }
+
     if (totaal < 0.5) {
       return json({ error: "Het bedrag na korting is te laag om af te rekenen." }, 400);
     }
@@ -188,6 +217,8 @@ export async function onRequestPost(context) {
           items: orderRegels,
           korting,
           couponCode: toegepasteCode,
+          loyaltyCode: loyaliteitsCodeGeldig,
+          loyaltyKorting: loyaliteitsKorting,
         },
       }),
     });
@@ -212,8 +243,8 @@ export async function onRequestPost(context) {
     if (env.DB) {
       try {
         await env.DB.prepare(
-          `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op)
-           VALUES (?, 'open', ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt)
+           VALUES (?, 'open', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
           .bind(
             orderId,
@@ -225,7 +256,9 @@ export async function onRequestPost(context) {
             levering || "afhalen",
             JSON.stringify(orderRegels),
             JSON.stringify(toegepasteActies),
-            new Date().toISOString()
+            new Date().toISOString(),
+            loyaliteitsCodeGeldig,
+            loyaliteitsKorting
           )
           .run();
       } catch (dbErr) {
@@ -233,7 +266,7 @@ export async function onRequestPost(context) {
       }
     }
 
-    return json({ checkoutUrl, orderId, totaal, korting });
+    return json({ checkoutUrl, orderId, totaal, korting, loyaliteitsKorting });
   } catch (err) {
     return json({ error: "Onverwachte fout.", detail: String(err) }, 500);
   }
