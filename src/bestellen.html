@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bestellen · Boslaantje Doen | Snackbar Veenendaal</title>
+<meta name="description" content="Bestel online bij Boslaantje Doen in Veenendaal — kies je patat, snacks, burgers en dranken en reken veilig af met iDEAL.">
+<meta name="robots" content="noindex, follow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="canonical" href="https://www.boslaantjedoen.com/bestellen">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --green:#4A5D3D;
+  --green-deep:#3E4E34;
+  --green-ink:#37472E;
+  --ink:#000000;
+  --paper:#FFFFFF;
+  --paper-2:#F5F3EF;
+  --paper-line:#E6E2DA;
+  --font-body:'Roboto',system-ui,-apple-system,Segoe UI,sans-serif;
+  --wrap:1180px;
+  --r:14px;
+  --shadow:0 14px 34px -20px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:var(--paper-2);
+  line-height:1.55;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 18px}
+
+header{
+  background:var(--green);
+  color:#fff;
+  padding:1rem 0;
+  position:sticky;top:0;z-index:40;
+  box-shadow:0 4px 16px -12px rgba(0,0,0,.5);
+}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.brand{font-weight:900;font-size:1.25rem;text-decoration:none}
+.brand a{color:#fff;text-decoration:none}
+.back-link{color:rgba(255,255,255,.85);font-weight:700;font-size:.9rem;text-decoration:none}
+.back-link:hover{color:#fff}
+
+main{padding:2rem 0 4rem}
+.layout{display:grid;gap:1.6rem;grid-template-columns:1fr}
+@media(min-width:960px){.layout{grid-template-columns:1.6fr 1fr;align-items:start}}
+
+.catnav{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.6rem}
+.catnav a{
+  background:#fff;border:1.5px solid var(--paper-line);border-radius:999px;
+  padding:.45rem 1rem;font-weight:700;font-size:.85rem;color:var(--green-ink);
+  text-decoration:none;
+}
+.catnav a:hover{background:var(--green);color:#fff;border-color:var(--green)}
+
+.categorie{margin-bottom:2.2rem;scroll-margin-top:5.5rem}
+.categorie h2{font-size:1.4rem;font-weight:900;color:var(--green-ink);margin-bottom:.9rem}
+.product-grid{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.product{
+  background:#fff;border:1.5px solid var(--paper-line);border-radius:var(--r);
+  padding:1rem 1.1rem;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.5rem;
+}
+.product .naam{font-weight:800;font-size:1.02rem}
+.product .beschrijving{font-size:.85rem;color:#5a5a52;min-height:1.1em}
+.product .rij{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.product .prijs{font-weight:900;color:var(--green-ink);font-size:1.05rem}
+.product button{
+  background:var(--green);color:#fff;border:none;border-radius:999px;
+  padding:.5rem 1rem;font-weight:800;font-size:.85rem;cursor:pointer;
+  transition:background .15s ease,transform .15s ease;
+}
+.product button:hover{background:var(--green-ink);transform:translateY(-1px)}
+.product button:disabled{background:#9aa392;cursor:default;transform:none}
+
+/* ---- winkelwagen ---- */
+.cart{
+  background:#fff;border:1.5px solid var(--paper-line);border-radius:var(--r);
+  padding:1.3rem 1.3rem 1.5rem;box-shadow:var(--shadow);position:sticky;top:5.5rem;
+}
+.cart h2{font-size:1.15rem;font-weight:900;color:var(--green-ink);margin-bottom:1rem}
+.cart-empty{color:#6a6a62;font-size:.92rem}
+.cart-item{display:flex;justify-content:space-between;gap:.6rem;align-items:center;padding:.55rem 0;border-bottom:1px dashed var(--paper-line)}
+.cart-item:last-of-type{border-bottom:none}
+.cart-item .naam{font-weight:700;font-size:.92rem}
+.cart-item .qty{display:flex;align-items:center;gap:.4rem;margin-top:.2rem}
+.cart-item .qty button{
+  width:24px;height:24px;border-radius:50%;border:1.5px solid var(--paper-line);
+  background:#fff;font-weight:900;cursor:pointer;line-height:1;
+}
+.cart-item .subtotaal{font-weight:800;font-size:.92rem;white-space:nowrap}
+.cart-total{display:flex;justify-content:space-between;font-weight:900;font-size:1.15rem;
+  border-top:2px solid var(--paper-line);margin-top:1rem;padding-top:1rem;color:var(--green-ink)}
+
+.cart-form{margin-top:1.3rem;display:flex;flex-direction:column;gap:.7rem}
+.cart-form label{font-weight:700;font-size:.82rem;display:block;margin-bottom:.25rem}
+.cart-form input,.cart-form select,.cart-form textarea{
+  width:100%;padding:.55rem .7rem;border:1.5px solid var(--paper-line);border-radius:8px;font:inherit;
+}
+.levering-keuze{display:flex;gap:1.2rem;margin:.3rem 0 .2rem}
+.levering-keuze label{display:flex;align-items:center;gap:.4rem;font-weight:700;font-size:.9rem}
+.bezorg-velden{display:none;flex-direction:column;gap:.7rem}
+.bezorg-velden.tonen{display:flex}
+
+.afrekenen-btn{
+  margin-top:.6rem;width:100%;background:var(--green);color:#fff;border:none;
+  border-radius:999px;padding:.9rem;font-weight:900;font-size:1rem;cursor:pointer;
+}
+.afrekenen-btn:hover{background:var(--green-ink)}
+.afrekenen-btn:disabled{background:#9aa392;cursor:default}
+.form-status{font-size:.85rem;margin-top:.6rem;min-height:1.2em}
+.form-status.fout{color:#8a2b1e}
+.form-status.bezig{color:#5a5a52}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="/">Boslaantje Doen</a>
+    <a class="back-link" href="/">&larr; Terug naar de homepage</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="catnav" id="catnav"></div>
+
+    <div class="layout">
+      <div id="menu"></div>
+
+      <aside class="cart">
+        <h2>Jouw bestelling</h2>
+        <div id="cartItems"><p class="cart-empty">Je winkelwagen is nog leeg.</p></div>
+        <div class="cart-total"><span>Totaal</span><span id="cartTotal">&euro;0,00</span></div>
+
+        <form class="cart-form" id="checkoutForm">
+          <div>
+            <label for="naam">Naam</label>
+            <input type="text" id="naam" name="naam" required>
+          </div>
+          <div>
+            <label for="telefoon">Telefoonnummer</label>
+            <input type="tel" id="telefoon" name="telefoon" required>
+          </div>
+          <div>
+            <label for="email">E-mail (voor de betaalbevestiging)</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+
+          <div>
+            <label>Hoe wil je het ontvangen?</label>
+            <div class="levering-keuze">
+              <label><input type="radio" name="levering" value="afhalen" checked> Afhalen</label>
+              <label><input type="radio" name="levering" value="bezorgen"> Bezorgen</label>
+            </div>
+          </div>
+
+          <div class="bezorg-velden" id="bezorgVelden">
+            <div>
+              <label for="adres">Adres</label>
+              <input type="text" id="adres" name="adres" placeholder="Straat + huisnummer">
+            </div>
+            <div>
+              <label for="postcode">Postcode</label>
+              <input type="text" id="postcode" name="postcode" placeholder="1234 AB">
+            </div>
+            <div>
+              <label for="plaats">Plaats</label>
+              <input type="text" id="plaats" name="plaats" value="Veenendaal">
+            </div>
+          </div>
+
+          <div>
+            <label for="opmerking">Opmerking (optioneel)</label>
+            <textarea id="opmerking" name="opmerking" rows="2" placeholder="Bijv. allergie, geen uitjes, etc."></textarea>
+          </div>
+
+          <button type="submit" class="afrekenen-btn" id="afrekenenBtn" disabled>Afrekenen met iDEAL</button>
+          <div class="form-status" id="formStatus"></div>
+        </form>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var cart = {}; // { productId: aantal }
+  var catalogus = null;
+
+  function euro(bedrag) {
+    return '€' + bedrag.toFixed(2).replace('.', ',');
+  }
+
+  function alleProducten() {
+    if (!catalogus) return [];
+    return catalogus.categorieen.flatMap(function (c) { return c.producten; });
+  }
+
+  function vindProduct(id) {
+    return alleProducten().find(function (p) { return p.id === id; });
+  }
+
+  function renderMenu() {
+    var menuEl = document.getElementById('menu');
+    var catnavEl = document.getElementById('catnav');
+    menuEl.innerHTML = '';
+    catnavEl.innerHTML = '';
+
+    catalogus.categorieen.forEach(function (categorie) {
+      var a = document.createElement('a');
+      a.href = '#cat-' + categorie.id;
+      a.textContent = categorie.naam;
+      catnavEl.appendChild(a);
+
+      var sectie = document.createElement('section');
+      sectie.className = 'categorie';
+      sectie.id = 'cat-' + categorie.id;
+
+      var h2 = document.createElement('h2');
+      h2.textContent = categorie.naam;
+      sectie.appendChild(h2);
+
+      var grid = document.createElement('div');
+      grid.className = 'product-grid';
+
+      categorie.producten.forEach(function (product) {
+        var card = document.createElement('div');
+        card.className = 'product';
+        card.innerHTML =
+          '<div class="naam">' + product.naam + '</div>' +
+          '<div class="beschrijving">' + (product.beschrijving || '') + '</div>' +
+          '<div class="rij">' +
+            '<span class="prijs">' + euro(product.prijs) + '</span>' +
+            '<button type="button" data-id="' + product.id + '">Toevoegen</button>' +
+          '</div>';
+        grid.appendChild(card);
+      });
+
+      sectie.appendChild(grid);
+      menuEl.appendChild(sectie);
+    });
+
+    menuEl.querySelectorAll('button[data-id]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        cart[id] = (cart[id] || 0) + 1;
+        renderCart();
+      });
+    });
+  }
+
+  function renderCart() {
+    var itemsEl = document.getElementById('cartItems');
+    var totalEl = document.getElementById('cartTotal');
+    var afrekenenBtn = document.getElementById('afrekenenBtn');
+    var ids = Object.keys(cart).filter(function (id) { return cart[id] > 0; });
+
+    if (ids.length === 0) {
+      itemsEl.innerHTML = '<p class="cart-empty">Je winkelwagen is nog leeg.</p>';
+      totalEl.textContent = euro(0);
+      afrekenenBtn.disabled = true;
+      return;
+    }
+
+    var totaal = 0;
+    itemsEl.innerHTML = '';
+    ids.forEach(function (id) {
+      var product = vindProduct(id);
+      if (!product) return;
+      var aantal = cart[id];
+      var subtotaal = product.prijs * aantal;
+      totaal += subtotaal;
+
+      var row = document.createElement('div');
+      row.className = 'cart-item';
+      row.innerHTML =
+        '<div>' +
+          '<div class="naam">' + product.naam + '</div>' +
+          '<div class="qty">' +
+            '<button type="button" data-min="' + id + '">&minus;</button>' +
+            '<span>' + aantal + '</span>' +
+            '<button type="button" data-plus="' + id + '">+</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="subtotaal">' + euro(subtotaal) + '</div>';
+      itemsEl.appendChild(row);
+    });
+
+    totalEl.textContent = euro(totaal);
+    afrekenenBtn.disabled = false;
+
+    itemsEl.querySelectorAll('[data-plus]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-plus');
+        cart[id] = (cart[id] || 0) + 1;
+        renderCart();
+      });
+    });
+    itemsEl.querySelectorAll('[data-min]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-min');
+        cart[id] = Math.max(0, (cart[id] || 0) - 1);
+        renderCart();
+      });
+    });
+  }
+
+  // Levering: afhalen/bezorgen wisselt de adresvelden
+  document.querySelectorAll('input[name="levering"]').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+      var bezorgVelden = document.getElementById('bezorgVelden');
+      var isBezorgen = document.querySelector('input[name="levering"]:checked').value === 'bezorgen';
+      bezorgVelden.classList.toggle('tonen', isBezorgen);
+      document.getElementById('adres').required = isBezorgen;
+      document.getElementById('postcode').required = isBezorgen;
+      document.getElementById('plaats').required = isBezorgen;
+    });
+  });
+
+  document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var statusEl = document.getElementById('formStatus');
+    var afrekenenBtn = document.getElementById('afrekenenBtn');
+    var ids = Object.keys(cart).filter(function (id) { return cart[id] > 0; });
+
+    if (ids.length === 0) {
+      statusEl.textContent = 'Je winkelwagen is leeg.';
+      statusEl.className = 'form-status fout';
+      return;
+    }
+
+    var levering = document.querySelector('input[name="levering"]:checked').value;
+    var customer = {
+      naam: document.getElementById('naam').value.trim(),
+      telefoon: document.getElementById('telefoon').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      adres: document.getElementById('adres').value.trim(),
+      postcode: document.getElementById('postcode').value.trim(),
+      plaats: document.getElementById('plaats').value.trim(),
+      opmerking: document.getElementById('opmerking').value.trim()
+    };
+
+    var items = ids.map(function (id) { return { id: id, aantal: cart[id] }; });
+
+    statusEl.textContent = 'Bezig met doorsturen naar de betaalpagina...';
+    statusEl.className = 'form-status bezig';
+    afrekenenBtn.disabled = true;
+
+    fetch('/api/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: items, customer: customer, levering: levering })
+    })
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (result) {
+        if (!result.ok || !result.data.checkoutUrl) {
+          statusEl.textContent = (result.data && result.data.error) || 'Er ging iets mis, probeer het opnieuw.';
+          statusEl.className = 'form-status fout';
+          afrekenenBtn.disabled = false;
+          return;
+        }
+        window.location.href = result.data.checkoutUrl;
+      })
+      .catch(function () {
+        statusEl.textContent = 'Kon geen verbinding maken. Probeer het opnieuw.';
+        statusEl.className = 'form-status fout';
+        afrekenenBtn.disabled = false;
+      });
+  });
+
+  fetch('/producten.json')
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      catalogus = data;
+      renderMenu();
+      renderCart();
+    })
+    .catch(function (err) {
+      console.error('Kon producten.json niet laden:', err);
+      document.getElementById('menu').innerHTML = '<p>Het menu kon niet geladen worden. Probeer de pagina te vernieuwen.</p>';
+    });
+})();
+</script>
+
+</body>
+</html>
