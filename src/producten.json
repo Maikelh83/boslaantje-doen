@@ -1,0 +1,62 @@
+{
+  "_opmerking": "Dit is een startassortiment voor de nieuwe bestelpagina (test/MVP). Prijzen zijn voorbeeldprijzen — pas ze hier aan naar de echte prijzen voordat dit live gaat.",
+  "categorieen": [
+    {
+      "id": "patat",
+      "naam": "Patat",
+      "producten": [
+        { "id": "patat-klein", "naam": "Patat klein", "prijs": 2.80, "beschrijving": "" },
+        { "id": "patat-groot", "naam": "Patat groot", "prijs": 3.50, "beschrijving": "" },
+        { "id": "patat-oorlog", "naam": "Patat oorlog", "prijs": 4.50, "beschrijving": "Met satésaus, mayonaise en uitjes" }
+      ]
+    },
+    {
+      "id": "snacks",
+      "naam": "Snacks",
+      "producten": [
+        { "id": "kroket", "naam": "Kroket", "prijs": 2.20, "beschrijving": "" },
+        { "id": "frikandel", "naam": "Frikandel", "prijs": 2.00, "beschrijving": "" },
+        { "id": "bamischijf", "naam": "Bamischijf", "prijs": 2.20, "beschrijving": "" },
+        { "id": "kaassouffle", "naam": "Kaassoufflé", "prijs": 2.40, "beschrijving": "" }
+      ]
+    },
+    {
+      "id": "hamburgers",
+      "naam": "Hamburgers",
+      "producten": [
+        { "id": "hamburger", "naam": "Hamburger", "prijs": 3.50, "beschrijving": "" },
+        { "id": "cheeseburger", "naam": "Cheeseburger", "prijs": 4.00, "beschrijving": "" },
+        { "id": "bacon-cheeseburger", "naam": "Bacon cheeseburger", "prijs": 4.75, "beschrijving": "" }
+      ]
+    },
+    {
+      "id": "broodjes",
+      "naam": "Broodjes",
+      "producten": [
+        { "id": "broodje-kroket", "naam": "Broodje kroket", "prijs": 3.25, "beschrijving": "" },
+        { "id": "broodje-frikandel", "naam": "Broodje frikandel", "prijs": 3.00, "beschrijving": "" },
+        { "id": "broodje-shoarma", "naam": "Broodje shoarma", "prijs": 5.50, "beschrijving": "" }
+      ]
+    },
+    {
+      "id": "sauzen",
+      "naam": "Sauzen",
+      "producten": [
+        { "id": "saus-mayonaise", "naam": "Mayonaise", "prijs": 0.60, "beschrijving": "" },
+        { "id": "saus-ketchup", "naam": "Ketchup", "prijs": 0.60, "beschrijving": "" },
+        { "id": "saus-curry", "naam": "Curry", "prijs": 0.60, "beschrijving": "" },
+        { "id": "saus-speciaal", "naam": "Speciaal", "prijs": 0.60, "beschrijving": "" }
+      ]
+    },
+    {
+      "id": "dranken",
+      "naam": "Dranken",
+      "producten": [
+        { "id": "cola", "naam": "Cola 33cl", "prijs": 2.20, "beschrijving": "" },
+        { "id": "fanta", "naam": "Fanta 33cl", "prijs": 2.20, "beschrijving": "" },
+        { "id": "water", "naam": "Water 33cl", "prijs": 1.80, "beschrijving": "" },
+        { "id": "cassis", "naam": "Cassis 33cl", "prijs": 2.20, "beschrijving": "" }
+      ]
+    }
+  ]
+}
