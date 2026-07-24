@@ -13,6 +13,12 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('src/veelgestelde-vragen.html');
   eleventyConfig.addPassthroughCopy('src/storing-paneel.html');
 
+  // Bestelpagina (test/MVP): menu + winkelwagen + koppeling met de
+  // Cloudflare Functions in /functions/api voor Mollie-betalingen.
+  eleventyConfig.addPassthroughCopy('src/bestellen.html');
+  eleventyConfig.addPassthroughCopy('src/bestellen-bedankt.html');
+  eleventyConfig.addPassthroughCopy('src/producten.json');
+
   // Actie-pop-up (homepage): platte JSON-databestand, door Decap CMS
   // rechtstreeks in dit formaat weggeschreven (geen Eleventy-verwerking
   // nodig — index.html haalt 'm zelf op met fetch('actie.json')).
