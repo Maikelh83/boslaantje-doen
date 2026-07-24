@@ -6,12 +6,23 @@
 // De teruggegeven 'code' is tegelijk het pasjesnummer én de QR-inhoud
 // (net als de AH Bonuskaart): geen apart online account nodig.
 //
+// Twee manieren om een code te krijgen:
+//   1. Geen 'bestaandeCode' meegestuurd  -> we genereren zelf een nieuwe,
+//      unieke code (voor als de klant geen fysiek pasje heeft en de QR
+//      op het scherm gebruikt of een los geprint kaartje krijgt).
+//   2. Wel 'bestaandeCode' meegestuurd   -> dit is de waarde die van een
+//      al bestaand, nog niet gebruikt fysiek pasje (bv. de oude
+//      onbeschreven voorraad in onze eigen huisstijl) is gescand. We
+//      controleren alleen of hij nog niet in gebruik is en gebruiken 'm
+//      1-op-1 als primaire sleutel — het maakt niet uit wat er precies
+//      in die QR staat (kort nummer, lange code, url), zolang hij uniek is.
+//
 // Benodigde environment variables:
 //   STAFF_LOYALTY_PASSWORD — wachtwoord voor de personeelspagina
 //   DB                     — D1-database binding
 //
-// Body: { wachtwoord, naam?, telefoon?, email? }
-// Antwoord: { code }
+// Body: { wachtwoord, naam?, telefoon?, email?, bestaandeCode? }
+// Antwoord: { code, viaBestaandPasje }
 
 const CODE_ALFABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ"; // zonder 0/O/1/I/L — voorkomt leesfouten op een gedrukt pasje
 
@@ -20,7 +31,7 @@ export async function onRequestPost(context) {
 
   try {
     const body = await request.json();
-    const { wachtwoord, naam, telefoon, email } = body || {};
+    const { wachtwoord, naam, telefoon, email, bestaandeCode } = body || {};
 
     if (!env.STAFF_LOYALTY_PASSWORD) {
       return json({ error: "Personeelspagina is nog niet ingesteld (STAFF_LOYALTY_PASSWORD ontbreekt)." }, 500);
@@ -33,18 +44,29 @@ export async function onRequestPost(context) {
     }
 
     const nu = new Date().toISOString();
-
-    // Genereer een unieke code; bij een (zeldzame) botsing gewoon opnieuw proberen.
     let code = null;
-    for (let poging = 0; poging < 10 && !code; poging++) {
-      const kandidaat = genereerCode();
+    let viaBestaandPasje = false;
+
+    if (bestaandeCode && String(bestaandeCode).trim()) {
+      const kandidaat = String(bestaandeCode).trim();
       const bestaat = await env.DB.prepare(`SELECT 1 FROM loyalty_accounts WHERE code = ?`).bind(kandidaat).all();
-      if (!bestaat.results || bestaat.results.length === 0) {
-        code = kandidaat;
+      if (bestaat.results && bestaat.results.length > 0) {
+        return json({ error: "Dit pasje is al gekoppeld aan een spaarkaart." }, 409);
       }
-    }
-    if (!code) {
-      return json({ error: "Kon geen unieke code genereren, probeer het nogmaals." }, 500);
+      code = kandidaat;
+      viaBestaandPasje = true;
+    } else {
+      // Genereer een unieke code; bij een (zeldzame) botsing gewoon opnieuw proberen.
+      for (let poging = 0; poging < 10 && !code; poging++) {
+        const kandidaat = genereerCode();
+        const bestaat = await env.DB.prepare(`SELECT 1 FROM loyalty_accounts WHERE code = ?`).bind(kandidaat).all();
+        if (!bestaat.results || bestaat.results.length === 0) {
+          code = kandidaat;
+        }
+      }
+      if (!code) {
+        return json({ error: "Kon geen unieke code genereren, probeer het nogmaals." }, 500);
+      }
     }
 
     await env.DB.prepare(
@@ -54,7 +76,7 @@ export async function onRequestPost(context) {
       .bind(code, naam || null, telefoon || null, email || null, nu)
       .run();
 
-    return json({ code });
+    return json({ code, viaBestaandPasje });
   } catch (err) {
     return json({ error: "Onverwachte fout.", detail: String(err) }, 500);
   }
