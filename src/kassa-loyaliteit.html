@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loyaliteit (kassa) · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
+  --paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
+  --font-body:'Roboto',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.5;font-size:15px}
+.wrap{max-width:640px;margin:0 auto;padding:0 20px}
+h1,h2{font-weight:700;color:var(--green-ink)}
+header{background:var(--green);padding:1rem 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:.85rem}
+header h1{color:#fff;font-size:1.3rem}
+main{padding:1.6rem 0 3rem}
+
+#lockScreen{max-width:360px;margin:4rem auto;background:#fff;border:1px solid var(--paper-line);border-radius:8px;padding:1.6rem;text-align:center}
+#lockScreen input{width:100%;padding:.6rem .7rem;border:1px solid var(--paper-line);border-radius:6px;font:inherit;margin:.8rem 0}
+#lockScreen button{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:6px;padding:.7rem;font-weight:800;cursor:pointer}
+#lockScreen button:hover{background:var(--terracotta-deep)}
+#lockFout{color:#8a2b1e;font-size:.85rem;min-height:1.2em;margin-top:.4rem}
+
+.tabs{display:flex;gap:.4rem;margin-bottom:1.2rem}
+.tab{flex:1;background:#fff;border:1px solid var(--paper-line);border-radius:6px;padding:.6rem;text-align:center;font-weight:700;cursor:pointer;color:#6b6a62;font-size:.9rem}
+.tab.actief{background:var(--green);color:#fff;border-color:var(--green)}
+
+.paneel{display:none;background:#fff;border:1px solid var(--paper-line);border-radius:8px;padding:1.2rem}
+.paneel.actief{display:block}
+
+label{display:block;font-size:.8rem;font-weight:700;color:var(--green-ink);margin:.8rem 0 .3rem}
+label:first-child{margin-top:0}
+input[type=text],input[type=tel],input[type=email],input[type=number]{
+  width:100%;padding:.6rem .7rem;border:1px solid var(--paper-line);border-radius:6px;font:inherit;
+}
+.rij{display:flex;gap:.6rem}
+.rij > div{flex:1}
+button.primair{background:var(--terracotta);color:#fff;border:none;border-radius:6px;padding:.7rem 1rem;font-weight:800;cursor:pointer;margin-top:1rem;width:100%}
+button.primair:hover{background:var(--terracotta-deep)}
+button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px solid var(--paper-line);border-radius:6px;padding:.5rem .9rem;font-weight:700;cursor:pointer;font-size:.85rem}
+.melding{font-size:.85rem;min-height:1.2em;margin-top:.6rem}
+.melding.fout{color:#8a2b1e}
+.melding.ok{color:var(--green-ink)}
+
+.kaarten{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin:1rem 0}
+.kaart{background:var(--paper-2);border-radius:8px;padding:.8rem}
+.kaart .label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:#8a8a80}
+.kaart .waarde{font-weight:800;font-size:1.4rem;color:var(--green-ink);margin-top:.15rem}
+
+#qrHost{display:flex;justify-content:center;margin:1rem 0}
+.codeGroot{font-size:1.6rem;font-weight:800;letter-spacing:.08em;text-align:center;color:var(--green-ink);margin-top:.4rem}
+.hint{font-size:.78rem;color:#6b6a62;margin-top:.3rem}
+.scanZone{border:2px dashed var(--paper-line);border-radius:8px;padding:1rem;text-align:center;margin-top:.6rem}
+video{width:100%;border-radius:6px;margin-top:.6rem;display:none}
+.klant{background:var(--paper-2);border-radius:8px;padding:.9rem;margin-top:1rem}
+.klant .naam{font-weight:700;color:var(--green-ink)}
+.transacties{margin-top:1rem;font-size:.8rem;color:#6b6a62}
+.transacties table{width:100%;border-collapse:collapse}
+.transacties td,.transacties th{padding:.3rem;text-align:left;border-bottom:1px solid var(--paper-line)}
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+  <h1 style="font-size:1.2rem;margin-bottom:.3rem">Loyaliteit — personeel</h1>
+  <p style="font-size:.85rem;color:#6b6a62">Alleen voor personeel — voer het wachtwoord in.</p>
+  <input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
+  <button type="button" id="ontgrendelBtn">Ontgrendelen</button>
+  <div id="lockFout"></div>
+</div>
+
+<div id="scherm" style="display:none">
+  <header>
+    <div class="wrap">
+      <h1>Loyaliteit</h1>
+      <a href="/dashboard">&larr; Dashboard</a>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+
+      <div class="tabs">
+        <div class="tab actief" data-tab="zegel">Zegel toekennen</div>
+        <div class="tab" data-tab="nieuw">Nieuwe klant</div>
+      </div>
+
+      <!-- Zegel toekennen / klant opzoeken -->
+      <div class="paneel actief" id="paneel-zegel">
+        <label for="zoekCode">Code (pasje of QR)</label>
+        <input type="text" id="zoekCode" placeholder="bijv. K7QXM4RT" autocomplete="off">
+        <div class="scanZone" id="scanZone">
+          <button type="button" class="secundair" id="scanBtn">Camera scannen</button>
+          <div class="hint" id="scanHint"></div>
+          <video id="scanVideo" playsinline></video>
+        </div>
+        <button type="button" class="primair" id="zoekBtn">Klant opzoeken</button>
+        <div class="melding" id="zoekMelding"></div>
+
+        <div id="klantBlok" style="display:none">
+          <div class="klant">
+            <div class="naam" id="klantNaam"></div>
+            <div class="kaarten">
+              <div class="kaart"><div class="label">Zegels</div><div class="waarde" id="klantZegels"></div></div>
+              <div class="kaart"><div class="label">Onderweg naar volgende</div><div class="waarde" id="klantRest"></div></div>
+              <div class="kaart"><div class="label">Beschikbare korting</div><div class="waarde" id="klantKorting"></div></div>
+            </div>
+          </div>
+
+          <label for="aankoopBedrag">Aankoopbedrag (vóór korting)</label>
+          <input type="number" id="aankoopBedrag" step="0.01" min="0.01" placeholder="0,00">
+
+          <label for="kortingInwisselen">Korting inwisselen (optioneel, max. beschikbaar)</label>
+          <input type="number" id="kortingInwisselen" step="0.01" min="0" placeholder="0,00">
+
+          <button type="button" class="primair" id="stempelBtn">Zegel toekennen</button>
+          <div class="melding" id="stempelMelding"></div>
+
+          <div class="transacties" id="transactiesHost"></div>
+        </div>
+      </div>
+
+      <!-- Nieuwe klant aanmaken -->
+      <div class="paneel" id="paneel-nieuw">
+        <label for="nieuweNaam">Naam (optioneel)</label>
+        <input type="text" id="nieuweNaam" autocomplete="off">
+        <div class="rij">
+          <div>
+            <label for="nieuweTelefoon">Telefoon (optioneel)</label>
+            <input type="tel" id="nieuweTelefoon" autocomplete="off">
+          </div>
+          <div>
+            <label for="nieuweEmail">E-mail (optioneel)</label>
+            <input type="email" id="nieuweEmail" autocomplete="off">
+          </div>
+        </div>
+        <button type="button" class="primair" id="aanmakenBtn">Spaarkaart aanmaken</button>
+        <div class="melding" id="aanmakenMelding"></div>
+
+        <div id="nieuweKaartResultaat" style="display:none">
+          <div id="qrHost"></div>
+          <div class="codeGroot" id="nieuweCodeTekst"></div>
+          <div class="hint" style="text-align:center">Print dit pasje of laat de klant een foto maken — dezelfde code werkt straks ook bij het online bestellen.</div>
+          <button type="button" class="secundair" id="printBtn" style="margin-top:.8rem;width:100%">Printen</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+  var wachtwoordInput = document.getElementById('wachtwoordInput');
+  var ontgrendelBtn = document.getElementById('ontgrendelBtn');
+  var lockFout = document.getElementById('lockFout');
+  var huidigWachtwoord = null;
+
+  function euro(n){ return '€' + (Number(n)||0).toFixed(2).replace('.', ','); }
+
+  function controleerWachtwoord(wachtwoord){
+    lockFout.textContent = 'Controleren...';
+    // We toetsen het wachtwoord via een lichte opzoek-aanroep (lege code
+    // is altijd 'onbekende code' bij een juist wachtwoord, maar 401 bij
+    // een onjuist wachtwoord — zo hoeven we geen apart check-endpoint te bouwen).
+    fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(wachtwoord) + '&code=___check___')
+      .then(function(res){
+        if (res.status === 401) {
+          lockFout.textContent = 'Onjuist wachtwoord.';
+          return;
+        }
+        if (res.status === 500) {
+          return res.json().then(function(d){ lockFout.textContent = (d && d.error) || 'Kon niet inloggen.'; });
+        }
+        huidigWachtwoord = wachtwoord;
+        try { sessionStorage.setItem('bd_loyalty_pw', wachtwoord); } catch(e){}
+        document.getElementById('lockScreen').style.display = 'none';
+        document.getElementById('scherm').style.display = 'block';
+      })
+      .catch(function(){ lockFout.textContent = 'Kon geen verbinding maken.'; });
+  }
+
+  ontgrendelBtn.addEventListener('click', function(){ controleerWachtwoord(wachtwoordInput.value); });
+  wachtwoordInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') controleerWachtwoord(wachtwoordInput.value); });
+
+  var opgeslagen = null;
+  try { opgeslagen = sessionStorage.getItem('bd_loyalty_pw'); } catch(e){}
+  if (opgeslagen) controleerWachtwoord(opgeslagen);
+
+  // --- Tabs ---
+  document.querySelectorAll('.tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('actief'); });
+      document.querySelectorAll('.paneel').forEach(function(p){ p.classList.remove('actief'); });
+      tab.classList.add('actief');
+      document.getElementById('paneel-' + tab.dataset.tab).classList.add('actief');
+    });
+  });
+
+  // --- Zegel toekennen / opzoeken ---
+  var zoekBtn = document.getElementById('zoekBtn');
+  var zoekMelding = document.getElementById('zoekMelding');
+  var klantBlok = document.getElementById('klantBlok');
+  var huidigeCode = null;
+
+  function zoekKlant(){
+    var code = document.getElementById('zoekCode').value.trim();
+    if (!code) { zoekMelding.textContent = 'Voer een code in.'; zoekMelding.className = 'melding fout'; return; }
+    zoekMelding.textContent = 'Zoeken...';
+    zoekMelding.className = 'melding';
+    fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(huidigWachtwoord) + '&code=' + encodeURIComponent(code))
+      .then(function(res){ return res.json().then(function(d){ return {ok:res.ok, data:d}; }); })
+      .then(function(result){
+        if (!result.ok) {
+          zoekMelding.textContent = (result.data && result.data.error) || 'Kon klant niet vinden.';
+          zoekMelding.className = 'melding fout';
+          klantBlok.style.display = 'none';
+          return;
+        }
+        zoekMelding.textContent = '';
+        huidigeCode = result.data.account.code;
+        toonKlant(result.data.account, result.data.transacties);
+      })
+      .catch(function(){ zoekMelding.textContent = 'Kon geen verbinding maken.'; zoekMelding.className = 'melding fout'; });
+  }
+  zoekBtn.addEventListener('click', zoekKlant);
+  document.getElementById('zoekCode').addEventListener('keydown', function(e){ if (e.key === 'Enter') zoekKlant(); });
+
+  function toonKlant(account, transacties){
+    klantBlok.style.display = 'block';
+    document.getElementById('klantNaam').textContent = (account.naam || 'Naamloos pasje') + ' — ' + account.code;
+    document.getElementById('klantZegels').textContent = account.zegels + ' / 20';
+    document.getElementById('klantRest').textContent = euro(account.rest_bedrag);
+    document.getElementById('klantKorting').textContent = euro(account.beschikbare_korting);
+    document.getElementById('stempelMelding').textContent = '';
+    document.getElementById('aankoopBedrag').value = '';
+    document.getElementById('kortingInwisselen').value = '';
+
+    var host = document.getElementById('transactiesHost');
+    if (!transacties || !transacties.length) {
+      host.innerHTML = '<div class="hint">Nog geen eerdere transacties.</div>';
+    } else {
+      var rijen = transacties.map(function(t){
+        var datum = new Date(t.moment).toLocaleDateString('nl-NL');
+        return '<tr><td>' + datum + '</td><td>' + (t.bron === 'kassa' ? 'Kassa' : 'Online') + '</td><td>' + euro(t.bedrag) + '</td><td>+' + t.zegels_erbij + '</td></tr>';
+      }).join('');
+      host.innerHTML = '<table><tr><th>Datum</th><th>Bron</th><th>Bedrag</th><th>Zegels</th></tr>' + rijen + '</table>';
+    }
+  }
+
+  document.getElementById('stempelBtn').addEventListener('click', function(){
+    var stempelMelding = document.getElementById('stempelMelding');
+    var bedrag = parseFloat(document.getElementById('aankoopBedrag').value);
+    var kortingGebruikt = parseFloat(document.getElementById('kortingInwisselen').value) || 0;
+    if (!bedrag || bedrag <= 0) {
+      stempelMelding.textContent = 'Voer een geldig aankoopbedrag in.';
+      stempelMelding.className = 'melding fout';
+      return;
+    }
+    stempelMelding.textContent = 'Verwerken...';
+    stempelMelding.className = 'melding';
+    fetch('/api/loyalty-stempel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ wachtwoord: huidigWachtwoord, code: huidigeCode, bedrag: bedrag, kortingGebruikt: kortingGebruikt })
+    })
+      .then(function(res){ return res.json().then(function(d){ return {ok:res.ok, data:d}; }); })
+      .then(function(result){
+        if (!result.ok) {
+          stempelMelding.textContent = (result.data && result.data.error) || 'Kon zegel niet toekennen.';
+          stempelMelding.className = 'melding fout';
+          return;
+        }
+        var d = result.data;
+        var extra = d.kortingErbij > 0 ? ' Er is €5 korting bijgeschreven omdat 20 zegels bereikt zijn!' : '';
+        zoekKlant(); // haalt het bijgewerkte overzicht + transactiegeschiedenis opnieuw op
+        stempelMelding.textContent = '+' + d.zegelsErbij + ' zegel(s) toegekend.' + extra;
+        stempelMelding.className = 'melding ok';
+      })
+      .catch(function(){ stempelMelding.textContent = 'Kon geen verbinding maken.'; stempelMelding.className = 'melding fout'; });
+  });
+
+  // --- Camera-scan (optioneel, met nette fallback) ---
+  var scanBtn = document.getElementById('scanBtn');
+  var scanHint = document.getElementById('scanHint');
+  var scanVideo = document.getElementById('scanVideo');
+  var scanStream = null;
+  var scanTimer = null;
+
+  scanBtn.addEventListener('click', function(){
+    if (!('BarcodeDetector' in window)) {
+      scanHint.textContent = 'Deze browser ondersteunt camera-scannen niet — voer de code hierboven handmatig in.';
+      return;
+    }
+    if (scanStream) { stopScan(); return; }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then(function(stream){
+        scanStream = stream;
+        scanVideo.srcObject = stream;
+        scanVideo.style.display = 'block';
+        scanVideo.play();
+        scanBtn.textContent = 'Stoppen met scannen';
+        var detector = new BarcodeDetector({ formats: ['qr_code'] });
+        scanTimer = setInterval(function(){
+          detector.detect(scanVideo).then(function(codes){
+            if (codes && codes.length) {
+              document.getElementById('zoekCode').value = codes[0].rawValue;
+              stopScan();
+              zoekKlant();
+            }
+          }).catch(function(){});
+        }, 400);
+      })
+      .catch(function(){
+        scanHint.textContent = 'Kon geen toegang krijgen tot de camera — voer de code hierboven handmatig in.';
+      });
+  });
+
+  function stopScan(){
+    if (scanTimer) { clearInterval(scanTimer); scanTimer = null; }
+    if (scanStream) { scanStream.getTracks().forEach(function(t){ t.stop(); }); scanStream = null; }
+    scanVideo.style.display = 'none';
+    scanBtn.textContent = 'Camera scannen';
+  }
+
+  // --- Nieuwe klant aanmaken ---
+  document.getElementById('aanmakenBtn').addEventListener('click', function(){
+    var melding = document.getElementById('aanmakenMelding');
+    var naam = document.getElementById('nieuweNaam').value.trim();
+    var telefoon = document.getElementById('nieuweTelefoon').value.trim();
+    var email = document.getElementById('nieuweEmail').value.trim();
+    melding.textContent = 'Aanmaken...';
+    melding.className = 'melding';
+    fetch('/api/loyalty-aanmaken', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ wachtwoord: huidigWachtwoord, naam: naam || null, telefoon: telefoon || null, email: email || null })
+    })
+      .then(function(res){ return res.json().then(function(d){ return {ok:res.ok, data:d}; }); })
+      .then(function(result){
+        if (!result.ok) {
+          melding.textContent = (result.data && result.data.error) || 'Kon spaarkaart niet aanmaken.';
+          melding.className = 'melding fout';
+          return;
+        }
+        melding.textContent = 'Spaarkaart aangemaakt!';
+        melding.className = 'melding ok';
+        var code = result.data.code;
+        document.getElementById('nieuweCodeTekst').textContent = code;
+        document.getElementById('nieuweKaartResultaat').style.display = 'block';
+        var qrHost = document.getElementById('qrHost');
+        qrHost.innerHTML = '';
+        if (window.QRCode) {
+          new QRCode(qrHost, { text: code, width: 160, height: 160 });
+        } else {
+          qrHost.innerHTML = '<div class="hint">(QR-bibliotheek kon niet laden — code hieronder werkt ook handmatig.)</div>';
+        }
+      })
+      .catch(function(){ melding.textContent = 'Kon geen verbinding maken.'; melding.className = 'melding fout'; });
+  });
+
+  document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
+})();
+</script>
+</body>
+</html>

@@ -279,6 +279,15 @@ main{padding:1.4rem 0 3rem}
             <span id="kortingLabel">Korting</span><span id="kortingBedrag"></span>
           </div>
 
+          <div class="coupon-rij">
+            <input type="text" id="loyaliteitsInput" placeholder="Spaarkaart-code (optioneel)">
+            <button type="button" id="loyaliteitsBtn">Toepassen</button>
+          </div>
+          <div class="coupon-status" id="loyaliteitsStatus"></div>
+          <div class="korting-rij" id="loyaliteitsKortingRij" style="display:none">
+            <span>Spaarkaartkorting</span><span id="loyaliteitsKortingBedrag"></span>
+          </div>
+
           <div class="cart-total"><span>Totaal</span><span id="cartTotal">&euro;0,00</span></div>
 
           <form class="cart-form" id="checkoutForm">
@@ -384,6 +393,7 @@ function categorieIcon(catId, extraClass){
   var catalogus = null;
   var acties = [];
   var toegepasteCoupon = null; // { code, type, waarde, omschrijving }
+  var toegepasteLoyaliteit = null; // { code, beschikbareKorting }
   var modalProduct = null;
   var modalSelectie = {};
 
@@ -801,6 +811,19 @@ function categorieIcon(catId, extraClass){
     } else {
       kortingRij.style.display = 'none';
     }
+
+    var loyaliteitsKortingRij = document.getElementById('loyaliteitsKortingRij');
+    if (toegepasteLoyaliteit && toegepasteLoyaliteit.beschikbareKorting > 0 && eind > 0) {
+      // Zelfde grens als /api/order: nooit onder de Mollie-minimumgrens van €0,50 zakken.
+      var loyKorting = Math.min(toegepasteLoyaliteit.beschikbareKorting, Math.max(0, eind - 0.5));
+      loyKorting = Math.round(loyKorting * 100) / 100;
+      eind = Math.max(0, eind - loyKorting);
+      loyaliteitsKortingRij.style.display = 'flex';
+      document.getElementById('loyaliteitsKortingBedrag').textContent = '-' + euro(loyKorting);
+    } else {
+      loyaliteitsKortingRij.style.display = 'none';
+    }
+
     totalEl.textContent = euro(eind);
   }
 
@@ -824,6 +847,32 @@ function categorieIcon(catId, extraClass){
       } else {
         toegepasteCoupon = { code: code.toUpperCase(), type: data.type, waarde: data.waarde, omschrijving: data.omschrijving };
         statusEl.textContent = data.omschrijving || 'Code toegepast!'; statusEl.className = 'coupon-status ok';
+      }
+      renderCart();
+    }).catch(function () {
+      statusEl.textContent = 'Kon de code niet controleren. Probeer het opnieuw.'; statusEl.className = 'coupon-status fout';
+    });
+  });
+
+  // ---------------- loyaliteits-/spaarkaartcode (handmatig) ----------------
+  document.getElementById('loyaliteitsBtn').addEventListener('click', function () {
+    var code = document.getElementById('loyaliteitsInput').value.trim();
+    var statusEl = document.getElementById('loyaliteitsStatus');
+    if (!code) return;
+    statusEl.textContent = 'Code controleren...'; statusEl.className = 'coupon-status';
+    fetch('/api/loyalty-check', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: code })
+    }).then(function (res) { return res.json(); }).then(function (data) {
+      if (!data.geldig) {
+        toegepasteLoyaliteit = null;
+        statusEl.textContent = data.foutmelding || 'Deze code is niet geldig.'; statusEl.className = 'coupon-status fout';
+      } else if (data.beschikbareKorting > 0) {
+        toegepasteLoyaliteit = { code: code.toUpperCase(), beschikbareKorting: data.beschikbareKorting };
+        statusEl.textContent = 'Spaarkaart gekoppeld — ' + euro(data.beschikbareKorting) + ' korting toegepast.'; statusEl.className = 'coupon-status ok';
+      } else {
+        toegepasteLoyaliteit = { code: code.toUpperCase(), beschikbareKorting: 0 };
+        statusEl.textContent = 'Spaarkaart gekoppeld — je spaart mee met deze bestelling (nog geen korting beschikbaar).'; statusEl.className = 'coupon-status ok';
       }
       renderCart();
     }).catch(function () {
@@ -880,7 +929,7 @@ function categorieIcon(catId, extraClass){
 
     fetch('/api/order', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: items, customer: customer, levering: levering, couponCode: toegepasteCoupon ? toegepasteCoupon.code : null })
+      body: JSON.stringify({ items: items, customer: customer, levering: levering, couponCode: toegepasteCoupon ? toegepasteCoupon.code : null, loyaliteitsCode: toegepasteLoyaliteit ? toegepasteLoyaliteit.code : null })
     }).then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
       .then(function (result) {
         if (!result.ok || !result.data.checkoutUrl) {
