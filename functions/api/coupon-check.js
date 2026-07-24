@@ -4,6 +4,9 @@
 // Lichte preview-check zodat de klant vóór het afrekenen al ziet of een
 // kortingscode geldig is en wat de korting wordt. De echte, bindende
 // controle gebeurt hierna nogmaals in /api/order (nooit de client vertrouwen).
+// Alleen code-gebaseerde acties van het type 'percentage' of 'vast' kunnen
+// hier worden ingevoerd — automatische acties (gratis product/drempel)
+// worden rechtstreeks door bestellen.html uit coupons.json gehaald.
 
 export async function onRequestPost(context) {
   const { request } = context;
@@ -24,26 +27,36 @@ export async function onRequestPost(context) {
     }
     const data = await res.json();
     const lijst = Array.isArray(data.coupons) ? data.coupons : [];
-    const coupon = lijst.find((c) => (c.code || "").toUpperCase() === code.toUpperCase());
+    const actie = lijst.find((c) => c.code && c.code.toUpperCase() === code.toUpperCase());
 
-    if (!coupon || coupon.actief === false) {
+    if (!actie || actie.actief === false) {
       return json({ geldig: false, foutmelding: "Deze kortingscode bestaat niet (meer)." });
     }
-    if (coupon.geldigTot && new Date(coupon.geldigTot) < new Date()) {
+
+    const nu = new Date();
+    if (actie.geldigVanaf && nu < new Date(actie.geldigVanaf)) {
+      return json({ geldig: false, foutmelding: "Deze kortingscode is nog niet geldig." });
+    }
+    if (actie.geldigTot && nu > new Date(actie.geldigTot + "T23:59:59")) {
       return json({ geldig: false, foutmelding: "Deze kortingscode is verlopen." });
     }
-    if (coupon.minimumBedrag && veiligSubtotaal < coupon.minimumBedrag) {
+    if (actie.type !== "percentage" && actie.type !== "vast") {
+      return json({ geldig: false, foutmelding: "Deze code kan niet via het kortingsveld worden toegepast." });
+    }
+
+    const trigger = actie.trigger || {};
+    if (trigger.minimumBedrag && veiligSubtotaal < trigger.minimumBedrag) {
       return json({
         geldig: false,
-        foutmelding: `Deze code is geldig vanaf een besteding van ${coupon.minimumBedrag.toFixed(2).replace(".", ",")} euro.`,
+        foutmelding: `Deze code is geldig vanaf een besteding van ${trigger.minimumBedrag.toFixed(2).replace(".", ",")} euro.`,
       });
     }
 
     return json({
       geldig: true,
-      type: coupon.type,
-      waarde: coupon.waarde,
-      omschrijving: coupon.omschrijving,
+      type: actie.type,
+      waarde: actie.waarde,
+      omschrijving: actie.omschrijving,
     });
   } catch (err) {
     return json({ geldig: false, foutmelding: "Onverwachte fout bij het controleren van de code." });

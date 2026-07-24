@@ -2,12 +2,13 @@
 // Cloudflare Pages Function — POST /api/order
 //
 // Ontvangt de winkelwagen vanaf bestellen.html, herberekent de prijs
-// server-side (nooit de klant vertrouwen — ook niet voor extras of
-// kortingscodes), en start een iDEAL-betaling via Mollie. Geeft de
-// checkout-URL terug zodat de klant kan afrekenen.
+// server-side (nooit de klant vertrouwen — ook niet voor extras,
+// gratis-productacties of kortingscodes), en start een iDEAL-betaling
+// via Mollie. Geeft de checkout-URL terug zodat de klant kan afrekenen.
 //
-// Benodigde environment variable (Cloudflare Pages > Settings > Environment variables):
+// Benodigde environment variables (Cloudflare Pages > Settings > Environment variables):
 //   MOLLIE_API_KEY  — test_... of live_... key uit het Mollie-dashboard
+//   DB              — D1-database binding (optioneel; als afwezig wordt orderlogging overgeslagen)
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -34,20 +35,31 @@ export async function onRequestPost(context) {
       return json({ error: "Kon productenlijst niet laden." }, 500);
     }
     const catalogus = await productenRes.json();
-    const alleProducten = catalogus.categorieen.flatMap((c) => c.producten);
+    const alleProducten = catalogus.categorieen.flatMap((c) =>
+      c.producten.map((p) => Object.assign({}, p, { _categorie: c.naam }))
+    );
     const productMap = new Map(alleProducten.map((p) => [p.id, p]));
 
-    let totaal = 0;
+    const acties = await laadActies(request);
+
+    // Eerst de gewone (niet-gratis) regels doorrekenen, zodat we daarna
+    // weten of een gratis-productactie daadwerkelijk ontgrendeld is.
+    let subtotaalGewoneRegels = 0;
+    const categorienInOrder = new Set();
+    const productIdsInOrder = new Set();
+    const gewoneRegels = items.filter((r) => !r.gratisActie);
+    const gratisRegels = items.filter((r) => r.gratisActie);
+
     const orderRegels = [];
-    for (const regel of items) {
+    const toegepasteActies = [];
+
+    for (const regel of gewoneRegels) {
       const product = productMap.get(regel.id);
       if (!product) {
         return json({ error: `Onbekend product: ${regel.id}` }, 400);
       }
       const aantal = Math.max(1, Math.min(20, parseInt(regel.aantal, 10) || 1));
 
-      // Extras server-side herberekenen — nooit een door de klant
-      // meegestuurde prijs vertrouwen, alleen de gekozen optie-index.
       let extraPrijs = 0;
       const extraOmschrijvingen = [];
       const gekozenExtras = (regel.extras && typeof regel.extras === "object") ? regel.extras : {};
@@ -74,7 +86,10 @@ export async function onRequestPost(context) {
 
       const perStuk = Math.round((product.prijs + extraPrijs) * 100) / 100;
       const subtotaal = Math.round(perStuk * aantal * 100) / 100;
-      totaal += subtotaal;
+      subtotaalGewoneRegels += subtotaal;
+      categorienInOrder.add(product._categorie);
+      productIdsInOrder.add(product.id);
+
       orderRegels.push({
         id: product.id,
         naam: product.naam,
@@ -84,7 +99,45 @@ export async function onRequestPost(context) {
         subtotaal,
       });
     }
-    totaal = Math.round(totaal * 100) / 100;
+    subtotaalGewoneRegels = Math.round(subtotaalGewoneRegels * 100) / 100;
+
+    // Gratis-productacties: server herbeoordeelt zelf of de trigger klopt
+    // (nooit vertrouwen dat de client dit terecht heeft toegevoegd).
+    for (const regel of gratisRegels) {
+      const product = productMap.get(regel.id);
+      if (!product) {
+        return json({ error: `Onbekend gratis product: ${regel.id}` }, 400);
+      }
+      const actie = acties.find(
+        (a) => a.naam === regel.gratisActie && a.type === "gratis_product" && a.automatisch === true
+      );
+      if (!actie || actie.actief === false || !actieBinnenBereik(actie)) {
+        return json({ error: `Actie "${regel.gratisActie}" is niet (meer) geldig.` }, 400);
+      }
+      if (actie.gratisProductId !== product.id) {
+        return json({ error: `"${product.naam}" hoort niet bij de actie "${actie.naam}".` }, 400);
+      }
+      const trigger = actie.trigger || {};
+      let ontgrendeld = true;
+      if (trigger.minimumBedrag && subtotaalGewoneRegels < trigger.minimumBedrag) ontgrendeld = false;
+      if (trigger.vereistCategorie && !categorienInOrder.has(trigger.vereistCategorie)) ontgrendeld = false;
+      if (trigger.vereistProductId && !productIdsInOrder.has(trigger.vereistProductId)) ontgrendeld = false;
+      if (!ontgrendeld) {
+        return json({ error: `Je bestelling voldoet niet (meer) aan de voorwaarden voor "${actie.omschrijving}".` }, 400);
+      }
+
+      orderRegels.push({
+        id: product.id,
+        naam: product.naam + " (gratis actie)",
+        prijs: 0,
+        extras: "",
+        aantal: 1,
+        subtotaal: 0,
+      });
+      toegepasteActies.push(actie.naam);
+    }
+
+    let totaal = subtotaalGewoneRegels;
 
     if (totaal <= 0) {
       return json({ error: "Ongeldig totaalbedrag." }, 400);
@@ -94,12 +147,13 @@ export async function onRequestPost(context) {
     let korting = 0;
     let toegepasteCode = null;
     if (couponCode) {
-      const coupon = await vindGeldigeCoupon(request, couponCode, totaal);
+      const coupon = vindGeldigeCoupon(acties, couponCode, totaal);
       if (!coupon.geldig) {
         return json({ error: coupon.foutmelding || "Deze kortingscode is niet (meer) geldig." }, 400);
       }
       korting = coupon.korting;
       toegepasteCode = coupon.code;
+      toegepasteActies.push(coupon.omschrijving || coupon.code);
       totaal = Math.round((totaal - korting) * 100) / 100;
     }
 
@@ -150,44 +204,87 @@ export async function onRequestPost(context) {
       return json({ error: "Geen checkout-URL ontvangen van Mollie." }, 502);
     }
 
+    // Bestelling loggen in D1 (voor het marketingdashboard). Dit gebeurt
+    // vóór de betaling is bevestigd (status 'open') — de webhook werkt de
+    // status bij naar 'paid' zodra Mollie dat meldt. Als de database niet
+    // gekoppeld is (env.DB ontbreekt), slaan we dit stilletjes over: de
+    // bestelling zelf mag hier nooit op stuklopen.
+    if (env.DB) {
+      try {
+        await env.DB.prepare(
+          `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op)
+           VALUES (?, 'open', ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        )
+          .bind(
+            orderId,
+            totaal,
+            korting,
+            toegepasteCode,
+            customer.email || null,
+            customer.telefoon || null,
+            levering || "afhalen",
+            JSON.stringify(orderRegels),
+            JSON.stringify(toegepasteActies),
+            new Date().toISOString()
+          )
+          .run();
+      } catch (dbErr) {
+        console.error("order.js: kon order niet loggen in D1", dbErr);
+      }
+    }
+
     return json({ checkoutUrl, orderId, totaal, korting });
   } catch (err) {
     return json({ error: "Onverwachte fout.", detail: String(err) }, 500);
   }
 }
 
-async function vindGeldigeCoupon(request, code, subtotaal) {
+async function laadActies(request) {
   const couponsUrl = new URL("/coupons.json", request.url);
   const res = await fetch(couponsUrl.toString());
-  if (!res.ok) {
-    return { geldig: false, foutmelding: "Kon kortingscodes niet controleren." };
-  }
+  if (!res.ok) return [];
   const data = await res.json();
-  const lijst = Array.isArray(data.coupons) ? data.coupons : [];
-  const coupon = lijst.find((c) => (c.code || "").toUpperCase() === String(code).toUpperCase());
+  return Array.isArray(data.coupons) ? data.coupons : [];
+}
 
-  if (!coupon || coupon.actief === false) {
+function actieBinnenBereik(actie) {
+  const nu = new Date();
+  if (actie.geldigVanaf && nu < new Date(actie.geldigVanaf)) return false;
+  if (actie.geldigTot && nu > new Date(actie.geldigTot + "T23:59:59")) return false;
+  return true;
+}
+
+function vindGeldigeCoupon(acties, code, subtotaal) {
+  const actie = acties.find(
+    (a) => a.code && a.code.toUpperCase() === String(code).toUpperCase()
+  );
+
+  if (!actie || actie.actief === false) {
     return { geldig: false, foutmelding: "Deze kortingscode bestaat niet (meer)." };
   }
-  if (coupon.geldigTot && new Date(coupon.geldigTot) < new Date()) {
-    return { geldig: false, foutmelding: "Deze kortingscode is verlopen." };
+  if (!actieBinnenBereik(actie)) {
+    return { geldig: false, foutmelding: "Deze kortingscode is niet (meer) geldig." };
   }
-  if (coupon.minimumBedrag && subtotaal < coupon.minimumBedrag) {
+  const trigger = actie.trigger || {};
+  if (trigger.minimumBedrag && subtotaal < trigger.minimumBedrag) {
     return {
       geldig: false,
-      foutmelding: `Deze code is geldig vanaf een besteding van ${coupon.minimumBedrag.toFixed(2).replace(".", ",")} euro.`,
+      foutmelding: `Deze code is geldig vanaf een besteding van ${trigger.minimumBedrag.toFixed(2).replace(".", ",")} euro.`,
     };
+  }
+  if (actie.type !== "percentage" && actie.type !== "vast") {
+    return { geldig: false, foutmelding: "Deze code kan niet via het kortingsveld worden toegepast." };
   }
 
   let korting = 0;
-  if (coupon.type === "percentage") {
-    korting = subtotaal * (coupon.waarde / 100);
+  if (actie.type === "percentage") {
+    korting = subtotaal * (actie.waarde / 100);
   } else {
-    korting = Math.min(coupon.waarde, subtotaal);
+    korting = Math.min(actie.waarde, subtotaal);
   }
   korting = Math.round(korting * 100) / 100;
 
-  return { geldig: true, korting, code: coupon.code, type: coupon.type, waarde: coupon.waarde, omschrijving: coupon.omschrijving };
+  return { geldig: true, korting, code: actie.code, type: actie.type, waarde: actie.waarde, omschrijving: actie.omschrijving };
 }
 
 function json(data, status = 200) {
