@@ -1,23 +1,53 @@
 {
-  "_opmerking": "Voorbeeld-coupons — pas code, type (percentage of vast), waarde, minimumBedrag en geldigTot hier aan naar wens. geldigTot: null = geen einddatum. actief: false zet een code direct uit zonder hem te verwijderen.",
+  "_opmerking": "Promotie-engine Boslaantje Doen. Elke actie hieronder is óf een kortingscode (vul 'code' in, klant typt hem in) óf een automatische actie (code: null, automatisch: true — activeert vanzelf zodra de trigger klopt, geen code nodig). type: 'percentage' | 'vast' | 'gratis_product'. trigger.minimumBedrag = drempelbedrag; trigger.vereistCategorie / trigger.vereistProductId = alleen ontgrendelen als die categorie/dat product al in de bestelling zit (bijv. 'gratis saus bij een menu'). geldigVanaf/geldigTot: 'YYYY-MM-DD' voor seizoensacties/flyercodes, of null voor geen limiet. actief: false zet een actie direct uit zonder hem te verwijderen (handig om per maand te wisselen).",
   "coupons": [
     {
       "code": "WELKOM10",
-      "omschrijving": "10% korting",
+      "naam": "Welkomstkorting",
+      "omschrijving": "10% korting op je bestelling",
       "type": "percentage",
       "waarde": 10,
-      "minimumBedrag": 10,
+      "trigger": { "minimumBedrag": 10 },
+      "geldigVanaf": null,
       "geldigTot": null,
-      "actief": true
+      "actief": true,
+      "automatisch": false
     },
     {
       "code": "BOSLAAN5",
+      "naam": "Vaste korting",
       "omschrijving": "€5 korting",
       "type": "vast",
       "waarde": 5,
-      "minimumBedrag": 25,
+      "trigger": { "minimumBedrag": 25 },
+      "geldigVanaf": null,
       "geldigTot": null,
-      "actief": true
+      "actief": true,
+      "automatisch": false
+    },
+    {
+      "code": null,
+      "naam": "Gratis milkshake vanaf €25",
+      "omschrijving": "Gratis milkshake naar keuze (vanille)",
+      "type": "gratis_product",
+      "gratisProductId": "milkshake-vanille",
+      "trigger": { "minimumBedrag": 25 },
+      "geldigVanaf": null,
+      "geldigTot": null,
+      "actief": true,
+      "automatisch": true
+    },
+    {
+      "code": null,
+      "naam": "Gratis saus bij een menu",
+      "omschrijving": "Gratis sausje bij ieder menu",
+      "type": "gratis_product",
+      "gratisProductId": "saus-basis-bakje",
+      "trigger": { "vereistCategorie": "Menu's" },
+      "geldigVanaf": null,
+      "geldigTot": null,
+      "actief": true,
+      "automatisch": true
     }
   ]
 }
