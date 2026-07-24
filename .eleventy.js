@@ -21,6 +21,8 @@ module.exports = function (eleventyConfig) {
   // Kortingscodes voor de bestelpagina — bewerk dit bestand om codes toe
   // te voegen/aan te passen (zie _opmerking in het bestand zelf).
   eleventyConfig.addPassthroughCopy('src/coupons.json');
+  // Marketingdashboard (wachtwoord-beveiligd, leest via /api/dashboard-data uit D1).
+  eleventyConfig.addPassthroughCopy('src/dashboard.html');
 
   // Actie-pop-up (homepage): platte JSON-databestand, door Decap CMS
   // rechtstreeks in dit formaat weggeschreven (geen Eleventy-verwerking
