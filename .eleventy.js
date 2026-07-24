@@ -18,6 +18,9 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy('src/bestellen.html');
   eleventyConfig.addPassthroughCopy('src/bestellen-bedankt.html');
   eleventyConfig.addPassthroughCopy('src/producten.json');
+  // Kortingscodes voor de bestelpagina — bewerk dit bestand om codes toe
+  // te voegen/aan te passen (zie _opmerking in het bestand zelf).
+  eleventyConfig.addPassthroughCopy('src/coupons.json');
 
   // Actie-pop-up (homepage): platte JSON-databestand, door Decap CMS
   // rechtstreeks in dit formaat weggeschreven (geen Eleventy-verwerking
