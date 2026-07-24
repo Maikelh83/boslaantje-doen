@@ -22,6 +22,7 @@
   --paper:#FFFFFF;
   --paper-2:#F5F3EF;
   --paper-line:#E6E2DA;
+  --amber:#C9862E;
   --font-body:'Roboto',system-ui,-apple-system,Segoe UI,sans-serif;
   --wrap:1180px;
   --r:14px;
@@ -56,33 +57,69 @@ main{padding:2rem 0 4rem}
 .layout{display:grid;gap:1.6rem;grid-template-columns:1fr}
 @media(min-width:960px){.layout{grid-template-columns:1.6fr 1fr;align-items:start}}
 
-.catnav{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.6rem}
+.catnav{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.6rem;position:sticky;top:4.4rem;z-index:30;background:var(--paper-2);padding:.4rem 0}
 .catnav a{
   background:#fff;border:1.5px solid var(--paper-line);border-radius:999px;
   padding:.45rem 1rem;font-weight:700;font-size:.85rem;color:var(--green-ink);
-  text-decoration:none;
+  text-decoration:none;white-space:nowrap;
 }
 .catnav a:hover{background:var(--green);color:#fff;border-color:var(--green)}
 
-.categorie{margin-bottom:2.2rem;scroll-margin-top:5.5rem}
+.categorie{margin-bottom:2.2rem;scroll-margin-top:8.6rem}
 .categorie h2{font-size:1.4rem;font-weight:900;color:var(--green-ink);margin-bottom:.9rem}
 .product-grid{display:grid;gap:.9rem;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
 .product{
   background:#fff;border:1.5px solid var(--paper-line);border-radius:var(--r);
-  padding:1rem 1.1rem;box-shadow:var(--shadow);
-  display:flex;flex-direction:column;gap:.5rem;
+  overflow:hidden;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;
 }
+.product .foto-wrap{
+  width:100%;aspect-ratio:4/3;background:var(--paper-2);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.product .foto-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.product .foto-placeholder{color:#b9b3a4;font-size:.75rem;font-weight:700;text-align:center;padding:0 1rem}
+.product .body{padding:.9rem 1.1rem 1rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
 .product .naam{font-weight:800;font-size:1.02rem}
-.product .beschrijving{font-size:.85rem;color:#5a5a52;min-height:1.1em}
-.product .rij{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
-.product .prijs{font-weight:900;color:var(--green-ink);font-size:1.05rem}
-.product button{
+.product .beschrijving{font-size:.83rem;color:#5a5a52;min-height:1.1em}
+.product .rij{display:flex;align-items:center;justify-content:space-between;margin-top:auto;gap:.6rem}
+.product .prijs{font-weight:900;color:var(--green-ink);font-size:1.05rem;white-space:nowrap}
+.product button.toevoegen{
   background:var(--green);color:#fff;border:none;border-radius:999px;
   padding:.5rem 1rem;font-weight:800;font-size:.85rem;cursor:pointer;
-  transition:background .15s ease,transform .15s ease;
+  transition:background .15s ease,transform .15s ease;white-space:nowrap;
 }
-.product button:hover{background:var(--green-ink);transform:translateY(-1px)}
-.product button:disabled{background:#9aa392;cursor:default;transform:none}
+.product button.toevoegen:hover{background:var(--green-ink);transform:translateY(-1px)}
+
+/* ---- extras-modal ---- */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(30,28,20,.55);z-index:100;
+  display:none;align-items:center;justify-content:center;padding:1rem;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:#fff;border-radius:var(--r);max-width:460px;width:100%;
+  max-height:88vh;overflow-y:auto;box-shadow:0 30px 60px -20px rgba(0,0,0,.4);
+}
+.modal-head{padding:1.2rem 1.3rem .8rem;border-bottom:1px solid var(--paper-line)}
+.modal-head h3{font-size:1.15rem;font-weight:900;color:var(--green-ink)}
+.modal-head p{font-size:.85rem;color:#6a6a62;margin-top:.2rem}
+.modal-body{padding:1rem 1.3rem}
+.extra-groep{margin-bottom:1.1rem}
+.extra-groep .groep-naam{font-weight:800;font-size:.9rem;margin-bottom:.5rem;display:flex;gap:.4rem;align-items:center}
+.extra-groep .verplicht-badge{font-size:.68rem;font-weight:700;color:var(--amber);border:1px solid var(--amber);border-radius:999px;padding:.05rem .5rem}
+.extra-optie{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.5rem 0;border-bottom:1px dashed var(--paper-line);font-size:.9rem}
+.extra-optie:last-child{border-bottom:none}
+.extra-optie label{display:flex;align-items:center;gap:.55rem;cursor:pointer;flex:1}
+.extra-optie .optie-prijs{font-weight:700;color:#5a5a52;white-space:nowrap}
+.modal-foot{padding:1rem 1.3rem 1.3rem;border-top:1px solid var(--paper-line);display:flex;flex-direction:column;gap:.6rem}
+.modal-foot .modal-totaal{display:flex;justify-content:space-between;font-weight:900;color:var(--green-ink);font-size:1.05rem}
+.modal-foot button{
+  border:none;border-radius:999px;padding:.8rem;font-weight:900;font-size:.95rem;cursor:pointer;
+}
+.modal-btn-toevoegen{background:var(--green);color:#fff}
+.modal-btn-toevoegen:hover{background:var(--green-ink)}
+.modal-btn-annuleren{background:transparent;color:#6a6a62;padding:.3rem}
 
 /* ---- winkelwagen ---- */
 .cart{
@@ -91,15 +128,41 @@ main{padding:2rem 0 4rem}
 }
 .cart h2{font-size:1.15rem;font-weight:900;color:var(--green-ink);margin-bottom:1rem}
 .cart-empty{color:#6a6a62;font-size:.92rem}
-.cart-item{display:flex;justify-content:space-between;gap:.6rem;align-items:center;padding:.55rem 0;border-bottom:1px dashed var(--paper-line)}
+.cart-item{display:flex;justify-content:space-between;gap:.6rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px dashed var(--paper-line)}
 .cart-item:last-of-type{border-bottom:none}
 .cart-item .naam{font-weight:700;font-size:.92rem}
-.cart-item .qty{display:flex;align-items:center;gap:.4rem;margin-top:.2rem}
+.cart-item .extras-lijst{font-size:.76rem;color:#6a6a62;margin-top:.15rem;line-height:1.4}
+.cart-item .qty{display:flex;align-items:center;gap:.4rem;margin-top:.35rem}
 .cart-item .qty button{
   width:24px;height:24px;border-radius:50%;border:1.5px solid var(--paper-line);
   background:#fff;font-weight:900;cursor:pointer;line-height:1;
 }
 .cart-item .subtotaal{font-weight:800;font-size:.92rem;white-space:nowrap}
+
+/* ---- upsell ---- */
+.upsell-box{
+  background:var(--paper-2);border:1.5px dashed var(--green);border-radius:10px;
+  padding:.8rem .9rem;margin-top:1rem;display:flex;align-items:center;justify-content:space-between;gap:.7rem;
+}
+.upsell-box p{font-size:.85rem;font-weight:700;color:var(--green-ink)}
+.upsell-box button{
+  background:var(--green);color:#fff;border:none;border-radius:999px;
+  padding:.4rem .85rem;font-weight:800;font-size:.8rem;cursor:pointer;white-space:nowrap;
+}
+.upsell-box button:hover{background:var(--green-ink)}
+
+/* ---- coupon ---- */
+.coupon-rij{display:flex;gap:.5rem;margin-top:1rem}
+.coupon-rij input{flex:1;padding:.55rem .7rem;border:1.5px solid var(--paper-line);border-radius:8px;font:inherit}
+.coupon-rij button{
+  background:var(--green-ink);color:#fff;border:none;border-radius:8px;
+  padding:.55rem 1rem;font-weight:800;font-size:.85rem;cursor:pointer;white-space:nowrap;
+}
+.coupon-status{font-size:.82rem;margin-top:.4rem;min-height:1.1em}
+.coupon-status.ok{color:var(--green-ink);font-weight:700}
+.coupon-status.fout{color:#8a2b1e}
+.korting-rij{display:flex;justify-content:space-between;font-size:.92rem;color:var(--green-ink);font-weight:700;margin-top:.5rem}
+
 .cart-total{display:flex;justify-content:space-between;font-weight:900;font-size:1.15rem;
   border-top:2px solid var(--paper-line);margin-top:1rem;padding-top:1rem;color:var(--green-ink)}
 
@@ -143,6 +206,18 @@ main{padding:2rem 0 4rem}
       <aside class="cart">
         <h2>Jouw bestelling</h2>
         <div id="cartItems"><p class="cart-empty">Je winkelwagen is nog leeg.</p></div>
+
+        <div id="upsellBox"></div>
+
+        <div class="coupon-rij">
+          <input type="text" id="couponInput" placeholder="Kortingscode">
+          <button type="button" id="couponBtn">Toepassen</button>
+        </div>
+        <div class="coupon-status" id="couponStatus"></div>
+        <div class="korting-rij" id="kortingRij" style="display:none">
+          <span id="kortingLabel">Korting</span><span id="kortingBedrag"></span>
+        </div>
+
         <div class="cart-total"><span>Totaal</span><span id="cartTotal">&euro;0,00</span></div>
 
         <form class="cart-form" id="checkoutForm">
@@ -195,22 +270,45 @@ main{padding:2rem 0 4rem}
   </div>
 </main>
 
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalNaam"></h3>
+      <p id="modalBeschrijving"></p>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot">
+      <div class="modal-totaal"><span>Prijs</span><span id="modalTotaal"></span></div>
+      <button type="button" class="modal-btn-toevoegen" id="modalToevoegenBtn">Toevoegen aan bestelling</button>
+      <button type="button" class="modal-btn-annuleren" id="modalAnnulerenBtn">Annuleren</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
-  var cart = {}; // { productId: aantal }
+  var cart = {}; // { key: { productId, aantal, extras: {groepId: optieIndex|true}, extraPrijs, extraOmschrijving } }
   var catalogus = null;
+  var toegepasteCoupon = null; // { code, type, waarde, omschrijving }
+  var modalProduct = null;
+  var modalSelectie = {};
 
   function euro(bedrag) {
-    return '€' + bedrag.toFixed(2).replace('.', ',');
+    var teken = bedrag < 0 ? '-€' : '€';
+    return teken + Math.abs(bedrag).toFixed(2).replace('.', ',');
   }
 
   function alleProducten() {
     if (!catalogus) return [];
-    return catalogus.categorieen.flatMap(function (c) { return c.producten; });
+    return catalogus.categorieen.flatMap(function (c) { return c.producten.map(function(p){ return Object.assign({}, p, { _categorie: c.naam }); }); });
   }
 
   function vindProduct(id) {
     return alleProducten().find(function (p) { return p.id === id; });
+  }
+
+  function fotoSrc(foto) {
+    return '/images/bestellen/' + foto;
   }
 
   function renderMenu() {
@@ -239,12 +337,23 @@ main{padding:2rem 0 4rem}
       categorie.producten.forEach(function (product) {
         var card = document.createElement('div');
         card.className = 'product';
+
+        var fotoHtml = product.foto
+          ? '<img src="' + fotoSrc(product.foto) + '" alt="' + product.naam + '" loading="lazy" width="230" height="172">'
+          : '<span class="foto-placeholder">Boslaantje Doen</span>';
+
+        var heeftExtras = Array.isArray(product.extras) && product.extras.length > 0;
+        var knopTekst = heeftExtras ? 'Kies & voeg toe' : 'Toevoegen';
+
         card.innerHTML =
-          '<div class="naam">' + product.naam + '</div>' +
-          '<div class="beschrijving">' + (product.beschrijving || '') + '</div>' +
-          '<div class="rij">' +
-            '<span class="prijs">' + euro(product.prijs) + '</span>' +
-            '<button type="button" data-id="' + product.id + '">Toevoegen</button>' +
+          '<div class="foto-wrap">' + fotoHtml + '</div>' +
+          '<div class="body">' +
+            '<div class="naam">' + product.naam + '</div>' +
+            '<div class="beschrijving">' + (product.beschrijving || '') + '</div>' +
+            '<div class="rij">' +
+              '<span class="prijs">' + euro(product.prijs) + '</span>' +
+              '<button type="button" class="toevoegen" data-id="' + product.id + '">' + knopTekst + '</button>' +
+            '</div>' +
           '</div>';
         grid.appendChild(card);
       });
@@ -253,70 +362,287 @@ main{padding:2rem 0 4rem}
       menuEl.appendChild(sectie);
     });
 
-    menuEl.querySelectorAll('button[data-id]').forEach(function (btn) {
+    menuEl.querySelectorAll('button.toevoegen[data-id]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var id = btn.getAttribute('data-id');
-        cart[id] = (cart[id] || 0) + 1;
-        renderCart();
+        var product = vindProduct(id);
+        if (!product) return;
+        if (Array.isArray(product.extras) && product.extras.length > 0) {
+          openModal(product);
+        } else {
+          voegToe(id, {}, 0, '');
+        }
       });
     });
+  }
+
+  function voegToe(productId, extrasSelectie, extraPrijs, extraOmschrijving) {
+    var key = productId + '::' + JSON.stringify(extrasSelectie);
+    if (cart[key]) {
+      cart[key].aantal += 1;
+    } else {
+      cart[key] = { productId: productId, aantal: 1, extras: extrasSelectie, extraPrijs: extraPrijs, extraOmschrijving: extraOmschrijving };
+    }
+    renderCart();
+  }
+
+  // ---- extras-modal ----
+  function openModal(product) {
+    modalProduct = product;
+    modalSelectie = {};
+    product.extras.forEach(function (groep) {
+      if (groep.type === 'keuze' && groep.verplicht) {
+        modalSelectie[groep.id] = 0; // eerste optie standaard geselecteerd
+      }
+    });
+
+    document.getElementById('modalNaam').textContent = product.naam;
+    document.getElementById('modalBeschrijving').textContent = product.beschrijving || '';
+
+    var body = document.getElementById('modalBody');
+    body.innerHTML = '';
+
+    product.extras.forEach(function (groep) {
+      var wrap = document.createElement('div');
+      wrap.className = 'extra-groep';
+
+      var titel = document.createElement('div');
+      titel.className = 'groep-naam';
+      titel.innerHTML = groep.naam + (groep.verplicht ? '<span class="verplicht-badge">verplicht</span>' : '<span class="verplicht-badge" style="color:#6a6a62;border-color:#c9c4b8">optioneel</span>');
+      wrap.appendChild(titel);
+
+      groep.opties.forEach(function (optie, idx) {
+        var rij = document.createElement('div');
+        rij.className = 'extra-optie';
+        var inputType = groep.type === 'keuze' ? 'radio' : 'checkbox';
+        var inputName = 'groep-' + groep.id;
+        var checked = groep.type === 'keuze' ? (idx === 0 ? 'checked' : '') : '';
+        rij.innerHTML =
+          '<label>' +
+            '<input type="' + inputType + '" name="' + inputName + '" data-groep="' + groep.id + '" data-idx="' + idx + '" data-type="' + groep.type + '" ' + checked + '>' +
+            '<span>' + optie.naam + '</span>' +
+          '</label>' +
+          '<span class="optie-prijs">' + (optie.prijs > 0 ? '+' + euro(optie.prijs) : 'gratis') + '</span>';
+        wrap.appendChild(rij);
+      });
+
+      body.appendChild(wrap);
+    });
+
+    body.querySelectorAll('input').forEach(function (input) {
+      input.addEventListener('change', function () {
+        var groepId = input.getAttribute('data-groep');
+        var idx = parseInt(input.getAttribute('data-idx'), 10);
+        var type = input.getAttribute('data-type');
+        if (type === 'keuze') {
+          modalSelectie[groepId] = idx;
+        } else {
+          if (input.checked) { modalSelectie[groepId] = idx; }
+          else { delete modalSelectie[groepId]; }
+        }
+        updateModalTotaal();
+      });
+    });
+
+    updateModalTotaal();
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function berekenExtras() {
+    var prijs = 0;
+    var omschrijvingen = [];
+    if (!modalProduct) return { prijs: 0, omschrijving: '' };
+    modalProduct.extras.forEach(function (groep) {
+      var idx = modalSelectie[groep.id];
+      if (idx === undefined) return;
+      var optie = groep.opties[idx];
+      if (!optie) return;
+      prijs += optie.prijs || 0;
+      if (optie.prijs > 0 || groep.type === 'keuze') {
+        omschrijvingen.push(optie.naam);
+      }
+    });
+    return { prijs: prijs, omschrijving: omschrijvingen.join(', ') };
+  }
+
+  function updateModalTotaal() {
+    var extra = berekenExtras();
+    document.getElementById('modalTotaal').textContent = euro(modalProduct.prijs + extra.prijs);
+  }
+
+  document.getElementById('modalAnnulerenBtn').addEventListener('click', function () {
+    document.getElementById('modalOverlay').classList.remove('open');
+  });
+  document.getElementById('modalOverlay').addEventListener('click', function (e) {
+    if (e.target === document.getElementById('modalOverlay')) {
+      document.getElementById('modalOverlay').classList.remove('open');
+    }
+  });
+  document.getElementById('modalToevoegenBtn').addEventListener('click', function () {
+    // controleer verplichte groepen
+    var ontbreekt = modalProduct.extras.some(function (groep) {
+      return groep.verplicht && modalSelectie[groep.id] === undefined;
+    });
+    if (ontbreekt) {
+      alert('Kies een optie bij de verplichte keuze hierboven.');
+      return;
+    }
+    var extra = berekenExtras();
+    voegToe(modalProduct.id, modalSelectie, extra.prijs, extra.omschrijving);
+    document.getElementById('modalOverlay').classList.remove('open');
+  });
+
+  // ---- winkelwagen ----
+  function subtotaalVoorRegel(regel, product) {
+    return (product.prijs + (regel.extraPrijs || 0)) * regel.aantal;
   }
 
   function renderCart() {
     var itemsEl = document.getElementById('cartItems');
     var totalEl = document.getElementById('cartTotal');
     var afrekenenBtn = document.getElementById('afrekenenBtn');
-    var ids = Object.keys(cart).filter(function (id) { return cart[id] > 0; });
+    var keys = Object.keys(cart).filter(function (k) { return cart[k].aantal > 0; });
 
-    if (ids.length === 0) {
+    if (keys.length === 0) {
       itemsEl.innerHTML = '<p class="cart-empty">Je winkelwagen is nog leeg.</p>';
       totalEl.textContent = euro(0);
       afrekenenBtn.disabled = true;
+      document.getElementById('upsellBox').innerHTML = '';
+      pasKortingToe(0);
       return;
     }
 
-    var totaal = 0;
+    var subtotaalTotaal = 0;
     itemsEl.innerHTML = '';
-    ids.forEach(function (id) {
-      var product = vindProduct(id);
+    keys.forEach(function (key) {
+      var regel = cart[key];
+      var product = vindProduct(regel.productId);
       if (!product) return;
-      var aantal = cart[id];
-      var subtotaal = product.prijs * aantal;
-      totaal += subtotaal;
+      var subtotaal = subtotaalVoorRegel(regel, product);
+      subtotaalTotaal += subtotaal;
 
       var row = document.createElement('div');
       row.className = 'cart-item';
       row.innerHTML =
         '<div>' +
           '<div class="naam">' + product.naam + '</div>' +
+          (regel.extraOmschrijving ? '<div class="extras-lijst">' + regel.extraOmschrijving + '</div>' : '') +
           '<div class="qty">' +
-            '<button type="button" data-min="' + id + '">&minus;</button>' +
-            '<span>' + aantal + '</span>' +
-            '<button type="button" data-plus="' + id + '">+</button>' +
+            '<button type="button" data-min="' + key + '">&minus;</button>' +
+            '<span>' + regel.aantal + '</span>' +
+            '<button type="button" data-plus="' + key + '">+</button>' +
           '</div>' +
         '</div>' +
         '<div class="subtotaal">' + euro(subtotaal) + '</div>';
       itemsEl.appendChild(row);
     });
 
-    totalEl.textContent = euro(totaal);
     afrekenenBtn.disabled = false;
 
     itemsEl.querySelectorAll('[data-plus]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var id = btn.getAttribute('data-plus');
-        cart[id] = (cart[id] || 0) + 1;
+        var key = btn.getAttribute('data-plus');
+        cart[key].aantal += 1;
         renderCart();
       });
     });
     itemsEl.querySelectorAll('[data-min]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var id = btn.getAttribute('data-min');
-        cart[id] = Math.max(0, (cart[id] || 0) - 1);
+        var key = btn.getAttribute('data-min');
+        cart[key].aantal = Math.max(0, cart[key].aantal - 1);
+        if (cart[key].aantal === 0) delete cart[key];
         renderCart();
       });
     });
+
+    renderUpsell(keys);
+    pasKortingToe(subtotaalTotaal);
   }
+
+  function renderUpsell(keys) {
+    var box = document.getElementById('upsellBox');
+    var upsell = catalogus.upsell;
+    if (!upsell) { box.innerHTML = ''; return; }
+
+    var heeftAlUitgeslotenCategorie = keys.some(function (key) {
+      var product = vindProduct(cart[key].productId);
+      return product && product._categorie === upsell.categorieUitgesloten;
+    });
+    var upsellProduct = vindProduct(upsell.productId);
+    if (heeftAlUitgeslotenCategorie || !upsellProduct) { box.innerHTML = ''; return; }
+
+    box.innerHTML =
+      '<div class="upsell-box">' +
+        '<p>' + upsell.tekst + '</p>' +
+        '<button type="button" id="upsellBtn">' + upsellProduct.naam + ' toevoegen</button>' +
+      '</div>';
+    document.getElementById('upsellBtn').addEventListener('click', function () {
+      voegToe(upsellProduct.id, {}, 0, '');
+    });
+  }
+
+  // ---- coupon ----
+  function pasKortingToe(subtotaal) {
+    var kortingRij = document.getElementById('kortingRij');
+    var totalEl = document.getElementById('cartTotal');
+    var eind = subtotaal;
+
+    if (toegepasteCoupon && subtotaal > 0) {
+      var korting = 0;
+      if (toegepasteCoupon.type === 'percentage') {
+        korting = subtotaal * (toegepasteCoupon.waarde / 100);
+      } else {
+        korting = Math.min(toegepasteCoupon.waarde, subtotaal);
+      }
+      korting = Math.round(korting * 100) / 100;
+      eind = Math.max(0, subtotaal - korting);
+      kortingRij.style.display = 'flex';
+      document.getElementById('kortingLabel').textContent = 'Korting (' + toegepasteCoupon.code + ')';
+      document.getElementById('kortingBedrag').textContent = '-' + euro(korting);
+    } else {
+      kortingRij.style.display = 'none';
+    }
+
+    totalEl.textContent = euro(eind);
+  }
+
+  document.getElementById('couponBtn').addEventListener('click', function () {
+    var code = document.getElementById('couponInput').value.trim();
+    var statusEl = document.getElementById('couponStatus');
+    if (!code) { return; }
+
+    var keys = Object.keys(cart).filter(function (k) { return cart[k].aantal > 0; });
+    var subtotaal = keys.reduce(function (som, key) {
+      var product = vindProduct(cart[key].productId);
+      return product ? som + subtotaalVoorRegel(cart[key], product) : som;
+    }, 0);
+
+    statusEl.textContent = 'Code controleren...';
+    statusEl.className = 'coupon-status';
+
+    fetch('/api/coupon-check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: code, subtotaal: subtotaal })
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (!data.geldig) {
+          toegepasteCoupon = null;
+          statusEl.textContent = data.foutmelding || 'Deze code is niet geldig.';
+          statusEl.className = 'coupon-status fout';
+        } else {
+          toegepasteCoupon = { code: code.toUpperCase(), type: data.type, waarde: data.waarde, omschrijving: data.omschrijving };
+          statusEl.textContent = data.omschrijving || 'Code toegepast!';
+          statusEl.className = 'coupon-status ok';
+        }
+        renderCart();
+      })
+      .catch(function () {
+        statusEl.textContent = 'Kon de code niet controleren. Probeer het opnieuw.';
+        statusEl.className = 'coupon-status fout';
+      });
+  });
 
   // Levering: afhalen/bezorgen wisselt de adresvelden
   document.querySelectorAll('input[name="levering"]').forEach(function (radio) {
@@ -334,9 +660,9 @@ main{padding:2rem 0 4rem}
     e.preventDefault();
     var statusEl = document.getElementById('formStatus');
     var afrekenenBtn = document.getElementById('afrekenenBtn');
-    var ids = Object.keys(cart).filter(function (id) { return cart[id] > 0; });
+    var keys = Object.keys(cart).filter(function (k) { return cart[k].aantal > 0; });
 
-    if (ids.length === 0) {
+    if (keys.length === 0) {
       statusEl.textContent = 'Je winkelwagen is leeg.';
       statusEl.className = 'form-status fout';
       return;
@@ -353,7 +679,10 @@ main{padding:2rem 0 4rem}
       opmerking: document.getElementById('opmerking').value.trim()
     };
 
-    var items = ids.map(function (id) { return { id: id, aantal: cart[id] }; });
+    var items = keys.map(function (key) {
+      var regel = cart[key];
+      return { id: regel.productId, aantal: regel.aantal, extras: regel.extras };
+    });
 
     statusEl.textContent = 'Bezig met doorsturen naar de betaalpagina...';
     statusEl.className = 'form-status bezig';
@@ -362,7 +691,12 @@ main{padding:2rem 0 4rem}
     fetch('/api/order', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: items, customer: customer, levering: levering })
+      body: JSON.stringify({
+        items: items,
+        customer: customer,
+        levering: levering,
+        couponCode: toegepasteCoupon ? toegepasteCoupon.code : null
+      })
     })
       .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
       .then(function (result) {

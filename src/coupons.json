@@ -1,0 +1,23 @@
+{
+  "_opmerking": "Voorbeeld-coupons — pas code, type (percentage of vast), waarde, minimumBedrag en geldigTot hier aan naar wens. geldigTot: null = geen einddatum. actief: false zet een code direct uit zonder hem te verwijderen.",
+  "coupons": [
+    {
+      "code": "WELKOM10",
+      "omschrijving": "10% korting",
+      "type": "percentage",
+      "waarde": 10,
+      "minimumBedrag": 10,
+      "geldigTot": null,
+      "actief": true
+    },
+    {
+      "code": "BOSLAAN5",
+      "omschrijving": "€5 korting",
+      "type": "vast",
+      "waarde": 5,
+      "minimumBedrag": 25,
+      "geldigTot": null,
+      "actief": true
+    }
+  ]
+}

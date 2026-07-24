@@ -1,62 +1,1218 @@
 {
-  "_opmerking": "Dit is een startassortiment voor de nieuwe bestelpagina (test/MVP). Prijzen zijn voorbeeldprijzen — pas ze hier aan naar de echte prijzen voordat dit live gaat.",
+  "_opmerking": "Prijzen overgenomen van boslaantjedoen.com/menu op 2026-07-24. Wijzig hier, niet in bestellen.html.",
+  "upsell": {
+    "productId": "cola",
+    "categorieUitgesloten": "Dranken",
+    "tekst": "Nog een lekker drankje erbij?"
+  },
   "categorieen": [
     {
-      "id": "patat",
+      "naam": "Seizoensspecials",
+      "producten": [
+        {
+          "id": "loaded-fries-hete-kip",
+          "naam": "Loaded Fries Hete Kip",
+          "prijs": 9.95,
+          "beschrijving": "Een royale portie knapperige friet, belegd met hete kip, huisgemaakte jamballasaus, geroosterde ui en bosui",
+          "foto": "loaded-fries-hete-kip.jpg"
+        },
+        {
+          "id": "wrap-hete-kip",
+          "naam": "Wrap Hete Kip",
+          "prijs": 5.95,
+          "beschrijving": "Een wrap gevuld met reepjes van hete kip, sla, komkommer, tomaat, rode ui en huisgemaakte jamballasaus",
+          "foto": "wrap-hete-kip.jpg"
+        },
+        {
+          "id": "chili-chicken-burger",
+          "naam": "Chili Chicken Burger",
+          "prijs": 7.95,
+          "beschrijving": "Een sappige kipburger op een brioche broodje belegd met sla, cheddar, tomaat, chilimayonaise en een gefrituurd uiennest",
+          "foto": "chili-chicken-burger.jpg"
+        },
+        {
+          "id": "milkshake-mango-passie",
+          "naam": "Milkshake Mango Passievrucht",
+          "prijs": 3.5,
+          "beschrijving": "Romige milkshake met de frisse smaak van mango en passievrucht",
+          "foto": "milkshake.jpg"
+        }
+      ],
+      "id": "seizoensspecials"
+    },
+    {
       "naam": "Patat",
       "producten": [
-        { "id": "patat-klein", "naam": "Patat klein", "prijs": 2.80, "beschrijving": "" },
-        { "id": "patat-groot", "naam": "Patat groot", "prijs": 3.50, "beschrijving": "" },
-        { "id": "patat-oorlog", "naam": "Patat oorlog", "prijs": 4.50, "beschrijving": "Met satésaus, mayonaise en uitjes" }
-      ]
+        {
+          "id": "patat-klein",
+          "naam": "Patat Klein",
+          "prijs": 2.5,
+          "beschrijving": "Alle prijzen incl. saus naar keuze.",
+          "foto": "patat.jpg",
+          "extras": [
+            {
+              "id": "saus",
+              "naam": "Saus naar keuze",
+              "type": "keuze",
+              "verplicht": true,
+              "opties": [
+                {
+                  "naam": "Zonder saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Mayonaise / Curry / Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Speciaal / Oorlog / Pindasaus / Joppiesaus",
+                  "prijs": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "patat-middel",
+          "naam": "Patat Middel",
+          "prijs": 3,
+          "beschrijving": "Alle prijzen incl. saus naar keuze.",
+          "foto": "patat.jpg",
+          "extras": [
+            {
+              "id": "saus",
+              "naam": "Saus naar keuze",
+              "type": "keuze",
+              "verplicht": true,
+              "opties": [
+                {
+                  "naam": "Zonder saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Mayonaise / Curry / Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Speciaal / Oorlog / Pindasaus / Joppiesaus",
+                  "prijs": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "patat-groot",
+          "naam": "Patat Groot",
+          "prijs": 4.25,
+          "beschrijving": "Alle prijzen incl. saus naar keuze.",
+          "foto": "patat.jpg",
+          "extras": [
+            {
+              "id": "saus",
+              "naam": "Saus naar keuze",
+              "type": "keuze",
+              "verplicht": true,
+              "opties": [
+                {
+                  "naam": "Zonder saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Mayonaise / Curry / Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Speciaal / Oorlog / Pindasaus / Joppiesaus",
+                  "prijs": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gezinszak",
+          "naam": "Gezinszak (per persoon)",
+          "prijs": 5,
+          "beschrijving": "Kies zelf je aantal personen.",
+          "foto": "gezinszak.jpg"
+        },
+        {
+          "id": "gezinspakket",
+          "naam": "Gezinspakket (4 pers. + 4 snacks)",
+          "prijs": 18.5,
+          "beschrijving": "Friet voor 4 personen met 4 snacks naar keuze: kroket, frikandel of kaassoufflé.",
+          "foto": "gezinspakket.jpg"
+        },
+        {
+          "id": "waterfiets",
+          "naam": "Waterfiets (friet + 2 frikandellen)",
+          "prijs": 7.5,
+          "beschrijving": "Een royale portie friet met saus naar keuze en 2 frikandellen.",
+          "foto": "waterfiets.jpg"
+        },
+        {
+          "id": "patat-boslaan-deluxe",
+          "naam": "Patat Boslaan Deluxe",
+          "prijs": 7.5,
+          "beschrijving": "Een royale portie friet met saus naar keuze en een Boslaanstick: frikandel, viandel, mexicano, kipcorn en gehaktstaaf.",
+          "foto": "patat-boslaan-deluxe.jpg"
+        }
+      ],
+      "id": "patat"
     },
     {
-      "id": "snacks",
-      "naam": "Snacks",
+      "naam": "Loaded fries",
       "producten": [
-        { "id": "kroket", "naam": "Kroket", "prijs": 2.20, "beschrijving": "" },
-        { "id": "frikandel", "naam": "Frikandel", "prijs": 2.00, "beschrijving": "" },
-        { "id": "bamischijf", "naam": "Bamischijf", "prijs": 2.20, "beschrijving": "" },
-        { "id": "kaassouffle", "naam": "Kaassoufflé", "prijs": 2.40, "beschrijving": "" }
-      ]
+        {
+          "id": "loaded-fries-pulled-porc",
+          "naam": "Loaded Fries Pulled Porc",
+          "prijs": 9.95,
+          "beschrijving": "Rijkelijk belegd met malse pulled porc in rokerige barbecuesaus, fritessaus, gesmolten cheddar en gebakken bacon.",
+          "foto": "loaded-fries-pulled-porc.jpg"
+        },
+        {
+          "id": "loaded-fries-stoofvlees",
+          "naam": "Loaded Fries Stoofvlees",
+          "prijs": 9.95,
+          "beschrijving": "Rijkelijk belegd met onze huisgemaakte stoofvlees.",
+          "foto": "loaded-fries-stoofvlees.jpg"
+        },
+        {
+          "id": "loaded-fries-kip-kapsalon",
+          "naam": "Loaded Fries Kip-Kapsalon",
+          "prijs": 9.95,
+          "beschrijving": "Rijkelijk belegd met cheddar cheese, kipreepjes, huisgemaakte aioli, komkommer, tomaat, rode ui en ijsbergsla.",
+          "foto": "loaded-fries-kip-kapsalon.jpg"
+        },
+        {
+          "id": "loaded-fries-warm-vlees",
+          "naam": "Loaded Fries Warm Vlees",
+          "prijs": 7.95,
+          "beschrijving": "Rijkelijk belegd met gebakken fricandeau en pindasaus.",
+          "foto": "loaded-fries-warm-vlees.jpg"
+        },
+        {
+          "id": "loaded-fries-warm-vlees-speciaal",
+          "naam": "Loaded Fries Warm Vlees Speciaal",
+          "prijs": 9.95,
+          "beschrijving": "Rijkelijk belegd met gebakken fricandeau, pindasaus, gebakken uien, champignons en een gebakken ei.",
+          "foto": "loaded-fries-warm-vlees-speciaal.jpg"
+        },
+        {
+          "id": "loaded-fries-boeren",
+          "naam": "Loaded Fries Boeren",
+          "prijs": 9.95,
+          "beschrijving": "Rijkelijk belegd met gebakken champignons, rode uien en spekreepjes.",
+          "foto": "loaded-fries-boeren.jpg"
+        }
+      ],
+      "id": "loaded-fries"
     },
     {
-      "id": "hamburgers",
-      "naam": "Hamburgers",
+      "naam": "Kindermenu's",
       "producten": [
-        { "id": "hamburger", "naam": "Hamburger", "prijs": 3.50, "beschrijving": "" },
-        { "id": "cheeseburger", "naam": "Cheeseburger", "prijs": 4.00, "beschrijving": "" },
-        { "id": "bacon-cheeseburger", "naam": "Bacon cheeseburger", "prijs": 4.75, "beschrijving": "" }
-      ]
+        {
+          "id": "kindermenu",
+          "naam": "Kindermenu",
+          "prijs": 7.5,
+          "beschrijving": "Klein patatje, fritessaus, snack naar keuze, appelmoes, Capri-Sun en een leuke verrassing.",
+          "foto": "kindermenu.jpg"
+        }
+      ],
+      "id": "kindermenu-s"
     },
     {
-      "id": "broodjes",
-      "naam": "Broodjes",
+      "naam": "Menu's",
       "producten": [
-        { "id": "broodje-kroket", "naam": "Broodje kroket", "prijs": 3.25, "beschrijving": "" },
-        { "id": "broodje-frikandel", "naam": "Broodje frikandel", "prijs": 3.00, "beschrijving": "" },
-        { "id": "broodje-shoarma", "naam": "Broodje shoarma", "prijs": 5.50, "beschrijving": "" }
-      ]
+        {
+          "id": "varkensschnitzelmenu",
+          "naam": "Varkensschnitzelmenu",
+          "prijs": 13.95,
+          "beschrijving": "Huisgemaakte varkensschnitzel, incl. portie friet met saus naar keuze en dagverse salade.",
+          "foto": "varkensschnitzelmenu.jpg"
+        },
+        {
+          "id": "kipspiezenmenu",
+          "naam": "Kipspiezen Menu",
+          "prijs": 13.95,
+          "beschrijving": "Twee stokjes kipspiezen met pindasaus, pinda's en geroosterde uitjes, incl. friet met saus naar keuze en dagverse salade.",
+          "foto": "kipspiezenmenu.jpg"
+        },
+        {
+          "id": "kipschnitzelmenu",
+          "naam": "Kipschnitzel Menu",
+          "prijs": 13.95,
+          "beschrijving": "Malse kipschnitzel, incl. portie friet met saus naar keuze en dagverse salade.",
+          "foto": "kipschnitzelmenu.jpg"
+        }
+      ],
+      "id": "menu-s"
     },
     {
-      "id": "sauzen",
       "naam": "Sauzen",
       "producten": [
-        { "id": "saus-mayonaise", "naam": "Mayonaise", "prijs": 0.60, "beschrijving": "" },
-        { "id": "saus-ketchup", "naam": "Ketchup", "prijs": 0.60, "beschrijving": "" },
-        { "id": "saus-curry", "naam": "Curry", "prijs": 0.60, "beschrijving": "" },
-        { "id": "saus-speciaal", "naam": "Speciaal", "prijs": 0.60, "beschrijving": "" }
-      ]
+        {
+          "id": "saus-basis-bakje",
+          "naam": "Sausje (bakje) — mayo / curry / ketchup",
+          "prijs": 0.75,
+          "beschrijving": "1 persoon."
+        },
+        {
+          "id": "saus-basis-beker",
+          "naam": "Sausje (beker) — mayo / curry / ketchup",
+          "prijs": 2,
+          "beschrijving": "2-3 personen."
+        },
+        {
+          "id": "saus-basis-groot",
+          "naam": "Sausje (groot) — mayo / curry / ketchup",
+          "prijs": 2.75,
+          "beschrijving": "3-4 personen."
+        },
+        {
+          "id": "saus-speciaal-bakje",
+          "naam": "Sausje (bakje) — speciaal / oorlog / pindasaus / joppiesaus",
+          "prijs": 1,
+          "beschrijving": "1 persoon."
+        },
+        {
+          "id": "saus-speciaal-beker",
+          "naam": "Sausje (beker) — speciaal / oorlog / pindasaus / joppiesaus",
+          "prijs": 2.25,
+          "beschrijving": "2-3 personen."
+        },
+        {
+          "id": "saus-speciaal-groot",
+          "naam": "Sausje (groot) — speciaal / oorlog / pindasaus / joppiesaus",
+          "prijs": 3,
+          "beschrijving": "3-4 personen."
+        },
+        {
+          "id": "uitjes-bakje",
+          "naam": "Bakje uitjes",
+          "prijs": 1.5,
+          "beschrijving": ""
+        },
+        {
+          "id": "uitjes-beker",
+          "naam": "Beker uitjes",
+          "prijs": 2,
+          "beschrijving": ""
+        },
+        {
+          "id": "stoofvlees-beker",
+          "naam": "Beker stoofvlees",
+          "prijs": 4.5,
+          "beschrijving": "Heerlijke huisgemaakte stoofvlees."
+        },
+        {
+          "id": "appelmoes-bakje",
+          "naam": "Bakje appelmoes",
+          "prijs": 1.5,
+          "beschrijving": ""
+        }
+      ],
+      "id": "sauzen"
     },
     {
-      "id": "dranken",
+      "naam": "Snacks",
+      "producten": [
+        {
+          "id": "boslaanstick",
+          "naam": "Boslaanstick",
+          "prijs": 3.95,
+          "beschrijving": "Stokje met 5 stukjes snack: frikandel, viandel, mexicano, gehaktstaaf en kipcorn.",
+          "foto": "boslaanstick.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "frikandel",
+          "naam": "Frikandel",
+          "prijs": 2.5,
+          "beschrijving": "De populairste snack van Nederland.",
+          "foto": "frikadel.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "frikandel-speciaal",
+          "naam": "Frikandel speciaal",
+          "prijs": 3.5,
+          "beschrijving": "Opengesneden en rijkelijk belegd met mayonaise, curry en uitjes.",
+          "foto": "frikadel-speciaal.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "xxl-frikandel",
+          "naam": "XXL frikandel",
+          "prijs": 4.5,
+          "beschrijving": "Extra grote, sappige vleessnack van 250 gram en 35 cm.",
+          "foto": "xxlfrikadel.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "xxl-frikandel-speciaal",
+          "naam": "XXL frikandel speciaal",
+          "prijs": 5.5,
+          "beschrijving": "Extra grote frikandel, opengesneden en belegd met mayonaise, curry en uitjes.",
+          "foto": "xxl-frikadel-speciaal.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "kaassouffle",
+          "naam": "Kaassoufflé",
+          "prijs": 2.75,
+          "beschrijving": "Knapperig van buiten, romig van binnen.",
+          "foto": "kaassouffle.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "kroket",
+          "naam": "Kroket",
+          "prijs": 2.5,
+          "beschrijving": "Een Nederlandse klassieker.",
+          "foto": "vleeskroket.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rundvleeskroket",
+          "naam": "Rundvleeskroket",
+          "prijs": 3.25,
+          "beschrijving": "Ambachtelijke kroket met rundvlees in romige ragout.",
+          "foto": "rundvleeskroket.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "kalfskroket",
+          "naam": "Kalfskroket",
+          "prijs": 3.25,
+          "beschrijving": "Ambachtelijke kroket met zacht kalfsvlees in romige ragout.",
+          "foto": "kalfskroket.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "satekroket",
+          "naam": "Satékroket",
+          "prijs": 3.25,
+          "beschrijving": "Romige, licht pittige vulling van pindasaus en stukjes kip.",
+          "foto": "satekroket.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "goulashkroket",
+          "naam": "Goulashkroket",
+          "prijs": 3.25,
+          "beschrijving": "Smeuïge ragout van rundvlees, paprika en ui in goulashsaus.",
+          "foto": "goulashkroket.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "groentekroket",
+          "naam": "Groentekroket",
+          "prijs": 3.25,
+          "beschrijving": "Vegetarische kroket met romige ragout van groenten en kruiden.",
+          "foto": "groentekroket.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "berehap",
+          "naam": "Berehap",
+          "prijs": 3.5,
+          "beschrijving": "Grote gehaktbal in plakjes aan een stok, met uienringen.",
+          "foto": "berenhap.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mexicano",
+          "naam": "Mexicano",
+          "prijs": 3.5,
+          "beschrijving": "Pittige vleessnack met kenmerkende geribbelde vorm.",
+          "foto": "mexicano.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hamburger-los",
+          "naam": "Hamburger (los)",
+          "prijs": 4.95,
+          "beschrijving": "Verse rundvleesburger, gebakken op de warme bakplaat.",
+          "foto": "hamburger.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gehaktstaaf",
+          "naam": "Gehaktstaaf",
+          "prijs": 3.25,
+          "beschrijving": "Sappige gehaktstaaf van gekruid gehakt, krokant laagje.",
+          "foto": "gehaktstaaf.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "gehaktbal",
+          "naam": "Gehaktbal",
+          "prijs": 4.25,
+          "beschrijving": "Ambachtelijke gehaktbal, zachtjes gegaard in huisgemaakte jus.",
+          "foto": "gehaktbal.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "knakworst",
+          "naam": "Knakworst",
+          "prijs": 3.25,
+          "beschrijving": "Sappige, mild gekruide knakworst.",
+          "foto": "knakworst.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "kipcorn",
+          "naam": "Kipcorn",
+          "prijs": 2.95,
+          "beschrijving": "Krokant gepaneerde snack met smeuïg kippenvlees.",
+          "foto": "kipcorn.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "kipspiezen",
+          "naam": "Kipspiezen",
+          "prijs": 5.95,
+          "beschrijving": "Twee stokjes malse kipdijfilet met satésaus, pinda's en uitjes.",
+          "foto": "kipspiezen.jpg"
+        },
+        {
+          "id": "kipschnitzel",
+          "naam": "Kipschnitzel",
+          "prijs": 6.5,
+          "beschrijving": "Malse kipfiletschnitzel, vol van smaak.",
+          "foto": "kipschnitzel.jpg"
+        },
+        {
+          "id": "nasischijf",
+          "naam": "Nasischijf",
+          "prijs": 2.75,
+          "beschrijving": "Hartige vulling van gekruide nasi, groenten en rijst.",
+          "foto": "nasischijf.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bamischijf",
+          "naam": "Bamischijf",
+          "prijs": 2.75,
+          "beschrijving": "Krokante snack gevuld met kruidige bami.",
+          "foto": "bamischijf.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "bamischijf-pittig",
+          "naam": "Bamischijf pittig",
+          "prijs": 2.75,
+          "beschrijving": "Vegetarische snack gevuld met pittige bami.",
+          "foto": "bamischijf-pittig.jpg",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "loempia",
+          "naam": "Loempia",
+          "prijs": 4.5,
+          "beschrijving": "Goudbruin gefrituurde loempia met kip, ham, groenten en tauge."
+        },
+        {
+          "id": "loempia-speciaal",
+          "naam": "Loempia speciaal",
+          "prijs": 5.95,
+          "beschrijving": "Met pindasaus, geroosterde uitjes en een gebakken eitje.",
+          "foto": "loempia-speciaal.jpg"
+        },
+        {
+          "id": "sitostick",
+          "naam": "Sitostick",
+          "prijs": 3.95,
+          "beschrijving": "Knapperig gepaneerd kalkoenvlees en ui, op een stokje.",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "viandel",
+          "naam": "Viandel",
+          "prijs": 2.95,
+          "beschrijving": "Luchtige, krokante snack met gekruid vlees.",
+          "extras": [
+            {
+              "id": "op-broodje",
+              "naam": "Op vers wit bolletje",
+              "type": "aanvinken",
+              "verplicht": false,
+              "opties": [
+                {
+                  "naam": "Op vers wit bolletje",
+                  "prijs": 0.75
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "varkensschnitzel",
+          "naam": "Varkensschnitzel",
+          "prijs": 6.5,
+          "beschrijving": "Onze huisgemaakte varkensschnitzel.",
+          "foto": "varkensschnitzel.jpg"
+        }
+      ],
+      "id": "snacks"
+    },
+    {
+      "naam": "Broodjes",
+      "producten": [
+        {
+          "id": "broodje-warm-vlees",
+          "naam": "Broodje warm vlees",
+          "prijs": 5.95,
+          "beschrijving": "Vers wit bolletje belegd met huisgebraden fricandeau en pindasaus."
+        },
+        {
+          "id": "broodje-warm-vlees-speciaal",
+          "naam": "Broodje warm vlees speciaal",
+          "prijs": 7.25,
+          "beschrijving": "Slamelange, tomaat, komkommer, wortel, mais, fricandeau, pindasaus, gebakken uien, champignons en een gebakken eitje."
+        }
+      ],
+      "id": "broodjes"
+    },
+    {
+      "naam": "Mini snacks",
+      "producten": [
+        {
+          "id": "kipnuggets",
+          "naam": "Kipnuggets (6 stuks)",
+          "prijs": 3.75,
+          "beschrijving": "Malse kipnuggets (halal) in krokant goudbruin jasje."
+        },
+        {
+          "id": "kipfingers",
+          "naam": "Kipfingers (6 stuks)",
+          "prijs": 3.75,
+          "beschrijving": "Krokant gepaneerde reepjes malse kipfilet."
+        },
+        {
+          "id": "bitterballen",
+          "naam": "Bitterballen (6 stuks)",
+          "prijs": 3.75,
+          "beschrijving": "Goudbruine bitterballen met romige rundvleesragout."
+        },
+        {
+          "id": "mini-loempia",
+          "naam": "Mini loempia (6 st.) + chilisaus",
+          "prijs": 3.75,
+          "beschrijving": "Vegetarische mini-loempia's met groenten en glasnoedels."
+        },
+        {
+          "id": "chickenstrips",
+          "naam": "Chickenstrips (3 stuks)",
+          "prijs": 4.95,
+          "beschrijving": "Sappig mals kipfilet in krokant paneerjasje.",
+          "foto": "chickenstripes.jpg"
+        },
+        {
+          "id": "kaasloempias",
+          "naam": "Kaasloempia's (6 stuks)",
+          "prijs": 4.75,
+          "beschrijving": "Krokant gefrituurde loempia's gevuld met gesmolten kaas.",
+          "foto": "kaasloempia.jpg"
+        }
+      ],
+      "id": "mini-snacks"
+    },
+    {
+      "naam": "Glutenvrije snacks",
+      "producten": [
+        {
+          "id": "gv-frikandel",
+          "naam": "Glutenvrije frikandel",
+          "prijs": 3.5,
+          "beschrijving": ""
+        },
+        {
+          "id": "gv-kroket",
+          "naam": "Glutenvrije kroket",
+          "prijs": 3.5,
+          "beschrijving": "",
+          "foto": "glutenvrije-kroket.jpg"
+        },
+        {
+          "id": "gv-kaassouffle",
+          "naam": "Glutenvrije kaassoufflé",
+          "prijs": 3.5,
+          "beschrijving": ""
+        },
+        {
+          "id": "gv-bitterballen",
+          "naam": "Glutenvrije bitterballen (6 st.)",
+          "prijs": 5.95,
+          "beschrijving": ""
+        }
+      ],
+      "id": "glutenvrije-snacks"
+    },
+    {
+      "naam": "Hamburgers",
+      "producten": [
+        {
+          "id": "basic-burger",
+          "naam": "Basic Burger",
+          "prijs": 6.95,
+          "beschrijving": "Brioche broodje, slamelange, mosterd, tomatenketchup en augurkenchutney.",
+          "foto": "basicburger.jpg"
+        },
+        {
+          "id": "speciaal-burger",
+          "naam": "Speciaal Burger",
+          "prijs": 7.25,
+          "beschrijving": "Brioche broodje, slamelange, mayonaise, currysaus en uitjes."
+        },
+        {
+          "id": "italian-burger",
+          "naam": "Italian Burger",
+          "prijs": 7.95,
+          "beschrijving": "Brioche broodje, truffelmayonaise, tomaat, gebakken rode uien en Parmezaanse kaas.",
+          "foto": "italianburger.jpg"
+        },
+        {
+          "id": "boeren-burger",
+          "naam": "Boeren Burger",
+          "prijs": 8.25,
+          "beschrijving": "Brioche broodje, gebakken rode uien, champignons, bacon, mayonaise en curry.",
+          "foto": "boerenburger.jpg"
+        }
+      ],
+      "id": "hamburgers"
+    },
+    {
+      "naam": "Kipburgers",
+      "producten": [
+        {
+          "id": "chicken-basic-burger",
+          "naam": "Chicken Basic Burger",
+          "prijs": 6.95,
+          "beschrijving": "Kipfiletburger, slamelange, mosterd, tomatenketchup en augurkenchutney."
+        },
+        {
+          "id": "chicken-speciaal-burger",
+          "naam": "Chicken Speciaal Burger",
+          "prijs": 7.25,
+          "beschrijving": "Kipfiletburger, slamelange, mayonaise, currysaus en uitjes."
+        },
+        {
+          "id": "chicken-italian-burger",
+          "naam": "Chicken Italian Burger",
+          "prijs": 7.95,
+          "beschrijving": "Kipfiletburger, truffelmayonaise, tomaat, gebakken rode ui en Parmezaanse kaas."
+        },
+        {
+          "id": "chicken-joppie-burger",
+          "naam": "Chicken Joppie Burger",
+          "prijs": 7.5,
+          "beschrijving": "Kipfiletburger, cheddar, tomaat, joppiesaus en geroosterde uitjes.",
+          "foto": "chickenjoppie.jpg"
+        },
+        {
+          "id": "spicy-mexican-burger",
+          "naam": "Spicy Mexican Burger",
+          "prijs": 7.95,
+          "beschrijving": "Kipfiletburger, cheddar, salsasaus, mais en gefrituurd uiennest."
+        }
+      ],
+      "id": "kipburgers"
+    },
+    {
+      "naam": "Wraps",
+      "producten": [
+        {
+          "id": "wrap-joppie",
+          "naam": "Wrap joppie",
+          "prijs": 5.5,
+          "beschrijving": "Slamelange, rode ui, komkommer, tomaat, joppiesaus en een kipcorn.",
+          "foto": "wrap-joppie.jpg"
+        },
+        {
+          "id": "wrap-spicy",
+          "naam": "Wrap spicy",
+          "prijs": 5.5,
+          "beschrijving": "Slamelange, rode ui, komkommer, tomaat, mais, pittige salsasaus en een kipcorn.",
+          "foto": "wrap-spicy.jpg"
+        },
+        {
+          "id": "wrap-pesto",
+          "naam": "Wrap pesto",
+          "prijs": 5.5,
+          "beschrijving": "Slamelange, rode ui, komkommer, tomaat, Parmezaanse kaas, pestomayonaise en een kipcorn.",
+          "foto": "wrap-pesto.jpg"
+        }
+      ],
+      "id": "wraps"
+    },
+    {
+      "naam": "Salade",
+      "producten": [
+        {
+          "id": "huzarenslaatje",
+          "naam": "Huzarenslaatje",
+          "prijs": 3.95,
+          "beschrijving": "Opgemaakt met diverse rauwkost."
+        },
+        {
+          "id": "salade-kip-truffel",
+          "naam": "Salade kip truffel",
+          "prijs": 6.95,
+          "beschrijving": "Slamelange, komkommer, tomaat, rode ui, Parmezaanse kaas, truffeldressing en kipdijfilet."
+        }
+      ],
+      "id": "salade"
+    },
+    {
+      "naam": "Bittergarnituur",
+      "producten": [
+        {
+          "id": "bittergarnituur-30",
+          "naam": "Bittergarnituur 30 stuks",
+          "prijs": 22.5,
+          "beschrijving": "Mix van 10 soorten mini hapjes, incl. mayonaise, currysaus en pindasaus.",
+          "foto": "bittergarnituur-bord.jpg"
+        },
+        {
+          "id": "bittergarnituur-50",
+          "naam": "Bittergarnituur 50 stuks",
+          "prijs": 35.5,
+          "beschrijving": "Mix van 10 soorten mini hapjes, incl. mayonaise, currysaus en pindasaus.",
+          "foto": "bittergarnituur.jpg"
+        }
+      ],
+      "id": "bittergarnituur"
+    },
+    {
+      "naam": "IJs",
+      "producten": [
+        {
+          "id": "ijs-300",
+          "naam": "IJsbeker 300ml",
+          "prijs": 4,
+          "beschrijving": "Softijs met eventueel saus of dip naar keuze."
+        },
+        {
+          "id": "ijs-400",
+          "naam": "IJsbeker 400ml",
+          "prijs": 5,
+          "beschrijving": "Softijs met eventueel saus of dip naar keuze."
+        },
+        {
+          "id": "ijs-500",
+          "naam": "IJsbeker 500ml",
+          "prijs": 6,
+          "beschrijving": "Softijs met eventueel saus of dip naar keuze."
+        },
+        {
+          "id": "sundae",
+          "naam": "Sundae",
+          "prijs": 3,
+          "beschrijving": "Zacht softijs met een topping naar keuze."
+        }
+      ],
+      "id": "ijs"
+    },
+    {
+      "naam": "Milkshakes",
+      "producten": [
+        {
+          "id": "milkshake-vanille",
+          "naam": "Milkshake vanille",
+          "prijs": 3.5,
+          "beschrijving": "Romige, ijskoude milkshake met vanillesmaak.",
+          "foto": "milkshake.jpg"
+        },
+        {
+          "id": "milkshake-aardbei",
+          "naam": "Milkshake aardbei",
+          "prijs": 3.5,
+          "beschrijving": "Romige, ijskoude milkshake met aardbeismaak.",
+          "foto": "milkshake.jpg"
+        },
+        {
+          "id": "milkshake-banaan",
+          "naam": "Milkshake banaan",
+          "prijs": 3.5,
+          "beschrijving": "Romige milkshake met de smaak van banaan.",
+          "foto": "milkshake.jpg"
+        }
+      ],
+      "id": "milkshakes"
+    },
+    {
       "naam": "Dranken",
       "producten": [
-        { "id": "cola", "naam": "Cola 33cl", "prijs": 2.20, "beschrijving": "" },
-        { "id": "fanta", "naam": "Fanta 33cl", "prijs": 2.20, "beschrijving": "" },
-        { "id": "water", "naam": "Water 33cl", "prijs": 1.80, "beschrijving": "" },
-        { "id": "cassis", "naam": "Cassis 33cl", "prijs": 2.20, "beschrijving": "" }
-      ]
+        {
+          "id": "cola",
+          "naam": "Coca-Cola",
+          "prijs": 2.65,
+          "beschrijving": ""
+        },
+        {
+          "id": "cola-zero",
+          "naam": "Coca-Cola Zero Sugar",
+          "prijs": 2.65,
+          "beschrijving": ""
+        },
+        {
+          "id": "fanta-orange",
+          "naam": "Fanta Orange",
+          "prijs": 2.65,
+          "beschrijving": ""
+        },
+        {
+          "id": "fanta-cassis",
+          "naam": "Fanta Cassis",
+          "prijs": 2.65,
+          "beschrijving": ""
+        },
+        {
+          "id": "sprite-zero",
+          "naam": "Sprite Zero Sugar",
+          "prijs": 2.65,
+          "beschrijving": ""
+        },
+        {
+          "id": "fuze-tea-sparkling",
+          "naam": "Fuze Tea Sparkling",
+          "prijs": 2.65,
+          "beschrijving": ""
+        },
+        {
+          "id": "fuze-tea-green",
+          "naam": "Fuze Tea Green",
+          "prijs": 2.65,
+          "beschrijving": ""
+        },
+        {
+          "id": "spa-blauw",
+          "naam": "Spa Blauw",
+          "prijs": 2.65,
+          "beschrijving": ""
+        },
+        {
+          "id": "fristi",
+          "naam": "Fristi",
+          "prijs": 3.15,
+          "beschrijving": ""
+        },
+        {
+          "id": "redbull",
+          "naam": "Redbull",
+          "prijs": 3.65,
+          "beschrijving": ""
+        },
+        {
+          "id": "capri-sun",
+          "naam": "Capri-Sun Multivitamine",
+          "prijs": 1.75,
+          "beschrijving": ""
+        }
+      ],
+      "id": "dranken"
     }
   ]
 }
