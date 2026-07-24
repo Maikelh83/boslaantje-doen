@@ -143,13 +143,21 @@ video{width:100%;border-radius:6px;margin-top:.6rem;display:none}
             <input type="email" id="nieuweEmail" autocomplete="off">
           </div>
         </div>
+        <label for="bestaandeCode">Bestaand pasje (optioneel — laat leeg voor een nieuwe QR op scherm)</label>
+        <input type="text" id="bestaandeCode" placeholder="Scan of typ de code van een leeg pasje" autocomplete="off">
+        <div class="scanZone" id="scanZoneNieuw">
+          <button type="button" class="secundair" id="scanBtnNieuw">Camera scannen</button>
+          <div class="hint" id="scanHintNieuw"></div>
+          <video id="scanVideoNieuw" playsinline></video>
+        </div>
+
         <button type="button" class="primair" id="aanmakenBtn">Spaarkaart aanmaken</button>
         <div class="melding" id="aanmakenMelding"></div>
 
         <div id="nieuweKaartResultaat" style="display:none">
           <div id="qrHost"></div>
           <div class="codeGroot" id="nieuweCodeTekst"></div>
-          <div class="hint" style="text-align:center">Print dit pasje of laat de klant een foto maken — dezelfde code werkt straks ook bij het online bestellen.</div>
+          <div class="hint" id="printHint" style="text-align:center">Print dit pasje of laat de klant een foto maken — dezelfde code werkt straks ook bij het online bestellen.</div>
           <button type="button" class="secundair" id="printBtn" style="margin-top:.8rem;width:100%">Printen</button>
         </div>
       </div>
@@ -291,47 +299,67 @@ video{width:100%;border-radius:6px;margin-top:.6rem;display:none}
   });
 
   // --- Camera-scan (optioneel, met nette fallback) ---
-  var scanBtn = document.getElementById('scanBtn');
-  var scanHint = document.getElementById('scanHint');
-  var scanVideo = document.getElementById('scanVideo');
-  var scanStream = null;
-  var scanTimer = null;
+  // Herbruikbare scanner: elk scanblok (zoeken, of bestaand pasje koppelen
+  // bij een nieuwe klant) krijgt zijn eigen knop/hint/video, maar deelt
+  // dezelfde BarcodeDetector-logica.
+  function maakScanner(config){
+    var stream = null;
+    var timer = null;
 
-  scanBtn.addEventListener('click', function(){
-    if (!('BarcodeDetector' in window)) {
-      scanHint.textContent = 'Deze browser ondersteunt camera-scannen niet — voer de code hierboven handmatig in.';
-      return;
+    function stop(){
+      if (timer) { clearInterval(timer); timer = null; }
+      if (stream) { stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; }
+      config.video.style.display = 'none';
+      config.knop.textContent = 'Camera scannen';
     }
-    if (scanStream) { stopScan(); return; }
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-      .then(function(stream){
-        scanStream = stream;
-        scanVideo.srcObject = stream;
-        scanVideo.style.display = 'block';
-        scanVideo.play();
-        scanBtn.textContent = 'Stoppen met scannen';
-        var detector = new BarcodeDetector({ formats: ['qr_code'] });
-        scanTimer = setInterval(function(){
-          detector.detect(scanVideo).then(function(codes){
-            if (codes && codes.length) {
-              document.getElementById('zoekCode').value = codes[0].rawValue;
-              stopScan();
-              zoekKlant();
-            }
-          }).catch(function(){});
-        }, 400);
-      })
-      .catch(function(){
-        scanHint.textContent = 'Kon geen toegang krijgen tot de camera — voer de code hierboven handmatig in.';
-      });
+
+    config.knop.addEventListener('click', function(){
+      if (!('BarcodeDetector' in window)) {
+        config.hint.textContent = 'Deze browser ondersteunt camera-scannen niet — voer de code hierboven handmatig in.';
+        return;
+      }
+      if (stream) { stop(); return; }
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function(s){
+          stream = s;
+          config.video.srcObject = s;
+          config.video.style.display = 'block';
+          config.video.play();
+          config.knop.textContent = 'Stoppen met scannen';
+          var detector = new BarcodeDetector({ formats: ['qr_code'] });
+          timer = setInterval(function(){
+            detector.detect(config.video).then(function(codes){
+              if (codes && codes.length) {
+                stop();
+                config.opDetectie(codes[0].rawValue);
+              }
+            }).catch(function(){});
+          }, 400);
+        })
+        .catch(function(){
+          config.hint.textContent = 'Kon geen toegang krijgen tot de camera — voer de code hierboven handmatig in.';
+        });
+    });
+  }
+
+  maakScanner({
+    knop: document.getElementById('scanBtn'),
+    hint: document.getElementById('scanHint'),
+    video: document.getElementById('scanVideo'),
+    opDetectie: function(waarde){
+      document.getElementById('zoekCode').value = waarde;
+      zoekKlant();
+    }
   });
 
-  function stopScan(){
-    if (scanTimer) { clearInterval(scanTimer); scanTimer = null; }
-    if (scanStream) { scanStream.getTracks().forEach(function(t){ t.stop(); }); scanStream = null; }
-    scanVideo.style.display = 'none';
-    scanBtn.textContent = 'Camera scannen';
-  }
+  maakScanner({
+    knop: document.getElementById('scanBtnNieuw'),
+    hint: document.getElementById('scanHintNieuw'),
+    video: document.getElementById('scanVideoNieuw'),
+    opDetectie: function(waarde){
+      document.getElementById('bestaandeCode').value = waarde;
+    }
+  });
 
   // --- Nieuwe klant aanmaken ---
   document.getElementById('aanmakenBtn').addEventListener('click', function(){
@@ -339,12 +367,13 @@ video{width:100%;border-radius:6px;margin-top:.6rem;display:none}
     var naam = document.getElementById('nieuweNaam').value.trim();
     var telefoon = document.getElementById('nieuweTelefoon').value.trim();
     var email = document.getElementById('nieuweEmail').value.trim();
+    var bestaandeCode = document.getElementById('bestaandeCode').value.trim();
     melding.textContent = 'Aanmaken...';
     melding.className = 'melding';
     fetch('/api/loyalty-aanmaken', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ wachtwoord: huidigWachtwoord, naam: naam || null, telefoon: telefoon || null, email: email || null })
+      body: JSON.stringify({ wachtwoord: huidigWachtwoord, naam: naam || null, telefoon: telefoon || null, email: email || null, bestaandeCode: bestaandeCode || null })
     })
       .then(function(res){ return res.json().then(function(d){ return {ok:res.ok, data:d}; }); })
       .then(function(result){
@@ -353,18 +382,35 @@ video{width:100%;border-radius:6px;margin-top:.6rem;display:none}
           melding.className = 'melding fout';
           return;
         }
-        melding.textContent = 'Spaarkaart aangemaakt!';
-        melding.className = 'melding ok';
         var code = result.data.code;
+        var qrHost = document.getElementById('qrHost');
+        var printBtn = document.getElementById('printBtn');
+        var printHint = document.getElementById('printHint');
         document.getElementById('nieuweCodeTekst').textContent = code;
         document.getElementById('nieuweKaartResultaat').style.display = 'block';
-        var qrHost = document.getElementById('qrHost');
         qrHost.innerHTML = '';
-        if (window.QRCode) {
-          new QRCode(qrHost, { text: code, width: 160, height: 160 });
+
+        if (result.data.viaBestaandPasje) {
+          // Het fysieke pasje heeft al zijn eigen QR — niets nieuws te printen.
+          melding.textContent = 'Bestaand pasje gekoppeld aan deze klant!';
+          melding.className = 'melding ok';
+          qrHost.style.display = 'none';
+          printBtn.style.display = 'none';
+          printHint.textContent = 'Dit fysieke pasje is nu een geldige spaarkaart — geef het gewoon mee, er is niets te printen.';
         } else {
-          qrHost.innerHTML = '<div class="hint">(QR-bibliotheek kon niet laden — code hieronder werkt ook handmatig.)</div>';
+          melding.textContent = 'Spaarkaart aangemaakt!';
+          melding.className = 'melding ok';
+          qrHost.style.display = 'flex';
+          printBtn.style.display = 'block';
+          printHint.textContent = 'Print dit pasje of laat de klant een foto maken — dezelfde code werkt straks ook bij het online bestellen.';
+          if (window.QRCode) {
+            new QRCode(qrHost, { text: code, width: 160, height: 160 });
+          } else {
+            qrHost.innerHTML = '<div class="hint">(QR-bibliotheek kon niet laden — code hieronder werkt ook handmatig.)</div>';
+          }
         }
+
+        document.getElementById('bestaandeCode').value = '';
       })
       .catch(function(){ melding.textContent = 'Kon geen verbinding maken.'; melding.className = 'melding fout'; });
   });
