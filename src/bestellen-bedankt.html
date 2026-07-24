@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bedankt voor je bestelling · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --green:#4A5D3D;
+  --green-ink:#37472E;
+  --paper-2:#F5F3EF;
+  --paper-line:#E6E2DA;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Roboto',system-ui,-apple-system,Segoe UI,sans-serif;
+  background:var(--paper-2);
+  color:#000;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:1.5rem;
+}
+.card{
+  background:#fff;border:1.5px solid var(--paper-line);border-radius:16px;
+  padding:2.4rem 2rem;max-width:460px;width:100%;text-align:center;
+  box-shadow:0 14px 34px -20px rgba(0,0,0,.3);
+}
+.check{
+  width:64px;height:64px;border-radius:50%;background:var(--green);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1.2rem;font-size:2rem;font-weight:900;
+}
+h1{font-size:1.5rem;color:var(--green-ink);margin-bottom:.7rem}
+p{color:#4a4338;font-size:.98rem;margin-bottom:.5rem}
+.order-id{font-weight:800;color:var(--green-ink)}
+a.terug{
+  display:inline-block;margin-top:1.4rem;background:var(--green);color:#fff;
+  text-decoration:none;font-weight:800;padding:.7rem 1.4rem;border-radius:999px;
+}
+a.terug:hover{background:var(--green-ink)}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="check">&#10003;</div>
+    <h1>Bedankt voor je bestelling!</h1>
+    <p>We hebben je betaling ontvangen en gaan direct voor je aan de slag.</p>
+    <p id="orderRegel"></p>
+    <p>Heb je toch nog een vraag over je bestelling? Bel ons gerust op <strong>0318&nbsp;514916</strong>.</p>
+    <a class="terug" href="/">Terug naar de homepage</a>
+  </div>
+
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var orderId = params.get('order');
+    if (orderId) {
+      document.getElementById('orderRegel').innerHTML = 'Bestelnummer: <span class="order-id">' + orderId + '</span>';
+    }
+  </script>
+</body>
+</html>
