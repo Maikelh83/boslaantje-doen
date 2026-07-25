@@ -26,6 +26,11 @@ module.exports = function (eleventyConfig) {
   // Loyaliteitssysteem: personeelspagina (kassa) — wachtwoord-beveiligd,
   // spaarkaarten aanmaken en zegels toekennen via /api/loyalty-*.
   eleventyConfig.addPassthroughCopy('src/kassa-loyaliteit.html');
+  // POS-kassa: bestelscherm + winkelwagen voor personeel achter de balie,
+  // koppelt via /api/kassa-order. Fase 1: personeel toetst het te betalen
+  // bedrag nog zelf over op het losse pinapparaat (CCV-koppeling volgt later
+  // zodra duidelijk is welk protocol/terminal daarvoor werkt).
+  eleventyConfig.addPassthroughCopy('src/kassa.html');
 
   // Actie-pop-up (homepage): platte JSON-databestand, door Decap CMS
   // rechtstreeks in dit formaat weggeschreven (geen Eleventy-verwerking
