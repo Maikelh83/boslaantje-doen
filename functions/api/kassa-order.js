@@ -14,6 +14,16 @@
 // dit een personeelspagina: zo kan een verkeerd cachet scherm nooit een
 // fout bedrag wegschrijven.
 //
+// Extras: de kassa gebruikt het kassaExtras-veld in producten.json (exacte
+// CashDesk-keuzegroepen, 1:1 overgenomen — zie task #218/#219), NIET het
+// extras-veld dat bestellen.html/de webshop gebruikt. Elke groep heeft een
+// min/max (single-select = max 1, multi-select = max N) en kan optioneel
+// vervangtPrijs dragen (de gekozen optieprijs vervangt dan de basisprijs
+// i.p.v. dat hij erbij opgeteld wordt — bv. Gezinszak "Hoeveel personen?").
+// Een eventuele kassaToeslag (bv. Verpakkingskosten bij Bittergarnituur) is
+// een verplichte vaste toeslag die niet via een keuzegroep loopt.
+// Body-item extras heeft de vorm { groepId: [optieIndex, ...] }.
+//
 // Alleen voor personeel, achter hetzelfde wachtwoord als de
 // loyaliteitspagina (STAFF_LOYALTY_PASSWORD) — dezelfde balie-omgeving.
 //
@@ -65,31 +75,42 @@ export async function onRequestPost(context) {
       }
       const aantal = Math.max(1, Math.min(50, parseInt(regel.aantal, 10) || 1));
 
+      let basisPrijs = product.prijs;
       let extraPrijs = 0;
       const extraOmschrijvingen = [];
       const gekozenExtras = (regel.extras && typeof regel.extras === "object") ? regel.extras : {};
 
-      if (Array.isArray(product.extras)) {
-        for (const groep of product.extras) {
-          const idx = gekozenExtras[groep.id];
-          if (idx === undefined || idx === null) {
-            if (groep.verplicht) {
-              return json({ error: `Kies een optie bij "${groep.naam}" voor ${product.naam}.` }, 400);
+      if (Array.isArray(product.kassaExtras)) {
+        for (const groep of product.kassaExtras) {
+          const idxs = Array.isArray(gekozenExtras[groep.id]) ? gekozenExtras[groep.id] : [];
+          const min = groep.min || 0;
+          const max = groep.max || 1;
+          if (idxs.length < min) {
+            return json({ error: `Kies minimaal ${min} optie(s) bij "${groep.naam}" voor ${product.naam}.` }, 400);
+          }
+          if (idxs.length > max) {
+            return json({ error: `Te veel keuzes bij "${groep.naam}" voor ${product.naam}.` }, 400);
+          }
+          for (const idx of idxs) {
+            const optie = groep.opties[idx];
+            if (!optie) {
+              return json({ error: `Ongeldige keuze bij "${groep.naam}" voor ${product.naam}.` }, 400);
             }
-            continue;
-          }
-          const optie = groep.opties[idx];
-          if (!optie) {
-            return json({ error: `Ongeldige keuze bij "${groep.naam}" voor ${product.naam}.` }, 400);
-          }
-          extraPrijs += optie.prijs || 0;
-          if (optie.prijs > 0 || groep.type === "keuze") {
+            if (groep.vervangtPrijs) {
+              basisPrijs = optie.prijs;
+            } else {
+              extraPrijs += optie.prijs || 0;
+            }
             extraOmschrijvingen.push(optie.naam);
           }
         }
       }
+      if (product.kassaToeslag) {
+        extraPrijs += product.kassaToeslag.prijs || 0;
+        extraOmschrijvingen.push(product.kassaToeslag.naam);
+      }
 
-      const perStuk = Math.round((product.prijs + extraPrijs) * 100) / 100;
+      const perStuk = Math.round((basisPrijs + extraPrijs) * 100) / 100;
       const subtotaal = Math.round(perStuk * aantal * 100) / 100;
       totaal += subtotaal;
 
