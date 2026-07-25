@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Kassa · Boslaantje Doen</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
@@ -15,82 +15,103 @@
   --paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
   --font-body:'Roboto',system-ui,sans-serif;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.4;font-size:15px}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.4;font-size:16px}
 h1,h2,h3{font-weight:700;color:var(--green-ink)}
-header{background:var(--green);padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between}
-header h1{color:#fff;font-size:1.25rem}
-header a{color:#fff;text-decoration:none;font-weight:700;font-size:.85rem}
+button{font-family:inherit;user-select:none}
+header{background:var(--green);padding:1rem 1.3rem;display:flex;align-items:center;justify-content:space-between}
+header h1{color:#fff;font-size:1.35rem}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:.9rem}
 
-#lockScreen{max-width:360px;margin:4rem auto;background:#fff;border:1px solid var(--paper-line);border-radius:8px;padding:1.6rem;text-align:center}
-#lockScreen input{width:100%;padding:.6rem .7rem;border:1px solid var(--paper-line);border-radius:6px;font:inherit;margin:.8rem 0}
-#lockScreen button{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:6px;padding:.7rem;font-weight:800;cursor:pointer}
-#lockScreen button:hover{background:var(--terracotta-deep)}
-#lockFout{color:#8a2b1e;font-size:.85rem;min-height:1.2em;margin-top:.4rem}
+#lockScreen{max-width:400px;margin:4rem auto;background:#fff;border:1px solid var(--paper-line);border-radius:10px;padding:2rem}
+#lockScreen h1{text-align:center}
+#lockScreen p{text-align:center}
+#lockScreen input{width:100%;padding:1rem .9rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1.1rem;margin:1rem 0}
+#lockScreen button{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:1rem;font-weight:800;font-size:1.05rem;cursor:pointer;min-height:56px}
+#lockScreen button:active{background:var(--terracotta-deep)}
+#lockFout{color:#8a2b1e;font-size:.9rem;min-height:1.2em;margin-top:.5rem;text-align:center}
 
-#layout{display:flex;height:calc(100vh - 58px);overflow:hidden}
-#menuKolom{flex:1 1 62%;overflow-y:auto;padding:1rem}
-#cartKolom{flex:0 0 380px;max-width:38%;background:#fff;border-left:1px solid var(--paper-line);display:flex;flex-direction:column;overflow:hidden}
+#layout{display:flex;height:calc(100vh - 66px);overflow:hidden}
 
-.tabs{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.7rem;margin-bottom:.9rem;border-bottom:1px solid var(--paper-line)}
-.tab{flex:0 0 auto;background:#fff;border:1px solid var(--paper-line);border-radius:20px;padding:.5rem 1rem;font-weight:700;font-size:.85rem;color:#6b6a62;cursor:pointer;white-space:nowrap}
-.tab.actief{background:var(--green);color:#fff;border-color:var(--green)}
+/* --- categorieën: vaste kolom links, grote tikvlakken --- */
+#categorieKolom{flex:0 0 220px;background:var(--green);overflow-y:auto}
+.categorieItem{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid rgba(255,255,255,.14);color:#fff;font-weight:700;font-size:1rem;padding:1.1rem 1.2rem;min-height:60px;cursor:pointer}
+.categorieItem.actief{background:var(--terracotta)}
+.categorieItem:active{background:rgba(255,255,255,.18)}
 
-.productgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem}
-.productknop{background:#fff;border:1px solid var(--paper-line);border-radius:8px;padding:.8rem;text-align:left;cursor:pointer;min-height:78px;display:flex;flex-direction:column;justify-content:space-between}
-.productknop:hover{border-color:var(--terracotta)}
-.productknop .naam{font-weight:700;font-size:.88rem;color:var(--green-ink)}
-.productknop .prijs{font-weight:800;font-size:.95rem;margin-top:.4rem}
+#menuKolom{flex:1 1 auto;overflow-y:auto;padding:1.2rem}
 
-#cartLijst{flex:1;overflow-y:auto;padding:1rem}
-.cartRegel{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;padding:.6rem 0;border-bottom:1px solid var(--paper-line)}
+.productgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.9rem}
+.productknop{background:#fff;border:1px solid var(--paper-line);border-radius:12px;padding:1.2rem;text-align:left;cursor:pointer;min-height:104px;display:flex;flex-direction:column;justify-content:space-between}
+.productknop:active{background:var(--paper-2);border-color:var(--terracotta)}
+.productknop .naam{font-weight:700;font-size:1.05rem;color:var(--green-ink);line-height:1.28}
+.productknop .prijs{font-weight:800;font-size:1.15rem;margin-top:.6rem;color:var(--terracotta-deep)}
+
+#cartKolom{flex:0 0 420px;max-width:44%;background:#fff;border-left:1px solid var(--paper-line);display:flex;flex-direction:column;overflow:hidden}
+
+#cartLijst{flex:1;overflow-y:auto;padding:1.1rem}
+.cartRegel{display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem;padding:.85rem 0;border-bottom:1px solid var(--paper-line)}
 .cartRegel .info{flex:1}
-.cartRegel .naam{font-weight:700;font-size:.88rem}
-.cartRegel .extras{font-size:.76rem;color:#6b6a62}
-.cartRegel .subtotaal{font-weight:800;white-space:nowrap}
-.stepper{display:flex;align-items:center;gap:.4rem;margin-top:.3rem}
-.stepper button{width:26px;height:26px;border-radius:6px;border:1px solid var(--paper-line);background:var(--paper-2);font-weight:800;cursor:pointer}
-.verwijder{color:#8a2b1e;font-size:.75rem;background:none;border:none;cursor:pointer;padding:0;margin-top:.3rem}
+.cartRegel .naam{font-weight:700;font-size:1rem}
+.cartRegel .extras{font-size:.85rem;color:#6b6a62;margin-top:.15rem}
+.cartRegel .subtotaal{font-weight:800;font-size:1.02rem;white-space:nowrap}
+.stepper{display:flex;align-items:center;gap:.6rem;margin-top:.5rem}
+.stepper button{width:42px;height:42px;border-radius:8px;border:1px solid var(--paper-line);background:var(--paper-2);font-weight:800;font-size:1.15rem;cursor:pointer}
+.stepper button:active{background:var(--paper-line)}
+.stepper span{min-width:1.6rem;text-align:center;font-weight:800;font-size:1.05rem}
+.verwijder{color:#8a2b1e;font-size:.85rem;background:none;border:none;cursor:pointer;padding:.5rem 0 0;margin-top:.2rem;font-weight:700}
 
-#loyaliteitBlok{border-top:1px solid var(--paper-line);padding:1rem}
-#loyaliteitBlok label{display:block;font-size:.78rem;font-weight:700;color:var(--green-ink);margin-bottom:.3rem}
-#loyaliteitBlok input{width:100%;padding:.5rem .6rem;border:1px solid var(--paper-line);border-radius:6px;font:inherit;margin-bottom:.4rem}
-.klantkaart{background:var(--paper-2);border-radius:6px;padding:.6rem;font-size:.8rem;margin-bottom:.5rem}
-.klantkaart .rij{display:flex;justify-content:space-between;margin-top:.15rem}
-.klein{font-size:.75rem;color:#6b6a62;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0}
+#loyaliteitBlok{border-top:1px solid var(--paper-line);padding:1.1rem}
+#loyaliteitBlok label{display:block;font-size:.85rem;font-weight:700;color:var(--green-ink);margin-bottom:.35rem}
+#loyaliteitBlok input{width:100%;padding:.85rem .8rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1rem;margin-bottom:.5rem}
+.klantkaart{background:var(--paper-2);border-radius:8px;padding:.8rem;font-size:.9rem;margin-bottom:.5rem}
+.klantkaart .rij{display:flex;justify-content:space-between;margin-top:.2rem}
+.klein{font-size:.82rem;color:#6b6a62;background:none;border:none;cursor:pointer;text-decoration:underline;padding:.4rem 0 0}
 
-#afrekenBlok{border-top:1px solid var(--paper-line);padding:1rem}
-#totaalRij{display:flex;justify-content:space-between;font-size:1.2rem;font-weight:800;margin-bottom:.7rem;color:var(--green-ink)}
-button.primair{background:var(--terracotta);color:#fff;border:none;border-radius:6px;padding:.85rem 1rem;font-weight:800;cursor:pointer;width:100%;font-size:1rem}
-button.primair:hover{background:var(--terracotta-deep)}
+#afrekenBlok{border-top:1px solid var(--paper-line);padding:1.1rem}
+#totaalRij{display:flex;justify-content:space-between;font-size:1.35rem;font-weight:800;margin-bottom:.9rem;color:var(--green-ink)}
+button.primair{background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:1.1rem;font-weight:800;cursor:pointer;width:100%;font-size:1.15rem;min-height:60px}
+button.primair:active{background:var(--terracotta-deep)}
 button.primair:disabled{background:#c9beb8;cursor:not-allowed}
-button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px solid var(--paper-line);border-radius:6px;padding:.5rem .9rem;font-weight:700;cursor:pointer;font-size:.82rem}
-.melding{font-size:.82rem;min-height:1.2em;margin-top:.5rem}
+button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px solid var(--paper-line);border-radius:8px;padding:.7rem 1rem;font-weight:700;cursor:pointer;font-size:.92rem;min-height:48px}
+button.secundair:active{background:var(--paper-line)}
+.melding{font-size:.88rem;min-height:1.2em;margin-top:.6rem}
 .melding.fout{color:#8a2b1e}
 .melding.ok{color:var(--green-ink)}
-.leegCart{color:#6b6a62;font-size:.85rem;text-align:center;padding:2rem 0}
+.leegCart{color:#6b6a62;font-size:.92rem;text-align:center;padding:2.4rem 0}
 
-/* --- extras-modal --- */
-#modalOverlay{position:fixed;inset:0;background:rgba(27,27,24,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:1rem}
+/* --- extras-modal: grote keuzeknoppen i.p.v. radio/checkbox --- */
+#modalOverlay{position:fixed;inset:0;background:rgba(27,27,24,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:1rem}
 #modalOverlay.actief{display:flex}
-#modalKaart{background:#fff;border-radius:10px;padding:1.4rem;max-width:420px;width:100%;max-height:85vh;overflow-y:auto}
-.extraGroep{margin-bottom:1rem}
-.extraGroep .groepnaam{font-weight:700;font-size:.9rem;margin-bottom:.4rem;color:var(--green-ink)}
-.optieRij{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;cursor:pointer}
-.optieRij input{width:18px;height:18px}
-.optieRij .optieNaam{flex:1;font-size:.88rem}
-.optieRij .optiePrijs{font-size:.82rem;color:#6b6a62}
+#modalKaart{background:#fff;border-radius:14px;padding:1.6rem;max-width:520px;width:100%;max-height:88vh;overflow-y:auto}
+#modalKaart h3{font-size:1.2rem;margin-bottom:1.1rem}
+.extraGroep{margin-bottom:1.3rem}
+.extraGroep .groepnaam{font-weight:700;font-size:.98rem;margin-bottom:.6rem;color:var(--green-ink)}
+.extraGroep .opties{display:flex;flex-wrap:wrap;gap:.7rem}
+.optieBtn{flex:1 1 auto;min-width:130px;padding:1rem .9rem;border:2px solid var(--paper-line);border-radius:12px;background:#fff;text-align:center;font-weight:700;font-size:1rem;cursor:pointer;color:var(--green-ink);min-height:56px}
+.optieBtn .optiePrijs{display:block;font-size:.85rem;font-weight:600;margin-top:.25rem;opacity:.85}
+.optieBtn.geselecteerd{border-color:var(--terracotta);background:var(--terracotta);color:#fff}
+.optieBtn:active{border-color:var(--terracotta-deep)}
+
+.modalStepper{display:flex;align-items:center;gap:.7rem;margin:1rem 0 1.3rem}
+.modalStepper span.label{font-weight:700;font-size:.95rem;margin-right:.3rem}
+.modalStepper button{width:52px;height:52px;border-radius:10px;border:1px solid var(--paper-line);background:var(--paper-2);font-weight:800;font-size:1.3rem;cursor:pointer}
+.modalStepper button:active{background:var(--paper-line)}
+.modalStepper .aantal{min-width:2rem;text-align:center;font-weight:800;font-size:1.2rem}
 
 /* --- afreken-overlay --- */
 #betaalOverlay{position:fixed;inset:0;background:var(--green-ink);display:none;align-items:center;justify-content:center;flex-direction:column;color:#fff;z-index:60;text-align:center;padding:2rem}
 #betaalOverlay.actief{display:flex}
-#betaalOverlay .label{font-size:1.1rem;opacity:.85}
-#betaalOverlay .bedrag{font-size:5rem;font-weight:900;margin:.5rem 0 1.2rem}
-#betaalOverlay .loyaliteitInfo{font-size:1rem;margin-bottom:1.6rem;opacity:.95}
-#betaalOverlay button{background:#fff;color:var(--green-ink);border:none;border-radius:8px;padding:1rem 2rem;font-weight:800;font-size:1.05rem;cursor:pointer}
+#betaalOverlay .label{font-size:1.2rem;opacity:.85}
+#betaalOverlay .bedrag{font-size:5.5rem;font-weight:900;margin:.5rem 0 1.3rem}
+#betaalOverlay .loyaliteitInfo{font-size:1.05rem;margin-bottom:1.8rem;opacity:.95;max-width:32rem}
+#betaalOverlay button{background:#fff;color:var(--green-ink);border:none;border-radius:10px;padding:1.2rem 2.6rem;font-weight:800;font-size:1.15rem;cursor:pointer;min-height:64px}
 
-@media (max-width: 860px){
+@media (max-width: 900px){
   #layout{flex-direction:column;height:auto;overflow:visible}
+  #categorieKolom{flex:none;width:100%;display:flex;flex-direction:row;overflow-x:auto;overflow-y:hidden}
+  .categorieItem{border-bottom:none;border-right:1px solid rgba(255,255,255,.14);white-space:nowrap;flex:0 0 auto}
   #cartKolom{max-width:100%;flex:none;border-left:none;border-top:1px solid var(--paper-line)}
 }
 </style>
@@ -98,8 +119,8 @@ button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px sol
 <body>
 
 <div id="lockScreen">
-  <h1 style="font-size:1.2rem;margin-bottom:.3rem">Kassa — personeel</h1>
-  <p style="font-size:.85rem;color:#6b6a62">Alleen voor personeel — voer het wachtwoord in.</p>
+  <h1 style="font-size:1.3rem;margin-bottom:.4rem">Kassa — personeel</h1>
+  <p style="font-size:.9rem;color:#6b6a62">Alleen voor personeel — voer het wachtwoord in.</p>
   <input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
   <button type="button" id="ontgrendelBtn">Ontgrendelen</button>
   <div id="lockFout"></div>
@@ -112,8 +133,9 @@ button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px sol
   </header>
 
   <div id="layout">
+    <div id="categorieKolom"></div>
+
     <div id="menuKolom">
-      <div class="tabs" id="tabsHost"></div>
       <div class="productgrid" id="productgridHost"></div>
     </div>
 
@@ -140,17 +162,17 @@ button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px sol
 <!-- Extras-keuze modal -->
 <div id="modalOverlay">
   <div id="modalKaart">
-    <h3 id="modalProductNaam" style="margin-bottom:.9rem"></h3>
+    <h3 id="modalProductNaam"></h3>
     <div id="modalExtrasHost"></div>
-    <div class="stepper" style="margin:.8rem 0 1.1rem">
-      <span style="font-weight:700;font-size:.85rem;margin-right:.4rem">Aantal:</span>
+    <div class="modalStepper">
+      <span class="label">Aantal:</span>
       <button type="button" id="modalMin">-</button>
-      <span id="modalAantal" style="min-width:1.4rem;text-align:center;font-weight:800">1</span>
+      <span class="aantal" id="modalAantal">1</span>
       <button type="button" id="modalPlus">+</button>
     </div>
     <div class="melding fout" id="modalMelding"></div>
     <button type="button" class="primair" id="modalToevoegenBtn">Toevoegen</button>
-    <button type="button" class="secundair" id="modalAnnulerenBtn" style="width:100%;margin-top:.5rem">Annuleren</button>
+    <button type="button" class="secundair" id="modalAnnulerenBtn" style="width:100%;margin-top:.6rem">Annuleren</button>
   </div>
 </div>
 
@@ -207,7 +229,7 @@ button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px sol
         catalogus.categorieen.forEach(function(cat){
           cat.producten.forEach(function(p){ productMap.set(p.id, p); });
         });
-        bouwTabs();
+        bouwCategorieen();
         toonCategorie(catalogus.categorieen[0].naam);
       })
       .catch(function(){
@@ -215,19 +237,20 @@ button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px sol
       });
   }
 
-  function bouwTabs(){
-    var host = document.getElementById('tabsHost');
+  function bouwCategorieen(){
+    var host = document.getElementById('categorieKolom');
     host.innerHTML = '';
     catalogus.categorieen.forEach(function(cat, i){
-      var tab = document.createElement('div');
-      tab.className = 'tab' + (i === 0 ? ' actief' : '');
-      tab.textContent = cat.naam;
-      tab.addEventListener('click', function(){
-        host.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('actief'); });
-        tab.classList.add('actief');
+      var item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'categorieItem' + (i === 0 ? ' actief' : '');
+      item.textContent = cat.naam;
+      item.addEventListener('click', function(){
+        host.querySelectorAll('.categorieItem').forEach(function(t){ t.classList.remove('actief'); });
+        item.classList.add('actief');
         toonCategorie(cat.naam);
       });
-      host.appendChild(tab);
+      host.appendChild(item);
     });
   }
 
@@ -336,14 +359,16 @@ button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px sol
     tekenLoyaliteitKorting(totaal);
   }
 
-  // --- Extras-modal ---
+  // --- Extras-modal: grote keuzeknoppen i.p.v. radio/checkbox ---
   var modalProduct = null;
   var modalAantal = 1;
+  var modalSelecties = {}; // { groepId: optieIndex }
   var overlay = document.getElementById('modalOverlay');
 
   function openModal(product){
     modalProduct = product;
     modalAantal = 1;
+    modalSelecties = {};
     document.getElementById('modalProductNaam').textContent = product.naam;
     document.getElementById('modalAantal').textContent = '1';
     document.getElementById('modalMelding').textContent = '';
@@ -352,25 +377,37 @@ button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px sol
     product.extras.forEach(function(groep){
       var wrap = document.createElement('div');
       wrap.className = 'extraGroep';
-      wrap.dataset.groepId = groep.id;
       var titel = document.createElement('div');
       titel.className = 'groepnaam';
       titel.textContent = groep.naam + (groep.verplicht ? ' (verplicht)' : ' (optioneel)');
       wrap.appendChild(titel);
+      var optiesHost = document.createElement('div');
+      optiesHost.className = 'opties';
       groep.opties.forEach(function(optie, idx){
-        var label = document.createElement('label');
-        label.className = 'optieRij';
-        label.innerHTML =
-          '<input type="' + (groep.type === 'keuze' ? 'radio' : 'checkbox') + '" name="groep-' + groep.id + '" value="' + idx + '">' +
-          '<span class="optieNaam">' + optie.naam + '</span>' +
-          '<span class="optiePrijs">' + (optie.prijs > 0 ? '+' + euro(optie.prijs) : '') + '</span>';
-        wrap.appendChild(label);
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'optieBtn';
+        btn.innerHTML = optie.naam + (optie.prijs > 0 ? '<span class="optiePrijs">+' + euro(optie.prijs) + '</span>' : '');
+        btn.addEventListener('click', function(){
+          var huidig = modalSelecties[groep.id];
+          if (huidig === idx && !groep.verplicht) {
+            // Optioneel: nogmaals tikken op de al gekozen optie zet 'm weer uit.
+            delete modalSelecties[groep.id];
+          } else {
+            modalSelecties[groep.id] = idx;
+          }
+          optiesHost.querySelectorAll('.optieBtn').forEach(function(b, i2){
+            b.classList.toggle('geselecteerd', modalSelecties[groep.id] === i2);
+          });
+        });
+        optiesHost.appendChild(btn);
       });
+      wrap.appendChild(optiesHost);
       host.appendChild(wrap);
     });
     overlay.classList.add('actief');
   }
-  function sluitModal(){ overlay.classList.remove('actief'); modalProduct = null; }
+  function sluitModal(){ overlay.classList.remove('actief'); modalProduct = null; modalSelecties = {}; }
 
   document.getElementById('modalAnnulerenBtn').addEventListener('click', sluitModal);
   document.getElementById('modalMin').addEventListener('click', function(){
@@ -385,12 +422,12 @@ button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px sol
     var extras = {};
     var fout = null;
     modalProduct.extras.forEach(function(groep){
-      var gekozen = document.querySelector('input[name="groep-' + groep.id + '"]:checked');
-      if (!gekozen) {
+      var idx = modalSelecties[groep.id];
+      if (idx === undefined || idx === null) {
         if (groep.verplicht) fout = 'Kies een optie bij "' + groep.naam + '".';
         return;
       }
-      extras[groep.id] = parseInt(gekozen.value, 10);
+      extras[groep.id] = idx;
     });
     if (fout) {
       document.getElementById('modalMelding').textContent = fout;
@@ -438,9 +475,9 @@ button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px sol
         '<div class="rij"><span>Zegels</span><strong>' + loyaliteitAccount.zegels + ' / 20</strong></div>' +
         '<div class="rij"><span>Beschikbare korting</span><strong>' + euro(loyaliteitAccount.beschikbareKorting) + '</strong></div>' +
         (loyaliteitAccount.beschikbareKorting > 0
-          ? '<label style="margin-top:.5rem">Korting nu verzilveren</label><input type="number" id="loyKortingInput" step="0.01" min="0">'
+          ? '<label style="margin-top:.6rem">Korting nu verzilveren</label><input type="number" id="loyKortingInput" step="0.01" min="0">'
           : '') +
-        '<button type="button" class="klein" id="loyOntkoppelBtn" style="margin-top:.5rem">Loskoppelen</button>' +
+        '<button type="button" class="klein" id="loyOntkoppelBtn" style="margin-top:.4rem">Loskoppelen</button>' +
       '</div>';
     if (loyaliteitAccount.beschikbareKorting > 0) {
       var input = document.getElementById('loyKortingInput');
