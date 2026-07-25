@@ -14,7 +14,70 @@
           "naam": "Loaded Fries Hete Kip",
           "prijs": 9.95,
           "beschrijving": "Een royale portie knapperige friet, belegd met hete kip, huisgemaakte jamballasaus, geroosterde ui en bosui",
-          "foto": "loaded-fries-hete-kip.jpg"
+          "foto": "loaded-fries-hete-kip.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "wrap-hete-kip",
@@ -35,7 +98,43 @@
           "naam": "Milkshake Mango Passievrucht",
           "prijs": 3.5,
           "beschrijving": "Romige milkshake met de frisse smaak van mango en passievrucht",
-          "foto": "milkshake.jpg"
+          "foto": "milkshake.jpg",
+          "kassaExtras": [
+            {
+              "id": "formaat",
+              "naam": "Formaat",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Klein 300ml",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Middel 400ml",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Groot 500ml",
+                  "prijs": 1.0
+                }
+              ]
+            },
+            {
+              "id": "plastic-toeslag",
+              "naam": "Plastic Toeslag",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Plastic Toeslag",
+                  "prijs": 0.1
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "seizoensspecials"
@@ -70,6 +169,73 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "saus-a",
+              "naam": "Wilt u saus bij de patat?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo-Currysaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chillisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -96,6 +262,73 @@
                 {
                   "naam": "Speciaal / Oorlog / Pindasaus / Joppiesaus",
                   "prijs": 1
+                }
+              ]
+            }
+          ],
+          "kassaExtras": [
+            {
+              "id": "saus-a",
+              "naam": "Wilt u saus bij de patat?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo-Currysaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chillisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
                 }
               ]
             }
@@ -128,6 +361,73 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "saus-a",
+              "naam": "Wilt u saus bij de patat?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo-Currysaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chillisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -135,28 +435,272 @@
           "naam": "Gezinszak (per persoon)",
           "prijs": 5,
           "beschrijving": "Kies zelf je aantal personen.",
-          "foto": "gezinszak.jpg"
+          "foto": "gezinszak.jpg",
+          "kassaExtras": [
+            {
+              "id": "hoeveel-personen",
+              "naam": "Hoeveel personen?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "vervangtPrijs": true,
+              "opties": [
+                {
+                  "naam": "2 Personen",
+                  "prijs": 5.5
+                },
+                {
+                  "naam": "3 Personen",
+                  "prijs": 8.25
+                },
+                {
+                  "naam": "4 Personen",
+                  "prijs": 11.0
+                },
+                {
+                  "naam": "5 Personen",
+                  "prijs": 13.75
+                },
+                {
+                  "naam": "6 Personen",
+                  "prijs": 16.5
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "gezinspakket",
           "naam": "Gezinspakket (4 pers. + 4 snacks)",
           "prijs": 18.5,
           "beschrijving": "Friet voor 4 personen met 4 snacks naar keuze: kroket, frikandel of kaassoufflé.",
-          "foto": "gezinspakket.jpg"
+          "foto": "gezinspakket.jpg",
+          "kassaExtras": [
+            {
+              "id": "snack-1",
+              "naam": "Snack 1",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Kroket",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Frikandel",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Kaassoufflé",
+                  "prijs": 0
+                }
+              ]
+            },
+            {
+              "id": "snack-2",
+              "naam": "Snack 2",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Kroket",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Frikandel",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Kaassoufflé",
+                  "prijs": 0
+                }
+              ]
+            },
+            {
+              "id": "snack-3",
+              "naam": "Snack 3",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Kroket",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Frikandel",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Kaassoufflé",
+                  "prijs": 0
+                }
+              ]
+            },
+            {
+              "id": "snack-4",
+              "naam": "Snack 4",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Kroket",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Frikandel",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Kaassoufflé",
+                  "prijs": 0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "waterfiets",
           "naam": "Waterfiets (friet + 2 frikandellen)",
           "prijs": 7.5,
           "beschrijving": "Een royale portie friet met saus naar keuze en 2 frikandellen.",
-          "foto": "waterfiets.jpg"
+          "foto": "waterfiets.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "patat-boslaan-deluxe",
           "naam": "Patat Boslaan Deluxe",
           "prijs": 7.5,
           "beschrijving": "Een royale portie friet met saus naar keuze en een Boslaanstick: frikandel, viandel, mexicano, kipcorn en gehaktstaaf.",
-          "foto": "patat-boslaan-deluxe.jpg"
+          "foto": "patat-boslaan-deluxe.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "patat"
@@ -169,42 +713,420 @@
           "naam": "Loaded Fries Pulled Porc",
           "prijs": 9.95,
           "beschrijving": "Rijkelijk belegd met malse pulled porc in rokerige barbecuesaus, fritessaus, gesmolten cheddar en gebakken bacon.",
-          "foto": "loaded-fries-pulled-porc.jpg"
+          "foto": "loaded-fries-pulled-porc.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "loaded-fries-stoofvlees",
           "naam": "Loaded Fries Stoofvlees",
           "prijs": 9.95,
           "beschrijving": "Rijkelijk belegd met onze huisgemaakte stoofvlees.",
-          "foto": "loaded-fries-stoofvlees.jpg"
+          "foto": "loaded-fries-stoofvlees.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "loaded-fries-kip-kapsalon",
           "naam": "Loaded Fries Kip-Kapsalon",
           "prijs": 9.95,
           "beschrijving": "Rijkelijk belegd met cheddar cheese, kipreepjes, huisgemaakte aioli, komkommer, tomaat, rode ui en ijsbergsla.",
-          "foto": "loaded-fries-kip-kapsalon.jpg"
+          "foto": "loaded-fries-kip-kapsalon.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "loaded-fries-warm-vlees",
           "naam": "Loaded Fries Warm Vlees",
           "prijs": 7.95,
           "beschrijving": "Rijkelijk belegd met gebakken fricandeau en pindasaus.",
-          "foto": "loaded-fries-warm-vlees.jpg"
+          "foto": "loaded-fries-warm-vlees.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "loaded-fries-warm-vlees-speciaal",
           "naam": "Loaded Fries Warm Vlees Speciaal",
           "prijs": 9.95,
           "beschrijving": "Rijkelijk belegd met gebakken fricandeau, pindasaus, gebakken uien, champignons en een gebakken ei.",
-          "foto": "loaded-fries-warm-vlees-speciaal.jpg"
+          "foto": "loaded-fries-warm-vlees-speciaal.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "loaded-fries-boeren",
           "naam": "Loaded Fries Boeren",
           "prijs": 9.95,
           "beschrijving": "Rijkelijk belegd met gebakken champignons, rode uien en spekreepjes.",
-          "foto": "loaded-fries-boeren.jpg"
+          "foto": "loaded-fries-boeren.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "loaded-fries"
@@ -217,7 +1139,38 @@
           "naam": "Kindermenu",
           "prijs": 7.5,
           "beschrijving": "Klein patatje, fritessaus, snack naar keuze, appelmoes, Capri-Sun en een leuke verrassing.",
-          "foto": "kindermenu.jpg"
+          "foto": "kindermenu.jpg",
+          "kassaExtras": [
+            {
+              "id": "kies-je-snack",
+              "naam": "Kies je snack",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "3 kipnuggets",
+                  "prijs": 0
+                },
+                {
+                  "naam": "3 kipfingers",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Frikandel",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Kroket",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Kaassouffle",
+                  "prijs": 0
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "kindermenu-s"
@@ -230,21 +1183,222 @@
           "naam": "Varkensschnitzelmenu",
           "prijs": 13.95,
           "beschrijving": "Huisgemaakte varkensschnitzel, incl. portie friet met saus naar keuze en dagverse salade.",
-          "foto": "varkensschnitzelmenu.jpg"
+          "foto": "varkensschnitzelmenu.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-c",
+              "naam": "Welke saus had u erbij gewild?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Curry",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Aioli",
+                  "prijs": 0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "kipspiezenmenu",
           "naam": "Kipspiezen Menu",
           "prijs": 13.95,
           "beschrijving": "Twee stokjes kipspiezen met pindasaus, pinda's en geroosterde uitjes, incl. friet met saus naar keuze en dagverse salade.",
-          "foto": "kipspiezenmenu.jpg"
+          "foto": "kipspiezenmenu.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-c",
+              "naam": "Welke saus had u erbij gewild?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Curry",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Aioli",
+                  "prijs": 0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "kipschnitzelmenu",
           "naam": "Kipschnitzel Menu",
           "prijs": 13.95,
           "beschrijving": "Malse kipschnitzel, incl. portie friet met saus naar keuze en dagverse salade.",
-          "foto": "kipschnitzelmenu.jpg"
+          "foto": "kipschnitzelmenu.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-c",
+              "naam": "Welke saus had u erbij gewild?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Curry",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Portie Aioli",
+                  "prijs": 0
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "menu-s"
@@ -337,6 +1491,69 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -355,6 +1572,103 @@
                 {
                   "naam": "Op vers wit bolletje",
                   "prijs": 0.75
+                }
+              ]
+            }
+          ],
+          "kassaExtras": [
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            },
+            {
+              "id": "opties-frikandel",
+              "naam": "Opties.",
+              "type": "multi",
+              "min": 0,
+              "max": 3,
+              "opties": [
+                {
+                  "naam": "Zonder Uitjes",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Ketchup ipv Currysaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Vegetarische Frikadel ipv Gewone Frikade...",
+                  "prijs": 0
                 }
               ]
             }
@@ -379,6 +1693,29 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "opties-frikandel",
+              "naam": "Opties.",
+              "type": "multi",
+              "min": 0,
+              "max": 3,
+              "opties": [
+                {
+                  "naam": "Zonder Uitjes",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Ketchup ipv Currysaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Vegetarische Frikadel ipv Gewone Frikade...",
+                  "prijs": 0
+                }
+              ]
+            }
           ]
         },
         {
@@ -397,6 +1734,69 @@
                 {
                   "naam": "Op vers wit bolletje",
                   "prijs": 0.75
+                }
+              ]
+            }
+          ],
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
                 }
               ]
             }
@@ -421,6 +1821,29 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "opties-frikandel",
+              "naam": "Opties.",
+              "type": "multi",
+              "min": 0,
+              "max": 3,
+              "opties": [
+                {
+                  "naam": "Zonder Uitjes",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Ketchup ipv Currysaus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Vegetarische Frikadel ipv Gewone Frikade...",
+                  "prijs": 0
+                }
+              ]
+            }
           ]
         },
         {
@@ -439,6 +1862,82 @@
                 {
                   "naam": "Op vers wit bolletje",
                   "prijs": 0.75
+                }
+              ]
+            }
+          ],
+          "kassaExtras": [
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
                 }
               ]
             }
@@ -463,6 +1962,99 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "mosterd",
+              "naam": "Wilt u er mosterd bij?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Mosterd",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met Mosterd",
+                  "prijs": 0.05
+                }
+              ]
+            },
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -481,6 +2073,99 @@
                 {
                   "naam": "Op vers wit bolletje",
                   "prijs": 0.75
+                }
+              ]
+            }
+          ],
+          "kassaExtras": [
+            {
+              "id": "mosterd",
+              "naam": "Wilt u er mosterd bij?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Mosterd",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met Mosterd",
+                  "prijs": 0.05
+                }
+              ]
+            },
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
                 }
               ]
             }
@@ -505,6 +2190,99 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "mosterd",
+              "naam": "Wilt u er mosterd bij?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Mosterd",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met Mosterd",
+                  "prijs": 0.05
+                }
+              ]
+            },
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -523,6 +2301,99 @@
                 {
                   "naam": "Op vers wit bolletje",
                   "prijs": 0.75
+                }
+              ]
+            }
+          ],
+          "kassaExtras": [
+            {
+              "id": "mosterd",
+              "naam": "Wilt u er mosterd bij?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Mosterd",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met Mosterd",
+                  "prijs": 0.05
+                }
+              ]
+            },
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
                 }
               ]
             }
@@ -547,6 +2418,99 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "mosterd",
+              "naam": "Wilt u er mosterd bij?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Mosterd",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met Mosterd",
+                  "prijs": 0.05
+                }
+              ]
+            },
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -565,6 +2529,99 @@
                 {
                   "naam": "Op vers wit bolletje",
                   "prijs": 0.75
+                }
+              ]
+            }
+          ],
+          "kassaExtras": [
+            {
+              "id": "mosterd",
+              "naam": "Wilt u er mosterd bij?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Mosterd",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met Mosterd",
+                  "prijs": 0.05
+                }
+              ]
+            },
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
                 }
               ]
             }
@@ -589,6 +2646,69 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -607,6 +2727,82 @@
                 {
                   "naam": "Op vers wit bolletje",
                   "prijs": 0.75
+                }
+              ]
+            }
+          ],
+          "kassaExtras": [
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
                 }
               ]
             }
@@ -631,6 +2827,82 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -649,6 +2921,82 @@
                 {
                   "naam": "Op vers wit bolletje",
                   "prijs": 0.75
+                }
+              ]
+            }
+          ],
+          "kassaExtras": [
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
                 }
               ]
             }
@@ -673,6 +3021,99 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "mosterd",
+              "naam": "Wilt u er mosterd bij?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Mosterd",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met Mosterd",
+                  "prijs": 0.05
+                }
+              ]
+            },
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -691,6 +3132,99 @@
                 {
                   "naam": "Op vers wit bolletje",
                   "prijs": 0.75
+                }
+              ]
+            }
+          ],
+          "kassaExtras": [
+            {
+              "id": "mosterd",
+              "naam": "Wilt u er mosterd bij?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Mosterd",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met Mosterd",
+                  "prijs": 0.05
+                }
+              ]
+            },
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
                 }
               ]
             }
@@ -715,6 +3249,82 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -729,7 +3339,83 @@
           "naam": "Kipschnitzel",
           "prijs": 6.5,
           "beschrijving": "Malse kipfiletschnitzel, vol van smaak.",
-          "foto": "kipschnitzel.jpg"
+          "foto": "kipschnitzel.jpg",
+          "kassaExtras": [
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "nasischijf",
@@ -747,6 +3433,82 @@
                 {
                   "naam": "Op vers wit bolletje",
                   "prijs": 0.75
+                }
+              ]
+            }
+          ],
+          "kassaExtras": [
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
                 }
               ]
             }
@@ -771,6 +3533,82 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -792,13 +3630,152 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
           "id": "loempia",
           "naam": "Loempia",
           "prijs": 4.5,
-          "beschrijving": "Goudbruin gefrituurde loempia met kip, ham, groenten en tauge."
+          "beschrijving": "Goudbruin gefrituurde loempia met kip, ham, groenten en tauge.",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "loempia-speciaal",
@@ -825,6 +3802,69 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -845,6 +3885,82 @@
                 }
               ]
             }
+          ],
+          "kassaExtras": [
+            {
+              "id": "op-broodje-kassa",
+              "naam": "Op Broodje",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Op Broodje",
+                  "prijs": 0.75
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
           ]
         },
         {
@@ -852,7 +3968,70 @@
           "naam": "Varkensschnitzel",
           "prijs": 6.5,
           "beschrijving": "Onze huisgemaakte varkensschnitzel.",
-          "foto": "varkensschnitzel.jpg"
+          "foto": "varkensschnitzel.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "snacks"
@@ -882,19 +4061,225 @@
           "id": "kipnuggets",
           "naam": "Kipnuggets (6 stuks)",
           "prijs": 3.75,
-          "beschrijving": "Malse kipnuggets (halal) in krokant goudbruin jasje."
+          "beschrijving": "Malse kipnuggets (halal) in krokant goudbruin jasje.",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "kipfingers",
           "naam": "Kipfingers (6 stuks)",
           "prijs": 3.75,
-          "beschrijving": "Krokant gepaneerde reepjes malse kipfilet."
+          "beschrijving": "Krokant gepaneerde reepjes malse kipfilet.",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "bitterballen",
           "naam": "Bitterballen (6 stuks)",
           "prijs": 3.75,
-          "beschrijving": "Goudbruine bitterballen met romige rundvleesragout."
+          "beschrijving": "Goudbruine bitterballen met romige rundvleesragout.",
+          "kassaExtras": [
+            {
+              "id": "mosterd",
+              "naam": "Wilt u er mosterd bij?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Mosterd",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met Mosterd",
+                  "prijs": 0.05
+                }
+              ]
+            },
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "mini-loempia",
@@ -907,14 +4292,140 @@
           "naam": "Chickenstrips (3 stuks)",
           "prijs": 4.95,
           "beschrijving": "Sappig mals kipfilet in krokant paneerjasje.",
-          "foto": "chickenstripes.jpg"
+          "foto": "chickenstripes.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "kaasloempias",
           "naam": "Kaasloempia's (6 stuks)",
           "prijs": 4.75,
           "beschrijving": "Krokant gefrituurde loempia's gevuld met gesmolten kaas.",
-          "foto": "kaasloempia.jpg"
+          "foto": "kaasloempia.jpg",
+          "kassaExtras": [
+            {
+              "id": "saus-b",
+              "naam": "Wilt u er saus bij?",
+              "type": "multi",
+              "min": 0,
+              "max": 10,
+              "opties": [
+                {
+                  "naam": "Portie Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Currysaus",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Ketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/Curry",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Speciaal",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Pindasaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Oorlog + Ui",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Joppiesaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Alles",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Chilisaus",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie Ailoli",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "mini-snacks"
@@ -926,26 +4437,168 @@
           "id": "gv-frikandel",
           "naam": "Glutenvrije frikandel",
           "prijs": 3.5,
-          "beschrijving": ""
+          "beschrijving": "",
+          "kassaExtras": [
+            {
+              "id": "opties-gv",
+              "naam": "Opties Glutenvrije snack",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Tomatenketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/ketchup",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie speciaal (Met Tomatenketchup)",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "gv-kroket",
           "naam": "Glutenvrije kroket",
           "prijs": 3.5,
           "beschrijving": "",
-          "foto": "glutenvrije-kroket.jpg"
+          "foto": "glutenvrije-kroket.jpg",
+          "kassaExtras": [
+            {
+              "id": "mosterd",
+              "naam": "Wilt u er mosterd bij?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Mosterd",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met Mosterd",
+                  "prijs": 0.05
+                }
+              ]
+            },
+            {
+              "id": "opties-gv",
+              "naam": "Opties Glutenvrije snack",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Tomatenketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/ketchup",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie speciaal (Met Tomatenketchup)",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "gv-kaassouffle",
           "naam": "Glutenvrije kaassoufflé",
           "prijs": 3.5,
-          "beschrijving": ""
+          "beschrijving": "",
+          "kassaExtras": [
+            {
+              "id": "opties-gv",
+              "naam": "Opties Glutenvrije snack",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Tomatenketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/ketchup",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie speciaal (Met Tomatenketchup)",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "gv-bitterballen",
           "naam": "Glutenvrije bitterballen (6 st.)",
           "prijs": 5.95,
-          "beschrijving": ""
+          "beschrijving": "",
+          "kassaExtras": [
+            {
+              "id": "mosterd",
+              "naam": "Wilt u er mosterd bij?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder Mosterd",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met Mosterd",
+                  "prijs": 0.05
+                }
+              ]
+            },
+            {
+              "id": "opties-gv",
+              "naam": "Opties Glutenvrije snack",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Portie Glutenvrije Mayonaise",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Tomatenketchup",
+                  "prijs": 0.75
+                },
+                {
+                  "naam": "Portie Mayo/ketchup",
+                  "prijs": 1.0
+                },
+                {
+                  "naam": "Portie speciaal (Met Tomatenketchup)",
+                  "prijs": 1.0
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "glutenvrije-snacks"
@@ -958,27 +4611,331 @@
           "naam": "Basic Burger",
           "prijs": 6.95,
           "beschrijving": "Brioche broodje, slamelange, mosterd, tomatenketchup en augurkenchutney.",
-          "foto": "basicburger.jpg"
+          "foto": "basicburger.jpg",
+          "kassaExtras": [
+            {
+              "id": "opties-burger",
+              "naam": "Opties Burger",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Met Cheddar",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Bacon",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Gebakken Ei",
+                  "prijs": 1.5
+                }
+              ]
+            },
+            {
+              "id": "menu-van-maken",
+              "naam": "Wil je er een menu van maken?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Menu zonder Saus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayonaise",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Currysaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Tomatenketchup",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog +ui",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Speciaal",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayo/Curry",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Pindasaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Joppiesaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met alles (mayo,curry,pinda,ui)",
+                  "prijs": 5.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "speciaal-burger",
           "naam": "Speciaal Burger",
           "prijs": 7.25,
-          "beschrijving": "Brioche broodje, slamelange, mayonaise, currysaus en uitjes."
+          "beschrijving": "Brioche broodje, slamelange, mayonaise, currysaus en uitjes.",
+          "kassaExtras": [
+            {
+              "id": "opties-burger",
+              "naam": "Opties Burger",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Met Cheddar",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Bacon",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Gebakken Ei",
+                  "prijs": 1.5
+                }
+              ]
+            },
+            {
+              "id": "menu-van-maken",
+              "naam": "Wil je er een menu van maken?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Menu zonder Saus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayonaise",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Currysaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Tomatenketchup",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog +ui",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Speciaal",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayo/Curry",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Pindasaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Joppiesaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met alles (mayo,curry,pinda,ui)",
+                  "prijs": 5.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "italian-burger",
           "naam": "Italian Burger",
           "prijs": 7.95,
           "beschrijving": "Brioche broodje, truffelmayonaise, tomaat, gebakken rode uien en Parmezaanse kaas.",
-          "foto": "italianburger.jpg"
+          "foto": "italianburger.jpg",
+          "kassaExtras": [
+            {
+              "id": "opties-burger",
+              "naam": "Opties Burger",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Met Cheddar",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Bacon",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Gebakken Ei",
+                  "prijs": 1.5
+                }
+              ]
+            },
+            {
+              "id": "menu-van-maken",
+              "naam": "Wil je er een menu van maken?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Menu zonder Saus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayonaise",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Currysaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Tomatenketchup",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog +ui",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Speciaal",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayo/Curry",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Pindasaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Joppiesaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met alles (mayo,curry,pinda,ui)",
+                  "prijs": 5.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "boeren-burger",
           "naam": "Boeren Burger",
           "prijs": 8.25,
           "beschrijving": "Brioche broodje, gebakken rode uien, champignons, bacon, mayonaise en curry.",
-          "foto": "boerenburger.jpg"
+          "foto": "boerenburger.jpg",
+          "kassaExtras": [
+            {
+              "id": "opties-burger",
+              "naam": "Opties Burger",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Met Cheddar",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Bacon",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Gebakken Ei",
+                  "prijs": 1.5
+                }
+              ]
+            },
+            {
+              "id": "menu-van-maken",
+              "naam": "Wil je er een menu van maken?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Menu zonder Saus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayonaise",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Currysaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Tomatenketchup",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog +ui",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Speciaal",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayo/Curry",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Pindasaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Joppiesaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met alles (mayo,curry,pinda,ui)",
+                  "prijs": 5.0
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "hamburgers"
@@ -990,32 +4947,412 @@
           "id": "chicken-basic-burger",
           "naam": "Chicken Basic Burger",
           "prijs": 6.95,
-          "beschrijving": "Kipfiletburger, slamelange, mosterd, tomatenketchup en augurkenchutney."
+          "beschrijving": "Kipfiletburger, slamelange, mosterd, tomatenketchup en augurkenchutney.",
+          "kassaExtras": [
+            {
+              "id": "opties-burger",
+              "naam": "Opties Burger",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Met Cheddar",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Bacon",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Gebakken Ei",
+                  "prijs": 1.5
+                }
+              ]
+            },
+            {
+              "id": "menu-van-maken",
+              "naam": "Wil je er een menu van maken?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Menu zonder Saus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayonaise",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Currysaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Tomatenketchup",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog +ui",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Speciaal",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayo/Curry",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Pindasaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Joppiesaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met alles (mayo,curry,pinda,ui)",
+                  "prijs": 5.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "chicken-speciaal-burger",
           "naam": "Chicken Speciaal Burger",
           "prijs": 7.25,
-          "beschrijving": "Kipfiletburger, slamelange, mayonaise, currysaus en uitjes."
+          "beschrijving": "Kipfiletburger, slamelange, mayonaise, currysaus en uitjes.",
+          "kassaExtras": [
+            {
+              "id": "opties-burger",
+              "naam": "Opties Burger",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Met Cheddar",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Bacon",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Gebakken Ei",
+                  "prijs": 1.5
+                }
+              ]
+            },
+            {
+              "id": "menu-van-maken",
+              "naam": "Wil je er een menu van maken?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Menu zonder Saus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayonaise",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Currysaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Tomatenketchup",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog +ui",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Speciaal",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayo/Curry",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Pindasaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Joppiesaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met alles (mayo,curry,pinda,ui)",
+                  "prijs": 5.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "chicken-italian-burger",
           "naam": "Chicken Italian Burger",
           "prijs": 7.95,
-          "beschrijving": "Kipfiletburger, truffelmayonaise, tomaat, gebakken rode ui en Parmezaanse kaas."
+          "beschrijving": "Kipfiletburger, truffelmayonaise, tomaat, gebakken rode ui en Parmezaanse kaas.",
+          "kassaExtras": [
+            {
+              "id": "opties-burger",
+              "naam": "Opties Burger",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Met Cheddar",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Bacon",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Gebakken Ei",
+                  "prijs": 1.5
+                }
+              ]
+            },
+            {
+              "id": "menu-van-maken",
+              "naam": "Wil je er een menu van maken?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Menu zonder Saus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayonaise",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Currysaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Tomatenketchup",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog +ui",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Speciaal",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayo/Curry",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Pindasaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Joppiesaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met alles (mayo,curry,pinda,ui)",
+                  "prijs": 5.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "chicken-joppie-burger",
           "naam": "Chicken Joppie Burger",
           "prijs": 7.5,
           "beschrijving": "Kipfiletburger, cheddar, tomaat, joppiesaus en geroosterde uitjes.",
-          "foto": "chickenjoppie.jpg"
+          "foto": "chickenjoppie.jpg",
+          "kassaExtras": [
+            {
+              "id": "opties-burger",
+              "naam": "Opties Burger",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Met Cheddar",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Bacon",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Gebakken Ei",
+                  "prijs": 1.5
+                }
+              ]
+            },
+            {
+              "id": "menu-van-maken",
+              "naam": "Wil je er een menu van maken?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Menu zonder Saus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayonaise",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Currysaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Tomatenketchup",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog +ui",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Speciaal",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayo/Curry",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Pindasaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Joppiesaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met alles (mayo,curry,pinda,ui)",
+                  "prijs": 5.0
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "spicy-mexican-burger",
           "naam": "Spicy Mexican Burger",
           "prijs": 7.95,
-          "beschrijving": "Kipfiletburger, cheddar, salsasaus, mais en gefrituurd uiennest."
+          "beschrijving": "Kipfiletburger, cheddar, salsasaus, mais en gefrituurd uiennest.",
+          "kassaExtras": [
+            {
+              "id": "opties-burger",
+              "naam": "Opties Burger",
+              "type": "multi",
+              "min": 0,
+              "max": 5,
+              "opties": [
+                {
+                  "naam": "Met Cheddar",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Bacon",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Gebakken Ei",
+                  "prijs": 1.5
+                }
+              ]
+            },
+            {
+              "id": "menu-van-maken",
+              "naam": "Wil je er een menu van maken?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Menu zonder Saus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayonaise",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Currysaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Tomatenketchup",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Oorlog +ui",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Speciaal",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Mayo/Curry",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Pindasaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met Joppiesaus",
+                  "prijs": 5.0
+                },
+                {
+                  "naam": "Menu met alles (mayo,curry,pinda,ui)",
+                  "prijs": 5.0
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "kipburgers"
@@ -1073,14 +5410,22 @@
           "naam": "Bittergarnituur 30 stuks",
           "prijs": 22.5,
           "beschrijving": "Mix van 10 soorten mini hapjes, incl. mayonaise, currysaus en pindasaus.",
-          "foto": "bittergarnituur-bord.jpg"
+          "foto": "bittergarnituur-bord.jpg",
+          "kassaToeslag": {
+            "naam": "Verpakkingskosten",
+            "prijs": 1.5
+          }
         },
         {
           "id": "bittergarnituur-50",
           "naam": "Bittergarnituur 50 stuks",
           "prijs": 35.5,
           "beschrijving": "Mix van 10 soorten mini hapjes, incl. mayonaise, currysaus en pindasaus.",
-          "foto": "bittergarnituur.jpg"
+          "foto": "bittergarnituur.jpg",
+          "kassaToeslag": {
+            "naam": "Verpakkingskosten",
+            "prijs": 1.5
+          }
         }
       ],
       "id": "bittergarnituur"
@@ -1092,25 +5437,277 @@
           "id": "ijs-300",
           "naam": "IJsbeker 300ml",
           "prijs": 4,
-          "beschrijving": "Softijs met eventueel saus of dip naar keuze."
+          "beschrijving": "Softijs met eventueel saus of dip naar keuze.",
+          "kassaExtras": [
+            {
+              "id": "saus-ijs",
+              "naam": "Wilt u saus bij uw beker ijs?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met aardbeiensaus",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met chocoladesaus",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Caramelsaus",
+                  "prijs": 0.5
+                }
+              ]
+            },
+            {
+              "id": "dip-ijsje",
+              "naam": "Wilt u een dip op uw ijsje?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder dip",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met discodip",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met nootjes",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met smurfendip",
+                  "prijs": 0
+                }
+              ]
+            },
+            {
+              "id": "plastic-toeslag",
+              "naam": "Plastic Toeslag",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Plastic Toeslag",
+                  "prijs": 0.1
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "ijs-400",
           "naam": "IJsbeker 400ml",
           "prijs": 5,
-          "beschrijving": "Softijs met eventueel saus of dip naar keuze."
+          "beschrijving": "Softijs met eventueel saus of dip naar keuze.",
+          "kassaExtras": [
+            {
+              "id": "saus-ijs",
+              "naam": "Wilt u saus bij uw beker ijs?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met aardbeiensaus",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met chocoladesaus",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Caramelsaus",
+                  "prijs": 0.5
+                }
+              ]
+            },
+            {
+              "id": "dip-ijsje",
+              "naam": "Wilt u een dip op uw ijsje?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder dip",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met discodip",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met nootjes",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met smurfendip",
+                  "prijs": 0
+                }
+              ]
+            },
+            {
+              "id": "plastic-toeslag",
+              "naam": "Plastic Toeslag",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Plastic Toeslag",
+                  "prijs": 0.1
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "ijs-500",
           "naam": "IJsbeker 500ml",
           "prijs": 6,
-          "beschrijving": "Softijs met eventueel saus of dip naar keuze."
+          "beschrijving": "Softijs met eventueel saus of dip naar keuze.",
+          "kassaExtras": [
+            {
+              "id": "saus-ijs",
+              "naam": "Wilt u saus bij uw beker ijs?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder saus",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met aardbeiensaus",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met chocoladesaus",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Met Caramelsaus",
+                  "prijs": 0.5
+                }
+              ]
+            },
+            {
+              "id": "dip-ijsje",
+              "naam": "Wilt u een dip op uw ijsje?",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Zonder dip",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met discodip",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met nootjes",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Met smurfendip",
+                  "prijs": 0
+                }
+              ]
+            },
+            {
+              "id": "plastic-toeslag",
+              "naam": "Plastic Toeslag",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Plastic Toeslag",
+                  "prijs": 0.1
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "sundae",
           "naam": "Sundae",
           "prijs": 3,
-          "beschrijving": "Zacht softijs met een topping naar keuze."
+          "beschrijving": "Zacht softijs met een topping naar keuze.",
+          "kassaExtras": [
+            {
+              "id": "smaak",
+              "naam": "Smaak",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Naturel",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Aardbei",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Caramel",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Chocolade",
+                  "prijs": 0
+                }
+              ]
+            },
+            {
+              "id": "nootjes",
+              "naam": "Nootjes",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Met nootjes",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Zonder nootjes",
+                  "prijs": 0
+                }
+              ]
+            },
+            {
+              "id": "plastic-toeslag",
+              "naam": "Plastic Toeslag",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Plastic Toeslag",
+                  "prijs": 0.1
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "ijs"
@@ -1123,21 +5720,129 @@
           "naam": "Milkshake vanille",
           "prijs": 3.5,
           "beschrijving": "Romige, ijskoude milkshake met vanillesmaak.",
-          "foto": "milkshake.jpg"
+          "foto": "milkshake.jpg",
+          "kassaExtras": [
+            {
+              "id": "formaat",
+              "naam": "Formaat",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Klein 300ml",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Middel 400ml",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Groot 500ml",
+                  "prijs": 1.0
+                }
+              ]
+            },
+            {
+              "id": "plastic-toeslag",
+              "naam": "Plastic Toeslag",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Plastic Toeslag",
+                  "prijs": 0.1
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "milkshake-aardbei",
           "naam": "Milkshake aardbei",
           "prijs": 3.5,
           "beschrijving": "Romige, ijskoude milkshake met aardbeismaak.",
-          "foto": "milkshake.jpg"
+          "foto": "milkshake.jpg",
+          "kassaExtras": [
+            {
+              "id": "formaat",
+              "naam": "Formaat",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Klein 300ml",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Middel 400ml",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Groot 500ml",
+                  "prijs": 1.0
+                }
+              ]
+            },
+            {
+              "id": "plastic-toeslag",
+              "naam": "Plastic Toeslag",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Plastic Toeslag",
+                  "prijs": 0.1
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "milkshake-banaan",
           "naam": "Milkshake banaan",
           "prijs": 3.5,
           "beschrijving": "Romige milkshake met de smaak van banaan.",
-          "foto": "milkshake.jpg"
+          "foto": "milkshake.jpg",
+          "kassaExtras": [
+            {
+              "id": "formaat",
+              "naam": "Formaat",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Klein 300ml",
+                  "prijs": 0
+                },
+                {
+                  "naam": "Middel 400ml",
+                  "prijs": 0.5
+                },
+                {
+                  "naam": "Groot 500ml",
+                  "prijs": 1.0
+                }
+              ]
+            },
+            {
+              "id": "plastic-toeslag",
+              "naam": "Plastic Toeslag",
+              "type": "single",
+              "min": 0,
+              "max": 1,
+              "opties": [
+                {
+                  "naam": "Plastic Toeslag",
+                  "prijs": 0.1
+                }
+              ]
+            }
+          ]
         }
       ],
       "id": "milkshakes"
