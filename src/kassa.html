@@ -107,6 +107,23 @@ button.secundair:active{background:var(--paper-line)}
 #betaalOverlay .bedrag{font-size:5.5rem;font-weight:900;margin:.5rem 0 1.3rem}
 #betaalOverlay .loyaliteitInfo{font-size:1.05rem;margin-bottom:1.8rem;opacity:.95;max-width:32rem}
 #betaalOverlay button{background:#fff;color:var(--green-ink);border:none;border-radius:10px;padding:1.2rem 2.6rem;font-weight:800;font-size:1.15rem;cursor:pointer;min-height:64px}
+#betaalOverlay button:disabled{opacity:.4;cursor:not-allowed}
+#betaalOverlay .scene{display:none;flex-direction:column;align-items:center}
+#betaalOverlay .scene.actief{display:flex}
+.betaalKeuzeKnoppen{display:flex;gap:1.2rem;margin-top:.6rem}
+.betaalKeuzeKnoppen button{min-width:170px}
+#numpadWeergave{font-size:4rem;font-weight:900;margin:.4rem 0 .3rem}
+#wisselgeldRij{font-size:1.35rem;font-weight:700;min-height:1.7em;margin-bottom:1rem}
+#wisselgeldRij.nogNiet{opacity:.75;font-weight:500}
+.numpadSnel{display:flex;gap:.6rem;margin-bottom:1rem;flex-wrap:wrap;justify-content:center;max-width:22rem}
+.numpadSnel button{background:rgba(255,255,255,.14);color:#fff;border:none;border-radius:8px;font-weight:700;font-size:1rem;padding:.7rem 1.05rem;cursor:pointer;min-height:52px}
+.numpadSnel button:active{background:rgba(255,255,255,.28)}
+.numpad{display:grid;grid-template-columns:repeat(3,86px);gap:.65rem;margin-bottom:1.2rem}
+.numpad button{background:rgba(255,255,255,.14);color:#fff;border:none;border-radius:10px;font-weight:800;font-size:1.4rem;min-height:66px;cursor:pointer}
+.numpad button:active{background:rgba(255,255,255,.28)}
+.betaalKnopRij{display:flex;gap:.8rem}
+.betaalKnopRij button.secundair{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5)}
+.betaalKnopRij button.secundair:active{background:rgba(255,255,255,.14)}
 
 @media (max-width: 900px){
   #layout{flex-direction:column;height:auto;overflow:visible}
@@ -179,12 +196,59 @@ button.secundair:active{background:var(--paper-line)}
   </div>
 </div>
 
-<!-- Afreken-bevestiging (te betalen bedrag groot in beeld) -->
+<!-- Afreken-bevestiging: eerst pin/contant kiezen, bij contant een numpad
+     met live wisselgeldberekening. De order zelf is op dit punt al
+     afgerond via /api/kassa-order — deze schermen gaan alleen over hoe
+     het geld ontvangen wordt, niet of de verkoop doorgaat. -->
 <div id="betaalOverlay">
-  <div class="label">Te ontvangen (pin/contant)</div>
-  <div class="bedrag" id="betaalBedrag">€0,00</div>
-  <div class="loyaliteitInfo" id="betaalLoyaliteitInfo"></div>
-  <button type="button" id="volgendeKlantBtn">Volgende klant</button>
+
+  <div class="scene actief" id="sceneKeuze">
+    <div class="label">Totaal</div>
+    <div class="bedrag" id="betaalBedragKeuze">€0,00</div>
+    <div class="loyaliteitInfo" id="betaalLoyaliteitInfo"></div>
+    <div class="betaalKeuzeKnoppen">
+      <button type="button" id="kiesPinBtn">Pin</button>
+      <button type="button" id="kiesContantBtn">Contant</button>
+    </div>
+  </div>
+
+  <div class="scene" id="scenePin">
+    <div class="label">Te pinnen</div>
+    <div class="bedrag" id="betaalBedragPin">€0,00</div>
+    <button type="button" class="volgendeKlantBtn">Volgende klant</button>
+  </div>
+
+  <div class="scene" id="sceneContant">
+    <div class="label">Ontvangen bedrag</div>
+    <div class="bedrag" id="numpadWeergave">€0,00</div>
+    <div id="wisselgeldRij" class="nogNiet">Totaal: €0,00</div>
+    <div class="numpadSnel" id="numpadSnelHost"></div>
+    <div class="numpad">
+      <button type="button" data-cijfer="1">1</button>
+      <button type="button" data-cijfer="2">2</button>
+      <button type="button" data-cijfer="3">3</button>
+      <button type="button" data-cijfer="4">4</button>
+      <button type="button" data-cijfer="5">5</button>
+      <button type="button" data-cijfer="6">6</button>
+      <button type="button" data-cijfer="7">7</button>
+      <button type="button" data-cijfer="8">8</button>
+      <button type="button" data-cijfer="9">9</button>
+      <button type="button" id="numpadWisBtn">C</button>
+      <button type="button" data-cijfer="0">0</button>
+      <button type="button" id="numpadBackBtn">&larr;</button>
+    </div>
+    <div class="betaalKnopRij">
+      <button type="button" class="secundair" id="contantTerugBtn">Terug</button>
+      <button type="button" id="contantBevestigBtn" disabled>Bevestigen</button>
+    </div>
+  </div>
+
+  <div class="scene" id="sceneWisselgeld">
+    <div class="label">Wisselgeld</div>
+    <div class="bedrag" id="betaalWisselgeldBedrag">€0,00</div>
+    <button type="button" class="volgendeKlantBtn">Volgende klant</button>
+  </div>
+
 </div>
 
 <script>
@@ -594,8 +658,23 @@ button.secundair:active{background:var(--paper-line)}
       });
   });
 
+  // --- Pin/contant-keuze + numpad met wisselgeldberekening ---
+  // De verkoop zelf staat op dit punt al vast (kassa-order.js is al
+  // succesvol aangeroepen) — deze schermen bepalen alleen hoe het
+  // personeel het bedrag laat zien/uitrekent, niets hiervan raakt de
+  // database. Daarom is dit bewust puur front-end, geen extra API-call.
+  var betaalTotaal = 0;
+  var numpadCents = 0;
+
+  function toonScene(id){
+    document.querySelectorAll('#betaalOverlay .scene').forEach(function(el){
+      el.classList.toggle('actief', el.id === id);
+    });
+  }
+
   function toonBetaalOverlay(data){
-    document.getElementById('betaalBedrag').textContent = euro(data.totaal);
+    betaalTotaal = Number(data.totaal) || 0;
+    document.getElementById('betaalBedragKeuze').textContent = euro(betaalTotaal);
     var infoHost = document.getElementById('betaalLoyaliteitInfo');
     if (data.loyaliteit && !data.loyaliteit.fout) {
       var extra = data.loyaliteit.kortingErbij > 0 ? ' Er is €5 korting bijgeschreven omdat 20 zegels bereikt zijn!' : '';
@@ -605,18 +684,102 @@ button.secundair:active{background:var(--paper-line)}
     } else {
       infoHost.textContent = '';
     }
+    toonScene('sceneKeuze');
     document.getElementById('betaalOverlay').classList.add('actief');
   }
 
-  document.getElementById('volgendeKlantBtn').addEventListener('click', function(){
-    cart = [];
-    loyaliteitAccount = null;
-    document.getElementById('loyCode').value = '';
-    document.getElementById('loyKlantkaart').style.display = 'none';
-    document.getElementById('loyMelding').textContent = '';
-    document.getElementById('afrekenMelding').textContent = '';
-    tekenCart();
-    document.getElementById('betaalOverlay').classList.remove('actief');
+  document.getElementById('kiesPinBtn').addEventListener('click', function(){
+    document.getElementById('betaalBedragPin').textContent = euro(betaalTotaal);
+    toonScene('scenePin');
+  });
+
+  document.getElementById('kiesContantBtn').addEventListener('click', function(){
+    numpadCents = 0;
+    tekenNumpad();
+    bouwNumpadSnelknoppen();
+    toonScene('sceneContant');
+  });
+
+  document.getElementById('contantTerugBtn').addEventListener('click', function(){
+    toonScene('sceneKeuze');
+  });
+
+  function bouwNumpadSnelknoppen(){
+    var host = document.getElementById('numpadSnelHost');
+    host.innerHTML = '';
+    var passendCents = Math.round(betaalTotaal * 100);
+    var briefjes = [passendCents, 500, 1000, 2000, 5000];
+    // Uniek houden en alleen briefjes tonen die zinnig zijn (>= totaal, of het passende bedrag zelf).
+    var gezien = {};
+    briefjes.forEach(function(cents){
+      if (cents <= 0 || gezien[cents]) return;
+      gezien[cents] = true;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = cents === passendCents ? 'Precies (' + euro(cents / 100) + ')' : euro(cents / 100);
+      btn.addEventListener('click', function(){
+        numpadCents = cents;
+        tekenNumpad();
+      });
+      host.appendChild(btn);
+    });
+  }
+
+  function tekenNumpad(){
+    document.getElementById('numpadWeergave').textContent = euro(numpadCents / 100);
+    var wisselRij = document.getElementById('wisselgeldRij');
+    var wisselgeld = Math.round((numpadCents / 100 - betaalTotaal) * 100) / 100;
+    var bevestigBtn = document.getElementById('contantBevestigBtn');
+    if (numpadCents === 0) {
+      wisselRij.textContent = 'Totaal: ' + euro(betaalTotaal);
+      wisselRij.classList.add('nogNiet');
+      bevestigBtn.disabled = true;
+    } else if (wisselgeld < 0) {
+      wisselRij.textContent = 'Nog €' + Math.abs(wisselgeld).toFixed(2).replace('.', ',') + ' te weinig';
+      wisselRij.classList.add('nogNiet');
+      bevestigBtn.disabled = true;
+    } else {
+      wisselRij.textContent = 'Wisselgeld: ' + euro(wisselgeld);
+      wisselRij.classList.remove('nogNiet');
+      bevestigBtn.disabled = false;
+    }
+  }
+
+  document.querySelector('.numpad').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-cijfer]');
+    if (!btn) return;
+    // Cap op €999,99 zodat je niet per ongeluk een absurd bedrag opbouwt.
+    var nieuw = numpadCents * 10 + Number(btn.dataset.cijfer);
+    if (nieuw <= 99999) numpadCents = nieuw;
+    tekenNumpad();
+  });
+  document.getElementById('numpadWisBtn').addEventListener('click', function(){
+    numpadCents = 0;
+    tekenNumpad();
+  });
+  document.getElementById('numpadBackBtn').addEventListener('click', function(){
+    numpadCents = Math.floor(numpadCents / 10);
+    tekenNumpad();
+  });
+
+  document.getElementById('contantBevestigBtn').addEventListener('click', function(){
+    var wisselgeld = Math.round((numpadCents / 100 - betaalTotaal) * 100) / 100;
+    if (wisselgeld < 0) return;
+    document.getElementById('betaalWisselgeldBedrag').textContent = euro(wisselgeld);
+    toonScene('sceneWisselgeld');
+  });
+
+  document.querySelectorAll('.volgendeKlantBtn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      cart = [];
+      loyaliteitAccount = null;
+      document.getElementById('loyCode').value = '';
+      document.getElementById('loyKlantkaart').style.display = 'none';
+      document.getElementById('loyMelding').textContent = '';
+      document.getElementById('afrekenMelding').textContent = '';
+      tekenCart();
+      document.getElementById('betaalOverlay').classList.remove('actief');
+    });
   });
 })();
 </script>
