@@ -270,7 +270,7 @@ button.secundair:active{background:var(--paper-line)}
   }
 
   // --- Winkelwagen ---
-  // Cart-regels worden bijgehouden als array van { id, naam, basisPrijs, extras: {groepId: optieIndex}, extraOmschrijving, prijsPerStuk, aantal }.
+  // Cart-regels worden bijgehouden als array van { id, naam, extras: {groepId: [optieIndex,...]}, extraOmschrijving, prijsPerStuk, aantal }.
   // Regels met verschillende extra-keuzes voor hetzelfde product blijven bewust
   // aparte regels (bijv. patat met/zonder saus zijn niet samen te voegen).
   var cart = [];
@@ -280,26 +280,49 @@ button.secundair:active{background:var(--paper-line)}
   }
 
   function productKlik(product){
-    if (Array.isArray(product.extras) && product.extras.length > 0) {
+    if (Array.isArray(product.kassaExtras) && product.kassaExtras.length > 0) {
       openModal(product);
     } else {
       voegToeAanCart(product, {}, 1);
     }
   }
 
-  function voegToeAanCart(product, extras, aantal){
+  // Berekent prijs + omschrijving op basis van de exacte CashDesk-keuzegroepen
+  // (product.kassaExtras) en een eventuele verplichte vaste toeslag
+  // (product.kassaToeslag, bv. Verpakkingskosten bij Bittergarnituur).
+  // selecties heeft de vorm { groepId: [optieIndex, ...] } — ook single-select
+  // groepen gebruiken een array (met 0 of 1 element), zodat single- en
+  // multi-select-groepen door dezelfde code afgehandeld kunnen worden.
+  function berekenPrijsEnOmschrijving(product, selecties){
+    var basisPrijs = product.prijs;
     var extraPrijs = 0;
-    var extraOmschrijvingen = [];
-    (product.extras || []).forEach(function(groep){
-      var idx = extras[groep.id];
-      if (idx === undefined || idx === null) return;
-      var optie = groep.opties[idx];
-      if (!optie) return;
-      extraPrijs += optie.prijs || 0;
-      if (optie.prijs > 0 || groep.type === 'keuze') extraOmschrijvingen.push(optie.naam);
+    var omschrijvingen = [];
+    (product.kassaExtras || []).forEach(function(groep){
+      var idxs = selecties[groep.id] || [];
+      idxs.forEach(function(idx){
+        var optie = groep.opties[idx];
+        if (!optie) return;
+        if (groep.vervangtPrijs) {
+          basisPrijs = optie.prijs;
+        } else {
+          extraPrijs += optie.prijs || 0;
+        }
+        omschrijvingen.push(optie.naam);
+      });
     });
-    var prijsPerStuk = Math.round((product.prijs + extraPrijs) * 100) / 100;
-    var sleutel = sleutelVoorRegel(product.id, extras);
+    if (product.kassaToeslag) {
+      extraPrijs += product.kassaToeslag.prijs || 0;
+      omschrijvingen.push(product.kassaToeslag.naam);
+    }
+    return {
+      prijsPerStuk: Math.round((basisPrijs + extraPrijs) * 100) / 100,
+      omschrijving: omschrijvingen.join(', '),
+    };
+  }
+
+  function voegToeAanCart(product, selecties, aantal){
+    var berekend = berekenPrijsEnOmschrijving(product, selecties);
+    var sleutel = sleutelVoorRegel(product.id, selecties);
     var bestaande = cart.find(function(r){ return r.sleutel === sleutel; });
     if (bestaande) {
       bestaande.aantal += aantal;
@@ -308,9 +331,9 @@ button.secundair:active{background:var(--paper-line)}
         sleutel: sleutel,
         id: product.id,
         naam: product.naam,
-        extras: extras,
-        extraOmschrijving: extraOmschrijvingen.join(', '),
-        prijsPerStuk: prijsPerStuk,
+        extras: selecties,
+        extraOmschrijving: berekend.omschrijving,
+        prijsPerStuk: berekend.prijsPerStuk,
         aantal: aantal,
       });
     }
@@ -360,10 +383,21 @@ button.secundair:active{background:var(--paper-line)}
   }
 
   // --- Extras-modal: grote keuzeknoppen i.p.v. radio/checkbox ---
+  // Ondersteunt zowel single-select groepen (max 1, radiogedrag: kiezen
+  // vervangt de vorige keuze in die groep) als multi-select groepen (max N,
+  // togglegedrag: elke knop schakelt onafhankelijk aan/uit, tot het max
+  // bereikt is). modalSelecties heeft de vorm { groepId: [optieIndex, ...] }.
   var modalProduct = null;
   var modalAantal = 1;
-  var modalSelecties = {}; // { groepId: optieIndex }
+  var modalSelecties = {};
   var overlay = document.getElementById('modalOverlay');
+
+  function groepLabel(groep){
+    if (groep.min >= 1) {
+      return groep.max > 1 ? ' (verplicht, kies 1-' + groep.max + ')' : ' (verplicht)';
+    }
+    return groep.max > 1 ? ' (optioneel, kies tot ' + groep.max + ')' : ' (optioneel)';
+  }
 
   function openModal(product){
     modalProduct = product;
@@ -374,12 +408,13 @@ button.secundair:active{background:var(--paper-line)}
     document.getElementById('modalMelding').textContent = '';
     var host = document.getElementById('modalExtrasHost');
     host.innerHTML = '';
-    product.extras.forEach(function(groep){
+    product.kassaExtras.forEach(function(groep){
+      modalSelecties[groep.id] = [];
       var wrap = document.createElement('div');
       wrap.className = 'extraGroep';
       var titel = document.createElement('div');
       titel.className = 'groepnaam';
-      titel.textContent = groep.naam + (groep.verplicht ? ' (verplicht)' : ' (optioneel)');
+      titel.textContent = groep.naam + groepLabel(groep);
       wrap.appendChild(titel);
       var optiesHost = document.createElement('div');
       optiesHost.className = 'opties';
@@ -389,15 +424,21 @@ button.secundair:active{background:var(--paper-line)}
         btn.className = 'optieBtn';
         btn.innerHTML = optie.naam + (optie.prijs > 0 ? '<span class="optiePrijs">+' + euro(optie.prijs) + '</span>' : '');
         btn.addEventListener('click', function(){
-          var huidig = modalSelecties[groep.id];
-          if (huidig === idx && !groep.verplicht) {
-            // Optioneel: nogmaals tikken op de al gekozen optie zet 'm weer uit.
-            delete modalSelecties[groep.id];
+          var huidig = modalSelecties[groep.id] || [];
+          var alGeselecteerd = huidig.indexOf(idx) !== -1;
+          if (groep.max <= 1) {
+            // single-select: nogmaals tikken op de gekozen optie zet 'm uit;
+            // een nieuwe keuze vervangt altijd de vorige in deze groep.
+            modalSelecties[groep.id] = alGeselecteerd ? [] : [idx];
+          } else if (alGeselecteerd) {
+            modalSelecties[groep.id] = huidig.filter(function(i){ return i !== idx; });
+          } else if (huidig.length < groep.max) {
+            modalSelecties[groep.id] = huidig.concat([idx]);
           } else {
-            modalSelecties[groep.id] = idx;
+            return; // max bereikt: negeer extra klik
           }
           optiesHost.querySelectorAll('.optieBtn').forEach(function(b, i2){
-            b.classList.toggle('geselecteerd', modalSelecties[groep.id] === i2);
+            b.classList.toggle('geselecteerd', modalSelecties[groep.id].indexOf(i2) !== -1);
           });
         });
         optiesHost.appendChild(btn);
@@ -419,21 +460,21 @@ button.secundair:active{background:var(--paper-line)}
 
   document.getElementById('modalToevoegenBtn').addEventListener('click', function(){
     if (!modalProduct) return;
-    var extras = {};
     var fout = null;
-    modalProduct.extras.forEach(function(groep){
-      var idx = modalSelecties[groep.id];
-      if (idx === undefined || idx === null) {
-        if (groep.verplicht) fout = 'Kies een optie bij "' + groep.naam + '".';
-        return;
+    modalProduct.kassaExtras.forEach(function(groep){
+      if (fout) return;
+      var aantalGeselecteerd = (modalSelecties[groep.id] || []).length;
+      if (aantalGeselecteerd < (groep.min || 0)) {
+        fout = 'Kies minimaal ' + (groep.min || 1) + ' optie(s) bij "' + groep.naam + '".';
+      } else if (aantalGeselecteerd > groep.max) {
+        fout = 'Te veel keuzes bij "' + groep.naam + '".';
       }
-      extras[groep.id] = idx;
     });
     if (fout) {
       document.getElementById('modalMelding').textContent = fout;
       return;
     }
-    voegToeAanCart(modalProduct, extras, modalAantal);
+    voegToeAanCart(modalProduct, modalSelecties, modalAantal);
     sluitModal();
   });
 
