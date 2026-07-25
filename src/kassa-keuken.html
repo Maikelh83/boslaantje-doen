@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Keuken · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+--green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
+--paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
+--geel:#B08900;--geel-bg:#FFF6DC;--rood:#8A2B1E;--rood-bg:#FBE4E0;--groen-bg:#EAF1E4;
+--font-body:'Roboto',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.4;font-size:18px}
+h1,h2,h3{font-weight:700;color:var(--green-ink)}
+button{font-family:inherit;user-select:none}
+
+#lockScreen{max-width:400px;margin:4rem auto;background:#fff;border:1px solid var(--paper-line);border-radius:10px;padding:2rem}
+#lockScreen h1{text-align:center;font-size:1.3rem;margin-bottom:.4rem}
+#lockScreen p{text-align:center;font-size:.9rem;color:#6b6a62}
+#lockScreen input{width:100%;padding:1rem .9rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1.1rem;margin:1rem 0}
+#lockScreen button{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:1rem;font-weight:800;font-size:1.05rem;cursor:pointer;min-height:56px}
+#lockScreen button:active{background:var(--terracotta-deep)}
+#lockFout{color:var(--rood);font-size:.9rem;min-height:1.2em;margin-top:.5rem;text-align:center}
+
+header{background:var(--green);padding:.9rem 1.3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+header h1{color:#fff;font-size:1.4rem}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem}
+#telAantal{color:#fff;font-weight:800;font-size:1.1rem;background:rgba(255,255,255,.16);padding:.35rem .8rem;border-radius:20px}
+
+#bordHost{padding:1.1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.1rem;align-content:start}
+.leeg{grid-column:1/-1;text-align:center;color:#6b6a62;font-size:1.2rem;padding:4rem 0}
+
+.orderKaart{background:#fff;border-radius:14px;border:3px solid var(--paper-line);padding:1.1rem;display:flex;flex-direction:column;gap:.7rem;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.orderKaart.wacht-normaal{border-color:var(--paper-line)}
+.orderKaart.wacht-geel{border-color:var(--geel);background:var(--geel-bg)}
+.orderKaart.wacht-rood{border-color:var(--rood);background:var(--rood-bg)}
+.orderKaart.nieuw{animation:pulseNieuw 1.6s ease-in-out 2}
+@keyframes pulseNieuw{
+0%,100%{box-shadow:0 1px 3px rgba(0,0,0,.06)}
+50%{box-shadow:0 0 0 6px rgba(74,93,61,.35)}
+}
+
+.kaartKop{display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem}
+.kaartKop .ticket{font-size:1.7rem;font-weight:900;color:var(--green-ink);letter-spacing:.02em}
+.kaartKop .rechts{text-align:right}
+.tijdWachtend{font-weight:800;font-size:1rem}
+.tijdstip{font-size:.82rem;color:#6b6a62}
+.leveringBadge{display:inline-block;font-size:.78rem;font-weight:800;padding:.2rem .55rem;border-radius:20px;text-transform:uppercase;letter-spacing:.03em;margin-top:.3rem}
+.leveringBadge.kassa{background:var(--paper-2);color:var(--green-ink)}
+.leveringBadge.afhalen{background:#E4EEF6;color:#2C5C7A}
+.leveringBadge.bezorgen{background:#F1E6F6;color:#5C2C7A}
+
+.itemsLijst{border-top:1px dashed var(--paper-line);border-bottom:1px dashed var(--paper-line);padding:.6rem 0;display:flex;flex-direction:column;gap:.55rem}
+.item .itemNaam{font-weight:700;font-size:1.08rem}
+.item .itemExtras{font-size:.92rem;color:#4a4940;margin-top:.1rem;line-height:1.3}
+
+.klaarBtn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:.9rem;font-weight:800;font-size:1.1rem;cursor:pointer;min-height:56px}
+.klaarBtn:active{background:var(--green-ink)}
+
+@media (max-width: 640px){
+body{font-size:16px}
+#bordHost{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+<h1>Keuken — personeel</h1>
+<p>Alleen voor personeel — voer het wachtwoord in.</p>
+<input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
+<button type="button" id="ontgrendelBtn">Ontgrendelen</button>
+<div id="lockFout"></div>
+</div>
+
+<div id="scherm" style="display:none">
+<header>
+<h1>Keuken</h1>
+<span id="telAantal">0 openstaand</span>
+<a href="/kassa">&larr; Kassa</a>
+</header>
+<div id="bordHost"></div>
+</div>
+
+<script>
+(function(){
+var wachtwoordInput = document.getElementById('wachtwoordInput');
+var ontgrendelBtn = document.getElementById('ontgrendelBtn');
+var lockFout = document.getElementById('lockFout');
+var huidigWachtwoord = null;
+var bekendeOrderIds = new Set();
+var eersteLading = true;
+var pollTimer = null;
+
+function euro(n){ return '€' + (Number(n)||0).toFixed(2).replace('.', ','); }
+
+// --- Zelfde wachtwoord-check + sessionStorage-sleutel als kassa.html en
+// kassa-loyaliteit.html: één keer inloggen in de balie-omgeving volstaat
+// voor alle personeelsschermen.
+function controleerWachtwoord(wachtwoord){
+lockFout.textContent = 'Controleren...';
+fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(wachtwoord) + '&code=___check___')
+.then(function(res){
+if (res.status === 401) { lockFout.textContent = 'Onjuist wachtwoord.'; return; }
+if (res.status === 500) {
+return res.json().then(function(d){ lockFout.textContent = (d && d.error) || 'Kon niet inloggen.'; });
+}
+huidigWachtwoord = wachtwoord;
+try { sessionStorage.setItem('bd_loyalty_pw', wachtwoord); } catch(e){}
+document.getElementById('lockScreen').style.display = 'none';
+document.getElementById('scherm').style.display = 'block';
+startPolling();
+})
+.catch(function(){ lockFout.textContent = 'Kon geen verbinding maken.'; });
+}
+ontgrendelBtn.addEventListener('click', function(){ controleerWachtwoord(wachtwoordInput.value); });
+wachtwoordInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') controleerWachtwoord(wachtwoordInput.value); });
+var opgeslagen = null;
+try { opgeslagen = sessionStorage.getItem('bd_loyalty_pw'); } catch(e){}
+if (opgeslagen) controleerWachtwoord(opgeslagen);
+
+// --- Geluidssignaal bij een nieuwe bestelling (geen los audiobestand nodig) ---
+function speelSignaal(){
+try {
+var ctx = new (window.AudioContext || window.webkitAudioContext)();
+[0, 0.18].forEach(function(vertraging){
+var osc = ctx.createOscillator();
+var gain = ctx.createGain();
+osc.type = 'sine';
+osc.frequency.value = 880;
+gain.gain.setValueAtTime(0.0001, ctx.currentTime + vertraging);
+gain.gain.exponentialRampToValueAtTime(0.35, ctx.currentTime + vertraging + 0.02);
+gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + vertraging + 0.16);
+osc.connect(gain).connect(ctx.destination);
+osc.start(ctx.currentTime + vertraging);
+osc.stop(ctx.currentTime + vertraging + 0.18);
+});
+} catch(e) { /* geluid is een leuke extra, geen kritieke functie */ }
+}
+
+function minutenGeleden(iso){
+var toen = new Date(iso).getTime();
+if (isNaN(toen)) return 0;
+return Math.max(0, Math.floor((Date.now() - toen) / 60000));
+}
+
+function leveringLabel(lev){
+if (lev === 'afhalen') return 'Afhalen';
+if (lev === 'bezorgen') return 'Bezorgen';
+return 'Kassa';
+}
+
+function tekenBord(orders){
+var host = document.getElementById('bordHost');
+document.getElementById('telAantal').textContent = orders.length + (orders.length === 1 ? ' openstaand' : ' openstaand');
+
+if (orders.length === 0) {
+host.innerHTML = '<div class="leeg">Geen openstaande bestellingen — goed bezig! 👍</div>';
+return;
+}
+
+host.innerHTML = '';
+orders.forEach(function(order){
+var minuten = minutenGeleden(order.aangemaaktOp);
+var urgentie = minuten >= 10 ? 'wacht-rood' : (minuten >= 5 ? 'wacht-geel' : 'wacht-normaal');
+var isNieuw = !eersteLading && !bekendeOrderIds.has(order.orderId);
+
+var kaart = document.createElement('div');
+kaart.className = 'orderKaart ' + urgentie + (isNieuw ? ' nieuw' : '');
+
+var tijd = new Date(order.aangemaaktOp);
+var tijdstipTekst = tijd.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+
+var itemsHtml = order.items.map(function(it){
+return '<div class="item">' +
+'<div class="itemNaam">' + it.aantal + '× ' + it.naam + '</div>' +
+(it.extras ? '<div class="itemExtras">' + it.extras + '</div>' : '') +
+'</div>';
+}).join('');
+
+kaart.innerHTML =
+'<div class="kaartKop">' +
+'<div>' +
+'<div class="ticket">#' + order.ticket + '</div>' +
+'<span class="leveringBadge ' + order.levering + '">' + leveringLabel(order.levering) + '</span>' +
+'</div>' +
+'<div class="rechts">' +
+'<div class="tijdWachtend">' + minuten + ' min</div>' +
+'<div class="tijdstip">' + tijdstipTekst + ' uur</div>' +
+'</div>' +
+'</div>' +
+'<div class="itemsLijst">' + itemsHtml + '</div>' +
+'<button type="button" class="klaarBtn">Klaar ✓</button>';
+
+kaart.querySelector('.klaarBtn').addEventListener('click', function(){
+kaart.remove();
+fetch('/api/keuken-klaar', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ wachtwoord: huidigWachtwoord, orderId: order.orderId }),
+}).catch(function(){ /* volgende poll herstelt de kaart vanzelf als het echt mislukt is */ });
+});
+
+host.appendChild(kaart);
+});
+}
+
+function ladenOrders(){
+fetch('/api/keuken-orders?wachtwoord=' + encodeURIComponent(huidigWachtwoord))
+.then(function(res){ return res.json(); })
+.then(function(data){
+if (!data || !Array.isArray(data.orders)) return;
+var nieuweIds = data.orders.map(function(o){ return o.orderId; });
+var heeftNieuwe = !eersteLading && nieuweIds.some(function(id){ return !bekendeOrderIds.has(id); });
+if (heeftNieuwe) speelSignaal();
+tekenBord(data.orders);
+bekendeOrderIds = new Set(nieuweIds);
+eersteLading = false;
+})
+.catch(function(){ /* volgende poll probeert het gewoon opnieuw */ });
+}
+
+function startPolling(){
+ladenOrders();
+pollTimer = setInterval(ladenOrders, 5000);
+}
+})();
+</script>
+</body>
+</html>
