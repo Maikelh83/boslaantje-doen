@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kassa · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
+  --paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
+  --font-body:'Roboto',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.4;font-size:15px}
+h1,h2,h3{font-weight:700;color:var(--green-ink)}
+header{background:var(--green);padding:.9rem 1.2rem;display:flex;align-items:center;justify-content:space-between}
+header h1{color:#fff;font-size:1.25rem}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:.85rem}
+
+#lockScreen{max-width:360px;margin:4rem auto;background:#fff;border:1px solid var(--paper-line);border-radius:8px;padding:1.6rem;text-align:center}
+#lockScreen input{width:100%;padding:.6rem .7rem;border:1px solid var(--paper-line);border-radius:6px;font:inherit;margin:.8rem 0}
+#lockScreen button{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:6px;padding:.7rem;font-weight:800;cursor:pointer}
+#lockScreen button:hover{background:var(--terracotta-deep)}
+#lockFout{color:#8a2b1e;font-size:.85rem;min-height:1.2em;margin-top:.4rem}
+
+#layout{display:flex;height:calc(100vh - 58px);overflow:hidden}
+#menuKolom{flex:1 1 62%;overflow-y:auto;padding:1rem}
+#cartKolom{flex:0 0 380px;max-width:38%;background:#fff;border-left:1px solid var(--paper-line);display:flex;flex-direction:column;overflow:hidden}
+
+.tabs{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.7rem;margin-bottom:.9rem;border-bottom:1px solid var(--paper-line)}
+.tab{flex:0 0 auto;background:#fff;border:1px solid var(--paper-line);border-radius:20px;padding:.5rem 1rem;font-weight:700;font-size:.85rem;color:#6b6a62;cursor:pointer;white-space:nowrap}
+.tab.actief{background:var(--green);color:#fff;border-color:var(--green)}
+
+.productgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.6rem}
+.productknop{background:#fff;border:1px solid var(--paper-line);border-radius:8px;padding:.8rem;text-align:left;cursor:pointer;min-height:78px;display:flex;flex-direction:column;justify-content:space-between}
+.productknop:hover{border-color:var(--terracotta)}
+.productknop .naam{font-weight:700;font-size:.88rem;color:var(--green-ink)}
+.productknop .prijs{font-weight:800;font-size:.95rem;margin-top:.4rem}
+
+#cartLijst{flex:1;overflow-y:auto;padding:1rem}
+.cartRegel{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;padding:.6rem 0;border-bottom:1px solid var(--paper-line)}
+.cartRegel .info{flex:1}
+.cartRegel .naam{font-weight:700;font-size:.88rem}
+.cartRegel .extras{font-size:.76rem;color:#6b6a62}
+.cartRegel .subtotaal{font-weight:800;white-space:nowrap}
+.stepper{display:flex;align-items:center;gap:.4rem;margin-top:.3rem}
+.stepper button{width:26px;height:26px;border-radius:6px;border:1px solid var(--paper-line);background:var(--paper-2);font-weight:800;cursor:pointer}
+.verwijder{color:#8a2b1e;font-size:.75rem;background:none;border:none;cursor:pointer;padding:0;margin-top:.3rem}
+
+#loyaliteitBlok{border-top:1px solid var(--paper-line);padding:1rem}
+#loyaliteitBlok label{display:block;font-size:.78rem;font-weight:700;color:var(--green-ink);margin-bottom:.3rem}
+#loyaliteitBlok input{width:100%;padding:.5rem .6rem;border:1px solid var(--paper-line);border-radius:6px;font:inherit;margin-bottom:.4rem}
+.klantkaart{background:var(--paper-2);border-radius:6px;padding:.6rem;font-size:.8rem;margin-bottom:.5rem}
+.klantkaart .rij{display:flex;justify-content:space-between;margin-top:.15rem}
+.klein{font-size:.75rem;color:#6b6a62;background:none;border:none;cursor:pointer;text-decoration:underline;padding:0}
+
+#afrekenBlok{border-top:1px solid var(--paper-line);padding:1rem}
+#totaalRij{display:flex;justify-content:space-between;font-size:1.2rem;font-weight:800;margin-bottom:.7rem;color:var(--green-ink)}
+button.primair{background:var(--terracotta);color:#fff;border:none;border-radius:6px;padding:.85rem 1rem;font-weight:800;cursor:pointer;width:100%;font-size:1rem}
+button.primair:hover{background:var(--terracotta-deep)}
+button.primair:disabled{background:#c9beb8;cursor:not-allowed}
+button.secundair{background:var(--paper-2);color:var(--green-ink);border:1px solid var(--paper-line);border-radius:6px;padding:.5rem .9rem;font-weight:700;cursor:pointer;font-size:.82rem}
+.melding{font-size:.82rem;min-height:1.2em;margin-top:.5rem}
+.melding.fout{color:#8a2b1e}
+.melding.ok{color:var(--green-ink)}
+.leegCart{color:#6b6a62;font-size:.85rem;text-align:center;padding:2rem 0}
+
+/* --- extras-modal --- */
+#modalOverlay{position:fixed;inset:0;background:rgba(27,27,24,.5);display:none;align-items:center;justify-content:center;z-index:50;padding:1rem}
+#modalOverlay.actief{display:flex}
+#modalKaart{background:#fff;border-radius:10px;padding:1.4rem;max-width:420px;width:100%;max-height:85vh;overflow-y:auto}
+.extraGroep{margin-bottom:1rem}
+.extraGroep .groepnaam{font-weight:700;font-size:.9rem;margin-bottom:.4rem;color:var(--green-ink)}
+.optieRij{display:flex;align-items:center;gap:.5rem;padding:.4rem 0;cursor:pointer}
+.optieRij input{width:18px;height:18px}
+.optieRij .optieNaam{flex:1;font-size:.88rem}
+.optieRij .optiePrijs{font-size:.82rem;color:#6b6a62}
+
+/* --- afreken-overlay --- */
+#betaalOverlay{position:fixed;inset:0;background:var(--green-ink);display:none;align-items:center;justify-content:center;flex-direction:column;color:#fff;z-index:60;text-align:center;padding:2rem}
+#betaalOverlay.actief{display:flex}
+#betaalOverlay .label{font-size:1.1rem;opacity:.85}
+#betaalOverlay .bedrag{font-size:5rem;font-weight:900;margin:.5rem 0 1.2rem}
+#betaalOverlay .loyaliteitInfo{font-size:1rem;margin-bottom:1.6rem;opacity:.95}
+#betaalOverlay button{background:#fff;color:var(--green-ink);border:none;border-radius:8px;padding:1rem 2rem;font-weight:800;font-size:1.05rem;cursor:pointer}
+
+@media (max-width: 860px){
+  #layout{flex-direction:column;height:auto;overflow:visible}
+  #cartKolom{max-width:100%;flex:none;border-left:none;border-top:1px solid var(--paper-line)}
+}
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+  <h1 style="font-size:1.2rem;margin-bottom:.3rem">Kassa — personeel</h1>
+  <p style="font-size:.85rem;color:#6b6a62">Alleen voor personeel — voer het wachtwoord in.</p>
+  <input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
+  <button type="button" id="ontgrendelBtn">Ontgrendelen</button>
+  <div id="lockFout"></div>
+</div>
+
+<div id="scherm" style="display:none">
+  <header>
+    <h1>Kassa</h1>
+    <a href="/dashboard">&larr; Dashboard</a>
+  </header>
+
+  <div id="layout">
+    <div id="menuKolom">
+      <div class="tabs" id="tabsHost"></div>
+      <div class="productgrid" id="productgridHost"></div>
+    </div>
+
+    <div id="cartKolom">
+      <div id="cartLijst"><div class="leegCart">Nog niets toegevoegd.</div></div>
+
+      <div id="loyaliteitBlok">
+        <label for="loyCode">Spaarkaart-code (optioneel)</label>
+        <input type="text" id="loyCode" placeholder="bijv. K7QXM4RT" autocomplete="off">
+        <button type="button" class="secundair" id="loyZoekBtn" style="width:100%">Koppelen</button>
+        <div class="melding" id="loyMelding"></div>
+        <div id="loyKlantkaart" style="display:none"></div>
+      </div>
+
+      <div id="afrekenBlok">
+        <div id="totaalRij"><span>Totaal</span><span id="totaalBedrag">€0,00</span></div>
+        <button type="button" class="primair" id="afrekenBtn" disabled>Afrekenen</button>
+        <div class="melding fout" id="afrekenMelding"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Extras-keuze modal -->
+<div id="modalOverlay">
+  <div id="modalKaart">
+    <h3 id="modalProductNaam" style="margin-bottom:.9rem"></h3>
+    <div id="modalExtrasHost"></div>
+    <div class="stepper" style="margin:.8rem 0 1.1rem">
+      <span style="font-weight:700;font-size:.85rem;margin-right:.4rem">Aantal:</span>
+      <button type="button" id="modalMin">-</button>
+      <span id="modalAantal" style="min-width:1.4rem;text-align:center;font-weight:800">1</span>
+      <button type="button" id="modalPlus">+</button>
+    </div>
+    <div class="melding fout" id="modalMelding"></div>
+    <button type="button" class="primair" id="modalToevoegenBtn">Toevoegen</button>
+    <button type="button" class="secundair" id="modalAnnulerenBtn" style="width:100%;margin-top:.5rem">Annuleren</button>
+  </div>
+</div>
+
+<!-- Afreken-bevestiging (te betalen bedrag groot in beeld) -->
+<div id="betaalOverlay">
+  <div class="label">Te ontvangen (pin/contant)</div>
+  <div class="bedrag" id="betaalBedrag">€0,00</div>
+  <div class="loyaliteitInfo" id="betaalLoyaliteitInfo"></div>
+  <button type="button" id="volgendeKlantBtn">Volgende klant</button>
+</div>
+
+<script>
+(function(){
+  var wachtwoordInput = document.getElementById('wachtwoordInput');
+  var ontgrendelBtn = document.getElementById('ontgrendelBtn');
+  var lockFout = document.getElementById('lockFout');
+  var huidigWachtwoord = null;
+  var catalogus = null;
+  var productMap = new Map();
+
+  function euro(n){ return '€' + (Number(n)||0).toFixed(2).replace('.', ','); }
+
+  // --- Zelfde wachtwoord-check-truc als kassa-loyaliteit.html: dezelfde
+  // personeelsomgeving, dus hetzelfde wachtwoord (STAFF_LOYALTY_PASSWORD) en
+  // dezelfde sessionStorage-sleutel, zodat je niet twee keer hoeft in te loggen.
+  function controleerWachtwoord(wachtwoord){
+    lockFout.textContent = 'Controleren...';
+    fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(wachtwoord) + '&code=___check___')
+      .then(function(res){
+        if (res.status === 401) { lockFout.textContent = 'Onjuist wachtwoord.'; return; }
+        if (res.status === 500) {
+          return res.json().then(function(d){ lockFout.textContent = (d && d.error) || 'Kon niet inloggen.'; });
+        }
+        huidigWachtwoord = wachtwoord;
+        try { sessionStorage.setItem('bd_loyalty_pw', wachtwoord); } catch(e){}
+        document.getElementById('lockScreen').style.display = 'none';
+        document.getElementById('scherm').style.display = 'block';
+        laadMenu();
+      })
+      .catch(function(){ lockFout.textContent = 'Kon geen verbinding maken.'; });
+  }
+  ontgrendelBtn.addEventListener('click', function(){ controleerWachtwoord(wachtwoordInput.value); });
+  wachtwoordInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') controleerWachtwoord(wachtwoordInput.value); });
+  var opgeslagen = null;
+  try { opgeslagen = sessionStorage.getItem('bd_loyalty_pw'); } catch(e){}
+  if (opgeslagen) controleerWachtwoord(opgeslagen);
+
+  // --- Menu laden ---
+  function laadMenu(){
+    fetch('/producten.json')
+      .then(function(res){ return res.json(); })
+      .then(function(data){
+        catalogus = data;
+        catalogus.categorieen.forEach(function(cat){
+          cat.producten.forEach(function(p){ productMap.set(p.id, p); });
+        });
+        bouwTabs();
+        toonCategorie(catalogus.categorieen[0].naam);
+      })
+      .catch(function(){
+        document.getElementById('productgridHost').innerHTML = '<div class="leegCart">Kon het menu niet laden.</div>';
+      });
+  }
+
+  function bouwTabs(){
+    var host = document.getElementById('tabsHost');
+    host.innerHTML = '';
+    catalogus.categorieen.forEach(function(cat, i){
+      var tab = document.createElement('div');
+      tab.className = 'tab' + (i === 0 ? ' actief' : '');
+      tab.textContent = cat.naam;
+      tab.addEventListener('click', function(){
+        host.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('actief'); });
+        tab.classList.add('actief');
+        toonCategorie(cat.naam);
+      });
+      host.appendChild(tab);
+    });
+  }
+
+  function toonCategorie(naam){
+    var cat = catalogus.categorieen.find(function(c){ return c.naam === naam; });
+    var host = document.getElementById('productgridHost');
+    host.innerHTML = '';
+    if (!cat) return;
+    cat.producten.forEach(function(p){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'productknop';
+      btn.innerHTML = '<span class="naam">' + p.naam + '</span><span class="prijs">' + euro(p.prijs) + '</span>';
+      btn.addEventListener('click', function(){ productKlik(p); });
+      host.appendChild(btn);
+    });
+  }
+
+  // --- Winkelwagen ---
+  // Cart-regels worden bijgehouden als array van { id, naam, basisPrijs, extras: {groepId: optieIndex}, extraOmschrijving, prijsPerStuk, aantal }.
+  // Regels met verschillende extra-keuzes voor hetzelfde product blijven bewust
+  // aparte regels (bijv. patat met/zonder saus zijn niet samen te voegen).
+  var cart = [];
+
+  function sleutelVoorRegel(id, extras){
+    return id + '::' + JSON.stringify(extras || {});
+  }
+
+  function productKlik(product){
+    if (Array.isArray(product.extras) && product.extras.length > 0) {
+      openModal(product);
+    } else {
+      voegToeAanCart(product, {}, 1);
+    }
+  }
+
+  function voegToeAanCart(product, extras, aantal){
+    var extraPrijs = 0;
+    var extraOmschrijvingen = [];
+    (product.extras || []).forEach(function(groep){
+      var idx = extras[groep.id];
+      if (idx === undefined || idx === null) return;
+      var optie = groep.opties[idx];
+      if (!optie) return;
+      extraPrijs += optie.prijs || 0;
+      if (optie.prijs > 0 || groep.type === 'keuze') extraOmschrijvingen.push(optie.naam);
+    });
+    var prijsPerStuk = Math.round((product.prijs + extraPrijs) * 100) / 100;
+    var sleutel = sleutelVoorRegel(product.id, extras);
+    var bestaande = cart.find(function(r){ return r.sleutel === sleutel; });
+    if (bestaande) {
+      bestaande.aantal += aantal;
+    } else {
+      cart.push({
+        sleutel: sleutel,
+        id: product.id,
+        naam: product.naam,
+        extras: extras,
+        extraOmschrijving: extraOmschrijvingen.join(', '),
+        prijsPerStuk: prijsPerStuk,
+        aantal: aantal,
+      });
+    }
+    tekenCart();
+  }
+
+  function tekenCart(){
+    var host = document.getElementById('cartLijst');
+    if (cart.length === 0) {
+      host.innerHTML = '<div class="leegCart">Nog niets toegevoegd.</div>';
+    } else {
+      host.innerHTML = '';
+      cart.forEach(function(regel){
+        var subtotaal = Math.round(regel.prijsPerStuk * regel.aantal * 100) / 100;
+        var div = document.createElement('div');
+        div.className = 'cartRegel';
+        div.innerHTML =
+          '<div class="info">' +
+            '<div class="naam">' + regel.naam + '</div>' +
+            (regel.extraOmschrijving ? '<div class="extras">' + regel.extraOmschrijving + '</div>' : '') +
+            '<div class="stepper">' +
+              '<button type="button" class="min">-</button>' +
+              '<span>' + regel.aantal + '</span>' +
+              '<button type="button" class="plus">+</button>' +
+            '</div>' +
+            '<button type="button" class="verwijder">Verwijderen</button>' +
+          '</div>' +
+          '<div class="subtotaal">' + euro(subtotaal) + '</div>';
+        div.querySelector('.min').addEventListener('click', function(){
+          regel.aantal -= 1;
+          if (regel.aantal <= 0) cart = cart.filter(function(r){ return r !== regel; });
+          tekenCart();
+        });
+        div.querySelector('.plus').addEventListener('click', function(){ regel.aantal += 1; tekenCart(); });
+        div.querySelector('.verwijder').addEventListener('click', function(){
+          cart = cart.filter(function(r){ return r !== regel; });
+          tekenCart();
+        });
+        host.appendChild(div);
+      });
+    }
+    var totaal = cart.reduce(function(s, r){ return s + Math.round(r.prijsPerStuk * r.aantal * 100) / 100; }, 0);
+    totaal = Math.round(totaal * 100) / 100;
+    document.getElementById('totaalBedrag').textContent = euro(totaal);
+    document.getElementById('afrekenBtn').disabled = cart.length === 0;
+    tekenLoyaliteitKorting(totaal);
+  }
+
+  // --- Extras-modal ---
+  var modalProduct = null;
+  var modalAantal = 1;
+  var overlay = document.getElementById('modalOverlay');
+
+  function openModal(product){
+    modalProduct = product;
+    modalAantal = 1;
+    document.getElementById('modalProductNaam').textContent = product.naam;
+    document.getElementById('modalAantal').textContent = '1';
+    document.getElementById('modalMelding').textContent = '';
+    var host = document.getElementById('modalExtrasHost');
+    host.innerHTML = '';
+    product.extras.forEach(function(groep){
+      var wrap = document.createElement('div');
+      wrap.className = 'extraGroep';
+      wrap.dataset.groepId = groep.id;
+      var titel = document.createElement('div');
+      titel.className = 'groepnaam';
+      titel.textContent = groep.naam + (groep.verplicht ? ' (verplicht)' : ' (optioneel)');
+      wrap.appendChild(titel);
+      groep.opties.forEach(function(optie, idx){
+        var label = document.createElement('label');
+        label.className = 'optieRij';
+        label.innerHTML =
+          '<input type="' + (groep.type === 'keuze' ? 'radio' : 'checkbox') + '" name="groep-' + groep.id + '" value="' + idx + '">' +
+          '<span class="optieNaam">' + optie.naam + '</span>' +
+          '<span class="optiePrijs">' + (optie.prijs > 0 ? '+' + euro(optie.prijs) : '') + '</span>';
+        wrap.appendChild(label);
+      });
+      host.appendChild(wrap);
+    });
+    overlay.classList.add('actief');
+  }
+  function sluitModal(){ overlay.classList.remove('actief'); modalProduct = null; }
+
+  document.getElementById('modalAnnulerenBtn').addEventListener('click', sluitModal);
+  document.getElementById('modalMin').addEventListener('click', function(){
+    if (modalAantal > 1) { modalAantal -= 1; document.getElementById('modalAantal').textContent = modalAantal; }
+  });
+  document.getElementById('modalPlus').addEventListener('click', function(){
+    modalAantal += 1; document.getElementById('modalAantal').textContent = modalAantal;
+  });
+
+  document.getElementById('modalToevoegenBtn').addEventListener('click', function(){
+    if (!modalProduct) return;
+    var extras = {};
+    var fout = null;
+    modalProduct.extras.forEach(function(groep){
+      var gekozen = document.querySelector('input[name="groep-' + groep.id + '"]:checked');
+      if (!gekozen) {
+        if (groep.verplicht) fout = 'Kies een optie bij "' + groep.naam + '".';
+        return;
+      }
+      extras[groep.id] = parseInt(gekozen.value, 10);
+    });
+    if (fout) {
+      document.getElementById('modalMelding').textContent = fout;
+      return;
+    }
+    voegToeAanCart(modalProduct, extras, modalAantal);
+    sluitModal();
+  });
+
+  // --- Loyaliteit koppelen ---
+  var loyaliteitAccount = null; // { code, zegels, restBedrag, beschikbareKorting }
+
+  document.getElementById('loyZoekBtn').addEventListener('click', function(){
+    var code = document.getElementById('loyCode').value.trim();
+    var melding = document.getElementById('loyMelding');
+    if (!code) { melding.textContent = 'Voer een code in.'; melding.className = 'melding fout'; return; }
+    melding.textContent = 'Zoeken...';
+    melding.className = 'melding';
+    fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(huidigWachtwoord) + '&code=' + encodeURIComponent(code))
+      .then(function(res){ return res.json().then(function(d){ return {ok:res.ok, data:d}; }); })
+      .then(function(result){
+        if (!result.ok) {
+          melding.textContent = (result.data && result.data.error) || 'Kon spaarkaart niet vinden.';
+          melding.className = 'melding fout';
+          loyaliteitAccount = null;
+          document.getElementById('loyKlantkaart').style.display = 'none';
+          tekenCart();
+          return;
+        }
+        melding.textContent = '';
+        var acc = result.data.account;
+        loyaliteitAccount = { code: acc.code, zegels: acc.zegels, restBedrag: acc.rest_bedrag, beschikbareKorting: acc.beschikbare_korting };
+        tekenKlantkaart();
+        tekenCart();
+      })
+      .catch(function(){ melding.textContent = 'Kon geen verbinding maken.'; melding.className = 'melding fout'; });
+  });
+
+  function tekenKlantkaart(){
+    var host = document.getElementById('loyKlantkaart');
+    if (!loyaliteitAccount) { host.style.display = 'none'; return; }
+    host.style.display = 'block';
+    host.innerHTML =
+      '<div class="klantkaart">' +
+        '<div class="rij"><span>Zegels</span><strong>' + loyaliteitAccount.zegels + ' / 20</strong></div>' +
+        '<div class="rij"><span>Beschikbare korting</span><strong>' + euro(loyaliteitAccount.beschikbareKorting) + '</strong></div>' +
+        (loyaliteitAccount.beschikbareKorting > 0
+          ? '<label style="margin-top:.5rem">Korting nu verzilveren</label><input type="number" id="loyKortingInput" step="0.01" min="0">'
+          : '') +
+        '<button type="button" class="klein" id="loyOntkoppelBtn" style="margin-top:.5rem">Loskoppelen</button>' +
+      '</div>';
+    if (loyaliteitAccount.beschikbareKorting > 0) {
+      var input = document.getElementById('loyKortingInput');
+      input.addEventListener('input', function(){ tekenCart(); });
+    }
+    document.getElementById('loyOntkoppelBtn').addEventListener('click', function(){
+      loyaliteitAccount = null;
+      document.getElementById('loyCode').value = '';
+      host.style.display = 'none';
+      tekenCart();
+    });
+  }
+
+  function gewensteKorting(totaal){
+    if (!loyaliteitAccount || loyaliteitAccount.beschikbareKorting <= 0) return 0;
+    var input = document.getElementById('loyKortingInput');
+    var gewenst = input ? parseFloat(input.value) : loyaliteitAccount.beschikbareKorting;
+    if (!Number.isFinite(gewenst)) gewenst = loyaliteitAccount.beschikbareKorting;
+    gewenst = Math.max(0, Math.min(gewenst, loyaliteitAccount.beschikbareKorting, totaal));
+    return Math.round(gewenst * 100) / 100;
+  }
+
+  function tekenLoyaliteitKorting(totaal){
+    // Toont geen apart kortingsbedrag-veld in de totaalregel (de server bepaalt
+    // het echte te betalen bedrag pas bij het afrekenen), maar houdt het
+    // ingevulde kortingsbedrag netjes binnen de grenzen als het totaal wijzigt.
+    var input = document.getElementById('loyKortingInput');
+    if (input && loyaliteitAccount) {
+      var max = Math.min(loyaliteitAccount.beschikbareKorting, totaal);
+      if (!input.value) input.value = max.toFixed(2);
+    }
+  }
+
+  // --- Afrekenen ---
+  document.getElementById('afrekenBtn').addEventListener('click', function(){
+    var melding = document.getElementById('afrekenMelding');
+    if (cart.length === 0) return;
+    var totaal = cart.reduce(function(s, r){ return s + Math.round(r.prijsPerStuk * r.aantal * 100) / 100; }, 0);
+    totaal = Math.round(totaal * 100) / 100;
+
+    var body = {
+      wachtwoord: huidigWachtwoord,
+      items: cart.map(function(r){ return { id: r.id, aantal: r.aantal, extras: r.extras }; }),
+    };
+    if (loyaliteitAccount) {
+      body.loyaliteitsCode = loyaliteitAccount.code;
+      body.kortingGebruikt = gewensteKorting(totaal);
+    }
+
+    melding.textContent = '';
+    document.getElementById('afrekenBtn').disabled = true;
+
+    fetch('/api/kassa-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(function(res){ return res.json().then(function(d){ return {ok:res.ok, data:d}; }); })
+      .then(function(result){
+        document.getElementById('afrekenBtn').disabled = cart.length === 0;
+        if (!result.ok) {
+          melding.textContent = (result.data && result.data.error) || 'Kon de verkoop niet verwerken.';
+          return;
+        }
+        toonBetaalOverlay(result.data);
+      })
+      .catch(function(){
+        melding.textContent = 'Kon geen verbinding maken.';
+        document.getElementById('afrekenBtn').disabled = cart.length === 0;
+      });
+  });
+
+  function toonBetaalOverlay(data){
+    document.getElementById('betaalBedrag').textContent = euro(data.totaal);
+    var infoHost = document.getElementById('betaalLoyaliteitInfo');
+    if (data.loyaliteit && !data.loyaliteit.fout) {
+      var extra = data.loyaliteit.kortingErbij > 0 ? ' Er is €5 korting bijgeschreven omdat 20 zegels bereikt zijn!' : '';
+      infoHost.textContent = '+' + data.loyaliteit.zegelsErbij + ' zegel(s) toegekend (' + data.loyaliteit.zegelsNieuw + '/20).' + extra;
+    } else if (data.loyaliteit && data.loyaliteit.fout) {
+      infoHost.textContent = data.loyaliteit.fout;
+    } else {
+      infoHost.textContent = '';
+    }
+    document.getElementById('betaalOverlay').classList.add('actief');
+  }
+
+  document.getElementById('volgendeKlantBtn').addEventListener('click', function(){
+    cart = [];
+    loyaliteitAccount = null;
+    document.getElementById('loyCode').value = '';
+    document.getElementById('loyKlantkaart').style.display = 'none';
+    document.getElementById('loyMelding').textContent = '';
+    document.getElementById('afrekenMelding').textContent = '';
+    tekenCart();
+    document.getElementById('betaalOverlay').classList.remove('actief');
+  });
+})();
+</script>
+</body>
+</html>
