@@ -42,6 +42,11 @@ eleventyConfig.addPassthroughCopy('src/kassa-keuken.html');
 // Koppelt via /api/admin/zakelijke-klanten (staff-wachtwoord-gated).
 eleventyConfig.addPassthroughCopy('src/kassa-zakelijke-klanten.html');
 
+// Admin/personeelspagina voor de bezorgzone (geografische afstandscontrole
+// bij bezorgen): maximale bezorgafstand + gestaffelde bezorgkosten instellen.
+// Koppelt via /api/admin/bezorgzone-instellingen (staff-wachtwoord-gated).
+eleventyConfig.addPassthroughCopy('src/kassa-bezorgzone.html');
+
 // Klant-facing account-pagina's voor pijler 7 (zakelijke accounts): registreren
 // en inloggen. Koppelen via /api/auth/register en /api/auth/login.
 eleventyConfig.addPassthroughCopy('src/account-registreren.html');
