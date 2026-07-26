@@ -313,9 +313,27 @@ main{padding:1.4rem 0 3rem}
 .factuur-optie label{display:flex;align-items:center;gap:.6rem;font-weight:600;color:#4a4338;cursor:pointer}
 .factuur-optie input{accent-color:var(--terracotta)}
 .factuur-note{font-size:.78rem;color:#7a786f;margin:.35rem 0 0}
+.login-nudge-overlay{position:fixed;inset:0;background:rgba(20,22,16,.5);z-index:150;display:none;align-items:flex-end;justify-content:center}
+.login-nudge-overlay.open{display:flex}
+.login-nudge{background:#fff;border-radius:var(--r) var(--r) 0 0;max-width:480px;width:100%;padding:1.4rem 1.5rem 1.6rem;position:relative}
+.login-nudge-sluiten{position:absolute;top:.7rem;right:.8rem;background:none;border:none;font-size:1.4rem;line-height:1;color:#7a786f;cursor:pointer;padding:.3rem}
+.login-nudge h3{font-family:var(--font-display);font-size:1.25rem;margin:0 1.6rem .4rem 0;color:var(--ink)}
+.login-nudge p{font-size:.88rem;color:#7a786f;margin:0 0 1rem}
+.login-nudge-knop{display:block;width:100%;text-align:center;padding:.8rem;border-radius:var(--r);font-weight:700;text-decoration:none;margin-bottom:.6rem;cursor:pointer;border:none;font-size:.95rem}
+.login-nudge-knop.primair{background:var(--terracotta);color:#fff}
+.login-nudge-knop.secundair{background:#fff;color:var(--terracotta);border:1.5px solid var(--terracotta);margin-bottom:0}
 </style>
 </head>
 <body>
+  <div class="login-nudge-overlay" id="loginNudgeOverlay">
+    <div class="login-nudge">
+      <button type="button" class="login-nudge-sluiten" id="loginNudgeSluiten" aria-label="Sluiten">&times;</button>
+      <h3>Nog niet ingelogd?</h3>
+      <p>Log in en we onthouden je gegevens, zodat de volgende bestelling nog sneller gaat.</p>
+      <a class="login-nudge-knop primair" href="/account-inloggen">Inloggen</a>
+      <a class="login-nudge-knop secundair" href="/account-registreren">Account aanmaken</a>
+    </div>
+  </div>
 
 <header>
   <div class="wrap">
@@ -1384,6 +1402,40 @@ fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (dat
         }
       } catch (accountUiErr) {
         console.error('bestellen.html: kon account-status/voorinvullen niet verwerken', accountUiErr);
+      }
+
+      // Login-nudge bottom-sheet (zichtbaarheidsnudge, geinspireerd op New York
+      // Pizza) - toont alleen voor niet-ingelogde bezoekers, met vertraging en
+      // een sluitknop die het tonen 7 dagen onderdrukt via localStorage. Belooft
+      // bewust geen (niet-bestaande) korting, puur bedoeld om de accountfunctie
+      // zichtbaarder te maken. Volledig ontkoppeld en faalt stil bij problemen.
+      try {
+        var loginNudgeOverlay = document.getElementById('loginNudgeOverlay');
+        if (loginNudgeOverlay && !(data && data.ingelogd)) {
+          var nudgeOnderdruktTot = parseInt(localStorage.getItem('bdLoginNudgeOnderdruktTot') || '0', 10);
+          if (Date.now() > nudgeOnderdruktTot) {
+            setTimeout(function () {
+              if (!document.querySelector('.modal-overlay.open')) {
+                loginNudgeOverlay.classList.add('open');
+              }
+            }, 4000);
+          }
+          var loginNudgeSluiten = document.getElementById('loginNudgeSluiten');
+          if (loginNudgeSluiten) {
+            loginNudgeSluiten.addEventListener('click', function () {
+              loginNudgeOverlay.classList.remove('open');
+              localStorage.setItem('bdLoginNudgeOnderdruktTot', String(Date.now() + 7 * 24 * 60 * 60 * 1000));
+            });
+          }
+          loginNudgeOverlay.addEventListener('click', function (ev) {
+            if (ev.target === loginNudgeOverlay) {
+              loginNudgeOverlay.classList.remove('open');
+              localStorage.setItem('bdLoginNudgeOnderdruktTot', String(Date.now() + 7 * 24 * 60 * 60 * 1000));
+            }
+          });
+        }
+      } catch (loginNudgeErr) {
+        console.error('bestellen.html: kon login-nudge niet tonen', loginNudgeErr);
       }
 
 var magVrijdagLunch = data && data.ingelogd && data.account && data.account.accountType === 'business' &&
