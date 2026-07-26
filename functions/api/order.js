@@ -10,7 +10,7 @@
 //   MOLLIE_API_KEY  — test_... of live_... key uit het Mollie-dashboard
 //   DB              — D1-database binding (optioneel; als afwezig wordt orderlogging overgeslagen)
 
-import { zorgVoorAccountTabellen, haalIngelogdeGebruikerOp } from "./auth/_lib.js";
+import { zorgVoorAccountTabellen, haalIngelogdeGebruikerOp, haalMinimumFactuurbedrag, berekenFactuurGeschiktheid } from "./auth/_lib.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -171,6 +171,34 @@ if (tijdslot === "vrijdag-lunch") {
       return json({ error: "Ongeldig totaalbedrag." }, 400);
     }
 
+
+    // Pijler 7: automatische zakelijke korting voor goedgekeurde accounts.
+    // custom_discount_percentage staat in business_profiles en wordt hier
+    // altijd toegepast als dat van toepassing is - de klant hoeft er niets
+    // voor te doen of in te vullen. Dit staat los van kortingscodes hieronder
+    // en wordt vóór de kortingscode verrekend.
+    let zakelijkeKortingBedrag = 0;
+    let zakelijkeKortingPercentage = 0;
+    let factuurGeschiktheid = { toegestaan: false };
+    if (env.DB) {
+      await zorgVoorAccountTabellen(env.DB);
+      const zakelijkeGebruiker = await haalIngelogdeGebruikerOp(env.DB, request);
+      if (
+        zakelijkeGebruiker &&
+        zakelijkeGebruiker.account.account_type === "business" &&
+        zakelijkeGebruiker.business &&
+        zakelijkeGebruiker.business.business_approved
+      ) {
+        if (zakelijkeGebruiker.business.custom_discount_percentage > 0) {
+          zakelijkeKortingPercentage = zakelijkeGebruiker.business.custom_discount_percentage;
+          zakelijkeKortingBedrag = Math.round(totaal * (zakelijkeKortingPercentage / 100) * 100) / 100;
+          totaal = Math.round((totaal - zakelijkeKortingBedrag) * 100) / 100;
+          toegepasteActies.push(`Zakelijke korting (${zakelijkeKortingPercentage}%)`);
+        }
+        const minimumFactuurbedrag = await haalMinimumFactuurbedrag(env.DB);
+        factuurGeschiktheid = berekenFactuurGeschiktheid(zakelijkeGebruiker.business, minimumFactuurbedrag, totaal);
+      }
+    }
     // Kortingscode — server-side de enige bron van waarheid.
     let korting = 0;
     let toegepasteCode = null;
@@ -244,6 +272,8 @@ if (tijdslot === "vrijdag-lunch") {
           customer,
           items: orderRegels,
           korting,
+              zakelijkeKorting: zakelijkeKortingBedrag,
+              zakelijkeKortingPercentage,
           couponCode: toegepasteCode,
           loyaltyCode: loyaliteitsCodeGeldig,
           loyaltyKorting: loyaliteitsKorting,
@@ -294,7 +324,17 @@ if (tijdslot === "vrijdag-lunch") {
       }
     }
 
-    return json({ checkoutUrl, orderId, totaal, korting, loyaliteitsKorting });
+    return json({
+      checkoutUrl,
+      orderId,
+      totaal,
+      korting,
+      loyaliteitsKorting,
+      zakelijkeKorting: zakelijkeKortingBedrag,
+      zakelijkeKortingPercentage,
+      magOpFactuur: factuurGeschiktheid.toegestaan,
+      factuurReden: factuurGeschiktheid.reden || null,
+    });
   } catch (err) {
     return json({ error: "Onverwachte fout.", detail: String(err) }, 500);
   }
