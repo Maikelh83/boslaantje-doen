@@ -56,6 +56,21 @@ if (tijdslot === "vrijdag-lunch") {
  return json({ error: "Het tijdslot 'Vrijdag lunch' is alleen beschikbaar voor goedgekeurde zakelijke klanten." }, 400);
  }
 }
+
+// Datum+tijdslot-kiezer ("Kies zelf een moment" in bestellen.html): de klant
+// kiest een eigen datum+tijd, aangeleverd als tijdslot = "DD-MM-JJJJ UU:MM".
+// De server is hier de enige bron van waarheid — valideert format, opening-
+// stijden/vakantie, minimale voorbereidingstijd en het toegestane aantal
+// dagen vooruit, helemaal opnieuw, ook al heeft bestellen.html dezelfde
+// selects al gevuld met geldige opties.
+let gewenstTijdstip = null;
+if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
+  const validatie = valideerEigenTijdslot(tijdslot, levering);
+  if (!validatie.geldig) {
+    return json({ error: validatie.foutmelding }, 400);
+  }
+  gewenstTijdstip = tijdslot;
+}
     // Productenlijst + prijzen ophalen van de eigen, live site (nooit de
     // prijs die de klant meestuurt vertrouwen).
     const productenUrl = new URL("/producten.json", request.url);
@@ -320,10 +335,11 @@ if (tijdslot === "vrijdag-lunch") {
 
       if (env.DB) {
         try {
+          await zorgVoorGewenstTijdstipKolom(env.DB);
           await env.DB
             .prepare(
-              `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, betaald_op)
-               VALUES (?, 'paid', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+              `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, betaald_op, gewenst_tijdstip)
+               VALUES (?, 'paid', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
             )
             .bind(
               factuurOrderId,
@@ -338,7 +354,8 @@ if (tijdslot === "vrijdag-lunch") {
               factuurMoment,
               null,
               0,
-              factuurMoment
+              factuurMoment,
+              gewenstTijdstip
             )
             .run();
         } catch (dbErr) {
@@ -411,9 +428,10 @@ if (tijdslot === "vrijdag-lunch") {
     // bestelling zelf mag hier nooit op stuklopen.
     if (env.DB) {
       try {
+        await zorgVoorGewenstTijdstipKolom(env.DB);
         await env.DB.prepare(
-          `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt)
-           VALUES (?, 'open', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, gewenst_tijdstip)
+           VALUES (?, 'open', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
           .bind(
             orderId,
@@ -427,7 +445,8 @@ if (tijdslot === "vrijdag-lunch") {
             JSON.stringify(toegepasteActies),
             new Date().toISOString(),
             loyaliteitsCodeGeldig,
-            loyaliteitsKorting
+            loyaliteitsKorting,
+            gewenstTijdstip
           )
           .run();
       } catch (dbErr) {
@@ -485,6 +504,150 @@ function vrijdagLunchCutoffBereikt(nu) {
  if (dag >= 1 && dag <= 3) return false; // ma/di/wo: ruim op tijd
  if (dag === 4) return uur >= 17; // do: cut-off om 17:00
  return true; // vr/weekend: cut-off al gepasseerd
+}
+
+// Datum+tijdslot-kiezer ("Kies zelf een moment"): server-side validatie.
+// LET OP: OPENINGSTIJDEN, VAKANTIES, VOORUIT_DAGEN en MIN_VOORBEREIDING_MIN
+// hieronder moeten functioneel gelijk blijven aan de gelijknamige constanten
+// in de losse script-blok onderaan src/bestellen.html en aan de vakantiedata
+// in src/index.html (checkVakantie/VACATIONS) — dit is de server-side bron
+// van waarheid, bestellen.html is alleen het UI-gemak.
+const EIGEN_TIJDSLOT_PATROON = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2})$/;
+
+const OPENINGSTIJDEN = {
+  0: null, // zondag: gesloten
+  1: [16, 0, 21, 0],
+  2: [16, 0, 21, 0],
+  3: [16, 0, 21, 0],
+  4: [16, 0, 21, 0],
+  5: [11, 0, 21, 0],
+  6: [16, 0, 21, 0],
+};
+
+const VAKANTIES = [
+  { schoonmaakZaterdag: "2026-08-01", dichtVanaf: "2026-08-03", dichtTotEnMet: "2026-08-16" },
+  { schoonmaakZaterdag: "2027-07-31", dichtVanaf: "2027-08-02", dichtTotEnMet: "2027-08-15" },
+  { schoonmaakZaterdag: "2028-07-22", dichtVanaf: "2028-07-24", dichtTotEnMet: "2028-08-06" },
+];
+
+const VOORUIT_DAGEN = 6;
+const MIN_VOORBEREIDING_MIN = 20;
+
+function isEigenTijdslotFormaat(waarde) {
+  return EIGEN_TIJDSLOT_PATROON.test(waarde);
+}
+
+function amsterdamNuVolledig() {
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Amsterdam",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  const parts = fmt.formatToParts(new Date());
+  const map = {};
+  parts.forEach((p) => { map[p.type] = p.value; });
+  return {
+    jaar: parseInt(map.year, 10),
+    maand: parseInt(map.month, 10),
+    dag: parseInt(map.day, 10),
+    uur: parseInt(map.hour, 10) % 24,
+    minuut: parseInt(map.minute, 10),
+  };
+}
+
+function vindVakantie(datumObj) {
+  for (const v of VAKANTIES) {
+    const dichtVanaf = new Date(v.dichtVanaf + "T00:00:00");
+    const dichtTot = new Date(v.dichtTotEnMet + "T00:00:00");
+    if (datumObj >= dichtVanaf && datumObj <= dichtTot) return { gesloten: true, vroegSluiten: null };
+    const schoonmaak = new Date(v.schoonmaakZaterdag + "T00:00:00");
+    if (datumObj.getTime() === schoonmaak.getTime()) return { gesloten: false, vroegSluiten: [19, 30] };
+  }
+  return { gesloten: false, vroegSluiten: null };
+}
+
+function openingstijdenVoorDag(datumObj) {
+  const vak = vindVakantie(datumObj);
+  if (vak.gesloten) return null;
+  const basis = OPENINGSTIJDEN[datumObj.getDay()];
+  if (!basis) return null;
+  if (vak.vroegSluiten) return [basis[0], basis[1], vak.vroegSluiten[0], vak.vroegSluiten[1]];
+  return basis;
+}
+
+function valideerEigenTijdslot(waarde, levering) {
+  const match = waarde.match(EIGEN_TIJDSLOT_PATROON);
+  if (!match) {
+    return { geldig: false, foutmelding: "Ongeldig formaat voor het gekozen tijdstip." };
+  }
+  const dag = parseInt(match[1], 10);
+  const maand = parseInt(match[2], 10);
+  const jaar = parseInt(match[3], 10);
+  const uur = parseInt(match[4], 10);
+  const minuut = parseInt(match[5], 10);
+
+  const gekozenDatum = new Date(jaar, maand - 1, dag);
+  if (
+    gekozenDatum.getFullYear() !== jaar ||
+    gekozenDatum.getMonth() !== maand - 1 ||
+    gekozenDatum.getDate() !== dag ||
+    uur < 0 || uur > 23 || minuut < 0 || minuut > 59
+  ) {
+    return { geldig: false, foutmelding: "Ongeldige datum of tijd." };
+  }
+
+  const nu = amsterdamNuVolledig();
+  const vandaag = new Date(nu.jaar, nu.maand - 1, nu.dag);
+
+  if (gekozenDatum < vandaag) {
+    return { geldig: false, foutmelding: "Je kunt geen tijdstip in het verleden kiezen." };
+  }
+  const laatsteToegestaneDag = new Date(vandaag);
+  laatsteToegestaneDag.setDate(laatsteToegestaneDag.getDate() + VOORUIT_DAGEN);
+  if (gekozenDatum > laatsteToegestaneDag) {
+    return { geldig: false, foutmelding: `Je kunt maximaal ${VOORUIT_DAGEN} dagen vooruit een tijdstip kiezen.` };
+  }
+
+  const venster = openingstijdenVoorDag(gekozenDatum);
+  if (!venster) {
+    return { geldig: false, foutmelding: "We zijn gesloten op de gekozen dag." };
+  }
+
+  const gekozenMin = uur * 60 + minuut;
+  let startMin = venster[0] * 60 + venster[1];
+  const eindMin = venster[2] * 60 + venster[3];
+
+  if (gekozenDatum.getTime() === vandaag.getTime()) {
+    const nuMin = nu.uur * 60 + nu.minuut + MIN_VOORBEREIDING_MIN;
+    if (nuMin > startMin) startMin = nuMin;
+  }
+
+  if (gekozenMin < startMin || gekozenMin > eindMin) {
+    return { geldig: false, foutmelding: "Het gekozen tijdstip valt buiten onze openingstijden (of is te dichtbij om te bereiden)." };
+  }
+
+  const interval = levering === "bezorgen" ? 45 : 30;
+  if (gekozenMin % interval !== 0) {
+    return { geldig: false, foutmelding: "Kies een geldig tijdstip uit de lijst." };
+  }
+
+  return { geldig: true };
+}
+
+// Additieve migratie: bestaande orders-tabel krijgt een gewenst_tijdstip-kolom
+// (nullable TEXT) voor het door de klant gekozen "Kies zelf een moment"-tijdstip.
+// Faalt stil als de kolom al bestaat (idempotent, zelfde patroon als de
+// account-tabellen-migraties in auth/_lib.js).
+async function zorgVoorGewenstTijdstipKolom(db) {
+  try {
+    await db.prepare(`ALTER TABLE orders ADD COLUMN gewenst_tijdstip TEXT`).run();
+  } catch (e) {
+    // kolom bestaat waarschijnlijk al — dat is prima, niets te doen.
+  }
 }
 
 function actieBinnenBereik(actie) {

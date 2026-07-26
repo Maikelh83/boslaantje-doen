@@ -49,9 +49,10 @@ export async function onRequestGet(context) {
 
     await zorgVoorKeukenKlaarTabel(env.DB);
     await zorgVoorThuisbezorgdKolommen(env.DB);
+    await zorgVoorGewenstTijdstipKolom(env.DB);
 
     const { results } = await env.DB.prepare(
-      `SELECT order_id, totaal, levering, items_json, aangemaakt_op, klant_telefoon, bron, opmerkingen
+      `SELECT order_id, totaal, levering, items_json, aangemaakt_op, klant_telefoon, bron, opmerkingen, gewenst_tijdstip
        FROM orders
        WHERE status = 'paid'
        AND aangemaakt_op >= datetime('now', ?)
@@ -77,6 +78,7 @@ export async function onRequestGet(context) {
         klantTelefoon: o.klant_telefoon || null,
         bron: o.bron || null,
         opmerkingen: o.opmerkingen || null,
+        gewenstTijdstip: o.gewenst_tijdstip || null,
         items,
       };
     });
@@ -107,6 +109,17 @@ async function zorgVoorThuisbezorgdKolommen(db) {
     } catch (migratieErr) {
       // kolom bestaat waarschijnlijk al - genegeerd
     }
+  }
+}
+
+// Zelfde additieve migratie als in functions/api/order.js (functie
+// zorgVoorGewenstTijdstipKolom) — bewust hier gedupliceerd, zelfde stijl als
+// de rest van dit project.
+async function zorgVoorGewenstTijdstipKolom(db) {
+  try {
+    await db.prepare(`ALTER TABLE orders ADD COLUMN gewenst_tijdstip TEXT`).run();
+  } catch (e) {
+    // kolom bestaat waarschijnlijk al — dat is prima, niets te doen.
   }
 }
 
