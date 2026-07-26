@@ -71,6 +71,16 @@ aangemaakt_op TEXT NOT NULL
   await db.prepare(
     `INSERT OR IGNORE INTO instellingen (sleutel, waarde) VALUES ('minimum_factuurbedrag', '50')`
   ).run();
+
+  // Bezorgzone (geografische afstandscontrole voor bezorgen, zie
+  // haalBezorgzoneInstellingen/controleerBezorgzone hieronder): standaard
+  // 2,5 km met twee prijs-staffels, aanpasbaar via /kassa-bezorgzone.
+  await db.prepare(
+    `INSERT OR IGNORE INTO instellingen (sleutel, waarde) VALUES ('max_bezorgafstand_km', '2.5')`
+  ).run();
+  await db.prepare(
+    `INSERT OR IGNORE INTO instellingen (sleutel, waarde) VALUES ('bezorgkosten_staffels', '[{"totKm":1.5,"bedrag":2},{"totKm":2.5,"bedrag":3.5}]')`
+  ).run();
 }
 
 export async function hashWachtwoord(wachtwoord, saltHex) {
@@ -184,6 +194,152 @@ export function berekenFactuurGeschiktheid(business, minimumFactuurbedrag, totaa
     };
   }
   return { toegestaan: true, minimumbedrag: minimumFactuurbedrag };
+}
+
+// Pijler "Geographic Distance & Delivery Radius Check": geografische
+// bezorgzone op basis van werkelijke rijafstand (Mapbox), met een
+// instelbare maximale afstand en gestaffelde bezorgkosten. Gedeeld tussen
+// /api/bezorgzone-afstand.js (live check tijdens het invullen van het adres
+// in bestellen.html) en order.js (server-side eindcontrole vóór betaling),
+// zodat beide altijd exact dezelfde uitkomst geven.
+
+// Vaste coördinaten van het restaurant (Oleander 1a, Veenendaal) - zelfde
+// waarden als het LocalBusiness-schema op de homepage (src/index.html).
+const RESTAURANT_LAT = 52.0286;
+const RESTAURANT_LNG = 5.5581;
+
+export async function haalBezorgzoneInstellingen(db) {
+  const maxRij = await db
+    .prepare(`SELECT waarde FROM instellingen WHERE sleutel = 'max_bezorgafstand_km'`)
+    .first();
+  const staffelsRij = await db
+    .prepare(`SELECT waarde FROM instellingen WHERE sleutel = 'bezorgkosten_staffels'`)
+    .first();
+
+  const maxBezorgafstandKm = maxRij ? parseFloat(maxRij.waarde) : 2.5;
+
+  let staffels = [
+    { totKm: 1.5, bedrag: 2 },
+    { totKm: 2.5, bedrag: 3.5 },
+  ];
+  if (staffelsRij && staffelsRij.waarde) {
+    try {
+      const geparsed = JSON.parse(staffelsRij.waarde);
+      if (Array.isArray(geparsed) && geparsed.length > 0) staffels = geparsed;
+    } catch (parseErr) {
+      // ongeldige JSON in de instellingen-tabel - val terug op de standaardstaffels
+    }
+  }
+
+  return {
+    maxBezorgafstandKm: Number.isFinite(maxBezorgafstandKm) ? maxBezorgafstandKm : 2.5,
+    staffels,
+  };
+}
+
+export function berekenBezorgkosten(afstandKm, staffels) {
+  const gesorteerd = staffels.slice().sort((a, b) => a.totKm - b.totKm);
+  for (const staffel of gesorteerd) {
+    if (afstandKm <= staffel.totKm) return staffel.bedrag;
+  }
+  // Afstand valt buiten alle staffels maar (net) nog wel binnen de
+  // maximale bezorgafstand - reken dan de hoogste staffel.
+  return gesorteerd.length > 0 ? gesorteerd[gesorteerd.length - 1].bedrag : 0;
+}
+
+async function geocodeAdres(env, adres, postcode, plaats) {
+  if (!env.MAPBOX_ACCESS_TOKEN) {
+    return {
+      ok: false,
+      error: "Bezorgzone-controle is nog niet ingesteld (MAPBOX_ACCESS_TOKEN ontbreekt in Cloudflare Pages).",
+      status: 500,
+    };
+  }
+
+  const url = new URL("https://api.mapbox.com/search/geocode/v6/forward");
+  url.searchParams.set("address_line1", adres);
+  if (postcode) url.searchParams.set("postcode", postcode);
+  url.searchParams.set("place", plaats || "Veenendaal");
+  url.searchParams.set("country", "nl");
+  url.searchParams.set("autocomplete", "false");
+  url.searchParams.set("limit", "1");
+  url.searchParams.set("access_token", env.MAPBOX_ACCESS_TOKEN);
+
+  let res;
+  try {
+    res = await fetch(url.toString());
+  } catch (fetchErr) {
+    return { ok: false, error: "Kon het adres niet controleren (geen verbinding met de kaartendienst).", status: 502 };
+  }
+  if (!res.ok) {
+    return { ok: false, error: "Kon het adres niet controleren (de kaartendienst gaf een fout).", status: 502 };
+  }
+
+  const data = await res.json();
+  const feature = data.features && data.features[0];
+  if (!feature || !feature.geometry || !Array.isArray(feature.geometry.coordinates)) {
+    return { ok: false, error: "Kon dit adres niet vinden. Controleer straat, huisnummer en postcode.", status: 400 };
+  }
+
+  const [lng, lat] = feature.geometry.coordinates;
+  return { ok: true, lat, lng };
+}
+
+async function berekenRijafstandKm(env, lat, lng) {
+  const url =
+    `https://api.mapbox.com/directions/v5/mapbox/driving/${RESTAURANT_LNG},${RESTAURANT_LAT};${lng},${lat}` +
+    `?overview=false&access_token=${env.MAPBOX_ACCESS_TOKEN}`;
+
+  let res;
+  try {
+    res = await fetch(url);
+  } catch (fetchErr) {
+    return { ok: false, error: "Kon de rijafstand niet berekenen (geen verbinding met de kaartendienst).", status: 502 };
+  }
+  if (!res.ok) {
+    return { ok: false, error: "Kon de rijafstand niet berekenen (de kaartendienst gaf een fout).", status: 502 };
+  }
+
+  const data = await res.json();
+  const route = data.routes && data.routes[0];
+  if (!route || typeof route.distance !== "number") {
+    return { ok: false, error: "Kon geen rijroute naar dit adres vinden.", status: 400 };
+  }
+
+  return { ok: true, afstandKm: route.distance / 1000 };
+}
+
+// Combineert geocoderen + rijafstand + bereik/kosten-check in één functie.
+// customer moet { adres, postcode, plaats } bevatten. Retourneert bij succes
+// altijd { ok: true, binnenBereik, afstandKm, maxBezorgafstandKm, bezorgkosten?,
+// foutmelding? } - alleen bij een technisch probleem (geen DB, geen token,
+// adres niet gevonden, kaartendienst onbereikbaar) is ok: false.
+export async function controleerBezorgzone(env, customer) {
+  const geocodeResultaat = await geocodeAdres(env, customer.adres, customer.postcode, customer.plaats);
+  if (!geocodeResultaat.ok) return geocodeResultaat;
+
+  const afstandResultaat = await berekenRijafstandKm(env, geocodeResultaat.lat, geocodeResultaat.lng);
+  if (!afstandResultaat.ok) return afstandResultaat;
+
+  const afstandKm = Math.round(afstandResultaat.afstandKm * 100) / 100;
+  const { maxBezorgafstandKm, staffels } = await haalBezorgzoneInstellingen(env.DB);
+
+  if (afstandKm > maxBezorgafstandKm) {
+    const maxTekst = String(maxBezorgafstandKm).replace(".", ",");
+    return {
+      ok: true,
+      binnenBereik: false,
+      afstandKm,
+      maxBezorgafstandKm,
+      foutmelding:
+        `Helaas! Dit adres ligt buiten onze snelle bezorgzone (max. ${maxTekst} km). ` +
+        `We willen garanderen dat onze frites en burgers bloedheet aankomen. ` +
+        `Je bent uiteraard van harte welkom om je bestelling af te halen!`,
+    };
+  }
+
+  const bezorgkosten = berekenBezorgkosten(afstandKm, staffels);
+  return { ok: true, binnenBereik: true, afstandKm, maxBezorgafstandKm, bezorgkosten };
 }
 
 export function json(data, status = 200, extraHeaders) {
