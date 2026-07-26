@@ -291,6 +291,22 @@ main{padding:1.4rem 0 3rem}
 #upsellPopupJa{background:var(--terracotta);color:#fff}
 #upsellPopupJa:hover{background:var(--terracotta-deep)}
 #upsellPopupNee{background:transparent;color:#7a786f;font-weight:600}
+.checkout-progress{display:flex;gap:.5rem;margin-bottom:1rem;overflow-x:auto}
+.checkout-dot{display:flex;align-items:center;gap:.35rem;padding:.3rem .6rem;border-radius:999px;background:#f2f0e6;font-size:.72rem;font-weight:700;color:#8a8a80;white-space:nowrap;flex-shrink:0}
+.checkout-dot .checkout-dot-nr{display:inline-flex;align-items:center;justify-content:center;width:1.1rem;height:1.1rem;border-radius:50%;background:#d8d4c8;color:#fff;font-size:.66rem}
+.checkout-dot.actief{background:var(--terracotta);color:#fff}
+.checkout-dot.actief .checkout-dot-nr{background:#fff;color:var(--terracotta)}
+.checkout-dot.gehad{background:#e8e5da;color:var(--green-ink)}
+.checkout-dot.gehad .checkout-dot-nr{background:var(--green-ink);color:#fff}
+.checkout-stap{display:none}
+.checkout-stap.actief{display:block}
+.checkout-nav{display:flex;justify-content:flex-end;gap:.6rem;margin-top:.8rem}
+.checkout-nav .checkout-volgende{background:var(--terracotta);color:#fff;border:none;font-weight:700;padding:.7rem 1.3rem;border-radius:999px;cursor:pointer}
+.checkout-nav .checkout-terug{background:transparent;color:#7a786f;border:none;font-weight:600;padding:.7rem .5rem;cursor:pointer;margin-right:auto}
+.tijdslot-keuze{display:flex;flex-direction:column;gap:.5rem}
+.tijdslot-optie{display:flex;align-items:center;gap:.6rem;padding:.7rem .9rem;border:1.5px solid #e6e2da;border-radius:12px;cursor:pointer;font-weight:600;color:#4a4338}
+.tijdslot-optie:has(input:checked){border-color:var(--terracotta);background:#fdf3ee}
+.tijdslot-optie input{accent-color:var(--terracotta)}
 </style>
 </head>
 <body>
@@ -354,6 +370,14 @@ main{padding:1.4rem 0 3rem}
           <div class="cart-total"><span>Totaal</span><span id="cartTotal">&euro;0,00</span></div>
 
           <form class="cart-form" id="checkoutForm">
+          <div class="checkout-progress" id="checkoutProgress">
+            <div class="checkout-dot actief" data-checkout-dot="0"><span class="checkout-dot-nr">1</span><span class="checkout-dot-naam">Gegevens</span></div>
+            <div class="checkout-dot" data-checkout-dot="1"><span class="checkout-dot-nr">2</span><span class="checkout-dot-naam">Bezorgen</span></div>
+            <div class="checkout-dot" data-checkout-dot="2"><span class="checkout-dot-nr">3</span><span class="checkout-dot-naam">Tijdslot</span></div>
+            <div class="checkout-dot" data-checkout-dot="3"><span class="checkout-dot-nr">4</span><span class="checkout-dot-naam">Overzicht</span></div>
+          </div>
+
+          <div class="checkout-stap actief" data-checkout-stap="0">
             <div>
               <label for="naam">Naam</label>
               <input type="text" id="naam" name="naam" required>
@@ -366,7 +390,9 @@ main{padding:1.4rem 0 3rem}
               <label for="email">E-mail (voor de betaalbevestiging)</label>
               <input type="email" id="email" name="email" required>
             </div>
+          </div>
 
+          <div class="checkout-stap" data-checkout-stap="1">
             <div>
               <label>Hoe wil je het ontvangen?</label>
               <div class="levering-keuze">
@@ -389,7 +415,18 @@ main{padding:1.4rem 0 3rem}
                 <input type="text" id="plaats" name="plaats" value="Veenendaal">
               </div>
             </div>
+          </div>
 
+          <div class="checkout-stap" data-checkout-stap="2">
+            <div class="tijdslot-keuze" id="tijdslotKeuze">
+              <label class="tijdslot-optie"><input type="radio" name="tijdslot" value="zo-snel-mogelijk" checked><span>Zo snel mogelijk</span></label>
+              <label class="tijdslot-optie"><input type="radio" name="tijdslot" value="over-30-min"><span>Over 30 minuten</span></label>
+              <label class="tijdslot-optie"><input type="radio" name="tijdslot" value="over-45-min"><span>Over 45 minuten</span></label>
+              <label class="tijdslot-optie"><input type="radio" name="tijdslot" value="over-60-min"><span>Over 1 uur</span></label>
+            </div>
+          </div>
+
+          <div class="checkout-stap" data-checkout-stap="3">
             <div>
               <label for="opmerking">Opmerking (optioneel)</label>
               <textarea id="opmerking" name="opmerking" rows="2" placeholder="Bijv. allergie, geen uitjes, etc."></textarea>
@@ -397,6 +434,12 @@ main{padding:1.4rem 0 3rem}
 
             <button type="submit" class="afrekenen-btn" id="afrekenenBtn" disabled>Afrekenen met iDEAL</button>
             <div class="form-status" id="formStatus"></div>
+          </div>
+
+          <div class="checkout-nav">
+            <button type="button" class="checkout-terug" id="checkoutTerugBtn" style="display:none">&larr; Vorige</button>
+            <button type="button" class="checkout-volgende" id="checkoutVolgendeBtn">Volgende &rarr;</button>
+          </div>
           </form>
         </div>
       </aside>
@@ -1065,6 +1108,58 @@ function categorieIcon(catId, extraClass){
   });
 
   // ---------------- checkout ----------------
+
+  var checkoutStap = 0;
+  var tijdslotLabels = {
+    'zo-snel-mogelijk': 'Zo snel mogelijk',
+    'over-30-min': 'Over 30 minuten',
+    'over-45-min': 'Over 45 minuten',
+    'over-60-min': 'Over 1 uur'
+  };
+  function toonCheckoutStap(i) {
+    checkoutStap = i;
+    document.querySelectorAll('.checkout-stap').forEach(function (el) {
+      el.classList.toggle('actief', parseInt(el.getAttribute('data-checkout-stap'), 10) === i);
+    });
+    document.querySelectorAll('#checkoutProgress .checkout-dot').forEach(function (el, idx) {
+      el.classList.toggle('actief', idx === i);
+      el.classList.toggle('gehad', idx < i);
+    });
+    document.getElementById('checkoutTerugBtn').style.display = i > 0 ? 'inline-flex' : 'none';
+    document.getElementById('checkoutVolgendeBtn').style.display = i < 3 ? 'inline-flex' : 'none';
+  }
+  function checkoutStapGeldig(i) {
+    var stapEl = document.querySelector('.checkout-stap[data-checkout-stap="' + i + '"]');
+    if (!stapEl) return true;
+    var geldig = true;
+    stapEl.querySelectorAll('input, textarea').forEach(function (el) {
+      if (el.offsetParent === null) return;
+      if (typeof el.checkValidity === 'function' && !el.checkValidity()) geldig = false;
+    });
+    return geldig;
+  }
+  function bijwerkenOpmerkingMetTijdslot() {
+    var gekozen = document.querySelector('input[name="tijdslot"]:checked');
+    if (!gekozen) return;
+    var opmerkingEl = document.getElementById('opmerking');
+    var huidige = opmerkingEl.value;
+    var zonderTijdslotRegel = huidige.replace(/^Gewenst tijdstip:.*(\n|$)/, '').replace(/^\n/, '');
+    var tijdslotRegel = 'Gewenst tijdstip: ' + (tijdslotLabels[gekozen.value] || gekozen.value);
+    opmerkingEl.value = zonderTijdslotRegel ? tijdslotRegel + '\n' + zonderTijdslotRegel : tijdslotRegel;
+  }
+  document.getElementById('checkoutVolgendeBtn').addEventListener('click', function () {
+    if (!checkoutStapGeldig(checkoutStap)) {
+      var stapEl = document.querySelector('.checkout-stap[data-checkout-stap="' + checkoutStap + '"]');
+      var ongeldig = stapEl.querySelector(':invalid');
+      if (ongeldig) ongeldig.reportValidity();
+      return;
+    }
+    if (checkoutStap === 2) bijwerkenOpmerkingMetTijdslot();
+    if (checkoutStap < 3) toonCheckoutStap(checkoutStap + 1);
+  });
+  document.getElementById('checkoutTerugBtn').addEventListener('click', function () {
+    if (checkoutStap > 0) toonCheckoutStap(checkoutStap - 1);
+  });
   document.getElementById('checkoutForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var statusEl = document.getElementById('formStatus');
