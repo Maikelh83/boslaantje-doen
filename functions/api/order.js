@@ -65,7 +65,26 @@ if (tijdslot === "vrijdag-lunch") {
 // selects al gevuld met geldige opties.
 let gewenstTijdstip = null;
 if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
-  const validatie = valideerEigenTijdslot(tijdslot, levering);
+  // Op vrijdag geldt voor bezorgen een verruimd venster (11:00-20:30) exclusief
+  // voor goedgekeurde zakelijke klanten (zelfde doelgroep als 'vrijdag-lunch'
+  // hierboven) - anders geldt het particuliere venster (16:30-20:30). Nooit de
+  // client vertrouwen: opnieuw, zelf, opzoeken wie er is ingelogd.
+  let magZakelijkBezorgenVrijdag = false;
+  if (env.DB) {
+    try {
+      await zorgVoorAccountTabellen(env.DB);
+      const tijdslotGebruiker = await haalIngelogdeGebruikerOp(env.DB, request);
+      magZakelijkBezorgenVrijdag = !!(
+        tijdslotGebruiker &&
+        tijdslotGebruiker.account.account_type === "business" &&
+        tijdslotGebruiker.business &&
+        tijdslotGebruiker.business.business_approved
+      );
+    } catch (magZakelijkErr) {
+      // faalt stil - dan geldt gewoon het particuliere bezorgvenster
+    }
+  }
+  const validatie = valideerEigenTijdslot(tijdslot, levering, magZakelijkBezorgenVrijdag);
   if (!validatie.geldig) {
     return json({ error: validatie.foutmelding }, 400);
   }
@@ -514,7 +533,11 @@ function vrijdagLunchCutoffBereikt(nu) {
 // van waarheid, bestellen.html is alleen het UI-gemak.
 const EIGEN_TIJDSLOT_PATROON = /^(\d{2})-(\d{2})-(\d{4}) (\d{2}):(\d{2})$/;
 
-const OPENINGSTIJDEN = {
+// Afhalen volgt de gewone openingstijden van de snackbar. Bezorgen heeft een
+// eigen, kortere venster: ma t/m za 16:30-20:30 voor iedereen, met op vrijdag
+// een verruiming naar 11:00-20:30 exclusief voor goedgekeurde zakelijke
+// klanten (zie magZakelijkBezorgenVrijdag hierboven).
+const OPENINGSTIJDEN_AFHALEN = {
   0: null, // zondag: gesloten
   1: [16, 0, 21, 0],
   2: [16, 0, 21, 0],
@@ -522,6 +545,16 @@ const OPENINGSTIJDEN = {
   4: [16, 0, 21, 0],
   5: [11, 0, 21, 0],
   6: [16, 0, 21, 0],
+};
+
+const OPENINGSTIJDEN_BEZORGEN = {
+  0: null, // zondag: gesloten
+  1: [16, 30, 20, 30],
+  2: [16, 30, 20, 30],
+  3: [16, 30, 20, 30],
+  4: [16, 30, 20, 30],
+  5: [16, 30, 20, 30], // particulier; zakelijk goedgekeurd wordt verruimd naar 11:00
+  6: [16, 30, 20, 30],
 };
 
 const VAKANTIES = [
@@ -570,16 +603,21 @@ function vindVakantie(datumObj) {
   return { gesloten: false, vroegSluiten: null };
 }
 
-function openingstijdenVoorDag(datumObj) {
+function openingstijdenVoorDag(datumObj, levering, magZakelijkBezorgenVrijdag) {
   const vak = vindVakantie(datumObj);
   if (vak.gesloten) return null;
-  const basis = OPENINGSTIJDEN[datumObj.getDay()];
+  const isBezorgen = levering === "bezorgen";
+  const tabel = isBezorgen ? OPENINGSTIJDEN_BEZORGEN : OPENINGSTIJDEN_AFHALEN;
+  let basis = tabel[datumObj.getDay()];
   if (!basis) return null;
+  if (isBezorgen && datumObj.getDay() === 5 && magZakelijkBezorgenVrijdag) {
+    basis = [11, 0, basis[2], basis[3]];
+  }
   if (vak.vroegSluiten) return [basis[0], basis[1], vak.vroegSluiten[0], vak.vroegSluiten[1]];
   return basis;
 }
 
-function valideerEigenTijdslot(waarde, levering) {
+function valideerEigenTijdslot(waarde, levering, magZakelijkBezorgenVrijdag) {
   const match = waarde.match(EIGEN_TIJDSLOT_PATROON);
   if (!match) {
     return { geldig: false, foutmelding: "Ongeldig formaat voor het gekozen tijdstip." };
@@ -612,9 +650,9 @@ function valideerEigenTijdslot(waarde, levering) {
     return { geldig: false, foutmelding: `Je kunt maximaal ${VOORUIT_DAGEN} dagen vooruit een tijdstip kiezen.` };
   }
 
-  const venster = openingstijdenVoorDag(gekozenDatum);
+  const venster = openingstijdenVoorDag(gekozenDatum, levering, magZakelijkBezorgenVrijdag);
   if (!venster) {
-    return { geldig: false, foutmelding: "We zijn gesloten op de gekozen dag." };
+    return { geldig: false, foutmelding: levering === "bezorgen" ? "We bezorgen niet op de gekozen dag/tijd." : "We zijn gesloten op de gekozen dag." };
   }
 
   const gekozenMin = uur * 60 + minuut;
