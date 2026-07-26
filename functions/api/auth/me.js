@@ -26,6 +26,9 @@ export async function onRequestGet(context) {
         naam: gebruiker.account.naam,
         telefoon: gebruiker.account.telefoon,
         accountType: gebruiker.account.account_type,
+            laatstAdres: gebruiker.account.laatst_adres || null,
+            laatstPostcode: gebruiker.account.laatst_postcode || null,
+            laatstPlaats: gebruiker.account.laatst_plaats || null,
       },
       business: gebruiker.business
         ? {
