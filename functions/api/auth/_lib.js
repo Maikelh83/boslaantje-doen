@@ -138,6 +138,38 @@ export async function haalIngelogdeGebruikerOp(db, request) {
   return { account, business };
 }
 
+
+export async function haalMinimumFactuurbedrag(db) {
+  const rij = await db
+    .prepare(`SELECT waarde FROM instellingen WHERE sleutel = 'minimum_factuurbedrag'`)
+    .first();
+  const bedrag = rij ? parseFloat(rij.waarde) : 50;
+  return Number.isFinite(bedrag) ? bedrag : 50;
+}
+
+// Pijler 7: bepaalt of een zakelijk account op dit moment op factuur mag
+// betalen. Dit is de enige plek waar deze regel wordt vastgelegd - zowel
+// order.js als de toekomstige 'Op Factuur'-orderflow gebruiken deze
+// functie, zodat de regel maar op één plek hoeft te kloppen.
+export function berekenFactuurGeschiktheid(business, minimumFactuurbedrag, totaal) {
+  if (!business || !business.business_approved || !business.factuur_toegestaan) {
+    return { toegestaan: false, reden: "Dit account is niet goedgekeurd voor betalen op factuur." };
+  }
+  if (business.override_minimum_invoice_amount) {
+    return { toegestaan: true, minimumbedrag: 0 };
+  }
+  if (totaal < minimumFactuurbedrag) {
+    const drempelTekst = minimumFactuurbedrag.toFixed(2).replace(".", ",");
+    const totaalTekst = totaal.toFixed(2).replace(".", ",");
+    return {
+      toegestaan: false,
+      reden: `Op factuur betalen kan vanaf €${drempelTekst} (deze bestelling is €${totaalTekst}).`,
+      minimumbedrag: minimumFactuurbedrag,
+    };
+  }
+  return { toegestaan: true, minimumbedrag: minimumFactuurbedrag };
+}
+
 export function json(data, status = 200, extraHeaders) {
   const headers = { "Content-Type": "application/json" };
   if (extraHeaders) Object.assign(headers, extraHeaders);
