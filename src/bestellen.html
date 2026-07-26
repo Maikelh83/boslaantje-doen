@@ -1508,7 +1508,12 @@ bijwerkenFactuurStatus();
   // LET OP: openingstijden en vakantiedata hieronder moeten functioneel gelijk
   // blijven aan de server-side check in functions/api/order.js (functie
   // valideerEigenTijdslot) en aan de data in src/index.html (checkVakantie).
-  var OPENINGSTIJDEN = {
+  //
+  // Afhalen volgt de gewone openingstijden van de snackbar. Bezorgen heeft een
+  // eigen, kortere venster: ma t/m za 16:30-20:30 voor iedereen, met op vrijdag
+  // een verruiming naar 11:00-20:30 exclusief voor goedgekeurde zakelijke
+  // klanten (zelfde doelgroep als het 'vrijdag-lunch'-tijdslot hierboven).
+  var OPENINGSTIJDEN_AFHALEN = {
     0: null,           // zondag: gesloten
     1: [16, 0, 21, 0],
     2: [16, 0, 21, 0],
@@ -1517,6 +1522,15 @@ bijwerkenFactuurStatus();
     5: [11, 0, 21, 0],
     6: [16, 0, 21, 0]
   };
+  var OPENINGSTIJDEN_BEZORGEN = {
+    0: null,           // zondag: gesloten
+    1: [16, 30, 20, 30],
+    2: [16, 30, 20, 30],
+    3: [16, 30, 20, 30],
+    4: [16, 30, 20, 30],
+    5: [16, 30, 20, 30], // particulier; zakelijk goedgekeurd wordt hieronder verruimd naar 11:00
+    6: [16, 30, 20, 30]
+  };
   var VAKANTIES = [
     { schoonmaakZaterdag: "2026-08-01", dichtVanaf: "2026-08-03", dichtTotEnMet: "2026-08-16" },
     { schoonmaakZaterdag: "2027-07-31", dichtVanaf: "2027-08-02", dichtTotEnMet: "2027-08-15" },
@@ -1524,6 +1538,12 @@ bijwerkenFactuurStatus();
   ];
   var VOORUIT_DAGEN = 6;
   var MIN_VOORBEREIDING_MIN = 20;
+
+  // Wordt na een eigen /api/auth/me-check op true gezet als de ingelogde klant
+  // een goedgekeurd zakelijk account heeft. Tot die check klaar is (of als de
+  // klant niet is ingelogd/niet zakelijk is) blijft dit false, en geldt op
+  // vrijdag gewoon het particuliere bezorgvenster.
+  var magZakelijkBezorgenVrijdag = false;
 
   function pad(n) { return n < 10 ? "0" + n : "" + n; }
   function maakDatum(jaar, maand, dag) { return new Date(jaar, maand - 1, dag); }
@@ -1557,11 +1577,21 @@ bijwerkenFactuurStatus();
     return { gesloten: false, vroegSluiten: null };
   }
 
+  function huidigeLevering() {
+    var bezorgenRadio = document.querySelector('input[name="levering"][value="bezorgen"]');
+    return (bezorgenRadio && bezorgenRadio.checked) ? "bezorgen" : "afhalen";
+  }
+
   function openingstijdenVoorDag(datumObj) {
     var vak = vindVakantie(datumObj);
     if (vak.gesloten) return null;
-    var basis = OPENINGSTIJDEN[datumObj.getDay()];
+    var isBezorgen = huidigeLevering() === "bezorgen";
+    var tabel = isBezorgen ? OPENINGSTIJDEN_BEZORGEN : OPENINGSTIJDEN_AFHALEN;
+    var basis = tabel[datumObj.getDay()];
     if (!basis) return null;
+    if (isBezorgen && datumObj.getDay() === 5 && magZakelijkBezorgenVrijdag) {
+      basis = [11, 0, basis[2], basis[3]];
+    }
     if (vak.vroegSluiten) return [basis[0], basis[1], vak.vroegSluiten[0], vak.vroegSluiten[1]];
     return basis;
   }
@@ -1578,8 +1608,7 @@ bijwerkenFactuurStatus();
   }
 
   function huidigeIntervalMinuten() {
-    var bezorgenRadio = document.querySelector('input[name="levering"][value="bezorgen"]');
-    return (bezorgenRadio && bezorgenRadio.checked) ? 45 : 30;
+    return huidigeLevering() === "bezorgen" ? 45 : 30;
   }
 
   function vulDatums() {
@@ -1700,6 +1729,18 @@ bijwerkenFactuurStatus();
     document.querySelectorAll('input[name="levering"]').forEach(function (r) {
       r.addEventListener("change", opnieuwOpbouwen);
     });
+
+    // Eigen /api/auth/me-check (bewust los van de vrijdaglunch-IIFE hierboven,
+    // zelfde ontkoppelde patroon) om te bepalen of het verruimde vrijdag-
+    // bezorgvenster (11:00-20:30) getoond moet worden. Faalt stil: zonder
+    // succesvolle check blijft gewoon het particuliere venster gelden.
+    fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (data) {
+      magZakelijkBezorgenVrijdag = !!(
+        data && data.ingelogd && data.account && data.account.accountType === 'business' &&
+        data.business && data.business.businessApproved
+      );
+      if (magZakelijkBezorgenVrijdag) opnieuwOpbouwen();
+    }).catch(function () { /* faalt stil - particulier bezorgvenster blijft gelden */ });
   });
 })();
 </script>
