@@ -279,6 +279,18 @@ main{padding:1.4rem 0 3rem}
 .wizard-footer .modal-btn-toevoegen{flex:1;border:none;border-radius:8px;padding:.85rem 1rem;font-weight:800;font-size:.92rem;cursor:pointer;background:var(--terracotta);color:#fff}
 .wizard-footer .modal-btn-toevoegen:hover{background:var(--terracotta-deep)}
 .wizard-footer .modal-btn-toevoegen:disabled{background:#d8d4c8;color:#8a8a80;cursor:not-allowed}
+
+/* ---------- upsell-pop-up na toevoegen ---------- */
+.upsell-popup-overlay{position:fixed;inset:0;background:rgba(20,22,16,.55);z-index:110;display:none;align-items:center;justify-content:center;padding:1rem}
+.upsell-popup-overlay.open{display:flex}
+.upsell-popup{background:#fff;border-radius:var(--r);max-width:380px;width:100%;padding:1.4rem 1.3rem;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.upsell-popup h4{font-size:1.15rem;margin-bottom:.4rem;color:var(--green-ink)}
+.upsell-popup p{font-size:.9rem;color:#5c5a4f;margin-bottom:1rem}
+.upsell-popup-actions{display:flex;flex-direction:column;gap:.5rem}
+.upsell-popup-actions button{border:none;border-radius:8px;padding:.8rem 1rem;font-weight:800;font-size:.88rem;cursor:pointer}
+#upsellPopupJa{background:var(--terracotta);color:#fff}
+#upsellPopupJa:hover{background:var(--terracotta-deep)}
+#upsellPopupNee{background:transparent;color:#7a786f;font-weight:600}
 </style>
 </head>
 <body>
@@ -404,6 +416,17 @@ main{padding:1.4rem 0 3rem}
     <div class="wizard-footer">
       <button type="button" class="wizard-terug" id="wizardTerugBtn">&larr; Vorige</button>
       <button type="button" class="modal-btn-toevoegen" id="modalToevoegenBtn">Toevoegen aan winkelmand</button>
+    </div>
+  </div>
+</div>
+
+<div class="upsell-popup-overlay" id="upsellPopupOverlay">
+  <div class="upsell-popup">
+    <h4 id="upsellPopupTitel">Maak er meer van!</h4>
+    <p id="upsellPopupTekst"></p>
+    <div class="upsell-popup-actions">
+      <button type="button" id="upsellPopupJa"></button>
+      <button type="button" id="upsellPopupNee">Nee, bedankt</button>
     </div>
   </div>
 </div>
@@ -602,7 +625,37 @@ function categorieIcon(catId, extraClass){
       cart[key] = { productId: productId, aantal: 1, extras: extrasSelectie, extraPrijs: extraPrijs, extraOmschrijving: extraOmschrijving };
     }
     renderCart();
+    toonUpsellPopupNaToevoegen(productId);
   }
+
+  var upsellPopupGetoond = false;
+  function toonUpsellPopupNaToevoegen(productId) {
+    if (upsellPopupGetoond) return;
+    var upsell = catalogus.upsell;
+    if (!upsell) return;
+    if (productId === upsell.productId) return;
+    var upsellProduct = vindProduct(upsell.productId);
+    if (!upsellProduct) return;
+    var toegevoegdProduct = vindProduct(productId);
+    if (toegevoegdProduct && toegevoegdProduct._categorie === upsell.categorieUitgesloten) return;
+    var alInCart = Object.keys(cart).some(function (k) { return cart[k].productId === upsell.productId && cart[k].aantal > 0; });
+    if (alInCart) return;
+    upsellPopupGetoond = true;
+    document.getElementById('upsellPopupTekst').textContent = upsell.tekst;
+    var jaBtn = document.getElementById('upsellPopupJa');
+    jaBtn.textContent = upsellProduct.naam + ' toevoegen (' + euro(upsellProduct.prijs) + ')';
+    jaBtn.onclick = function () {
+      voegToe(upsellProduct.id, {}, 0, '');
+      document.getElementById('upsellPopupOverlay').classList.remove('open');
+    };
+    document.getElementById('upsellPopupOverlay').classList.add('open');
+  }
+  document.getElementById('upsellPopupNee').addEventListener('click', function () {
+    document.getElementById('upsellPopupOverlay').classList.remove('open');
+  });
+  document.getElementById('upsellPopupOverlay').addEventListener('click', function (e) {
+    if (e.target === document.getElementById('upsellPopupOverlay')) document.getElementById('upsellPopupOverlay').classList.remove('open');
+  });
 
   // ---------------- extras-modal ----------------
   function openModal(product) {
