@@ -10,8 +10,9 @@
 //   MOLLIE_API_KEY  — test_... of live_... key uit het Mollie-dashboard
 //   DB              — D1-database binding (optioneel; als afwezig wordt orderlogging overgeslagen)
 //   MAKE_WEBHOOK_URL — optioneel; Make.com-webhook voor WeFact-facturatie bij 'op factuur'-orders (zelfde webhook als mollie-webhook.js)
+//   MAPBOX_ACCESS_TOKEN — access token uit het Mapbox-dashboard, nodig voor de bezorgzone-afstandscontrole hieronder
 
-import { zorgVoorAccountTabellen, haalIngelogdeGebruikerOp, haalMinimumFactuurbedrag, berekenFactuurGeschiktheid } from "./auth/_lib.js";
+import { zorgVoorAccountTabellen, haalIngelogdeGebruikerOp, haalMinimumFactuurbedrag, berekenFactuurGeschiktheid, controleerBezorgzone } from "./auth/_lib.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -28,6 +29,30 @@ export async function onRequestPost(context) {
     }
     if (levering === "bezorgen" && (!customer.adres || !customer.postcode || !customer.plaats)) {
       return json({ error: "Adres, postcode en plaats zijn verplicht bij bezorgen." }, 400);
+    }
+
+    // Geografische bezorgzone-check (werkelijke rijafstand via Mapbox): de
+    // klant heeft dit adres mogelijk al eerder in bestellen.html laten
+    // controleren via /api/bezorgzone-afstand (live UI-feedback), maar dat
+    // wordt hier nooit vertrouwd — de server voert de controle helemaal
+    // opnieuw uit, vanaf nul, met dezelfde controleerBezorgzone-functie
+    // (auth/_lib.js) zodat beide plekken altijd exact dezelfde uitkomst geven.
+    let bezorgAfstandKm = null;
+    let bezorgkosten = 0;
+    if (levering === "bezorgen") {
+      if (!env.DB) {
+        return json({ error: "Bezorgen is momenteel niet beschikbaar (database niet gekoppeld)." }, 400);
+      }
+      await zorgVoorAccountTabellen(env.DB);
+      const bezorgzoneResultaat = await controleerBezorgzone(env, customer);
+      if (!bezorgzoneResultaat.ok) {
+        return json({ error: bezorgzoneResultaat.error }, bezorgzoneResultaat.status || 400);
+      }
+      if (!bezorgzoneResultaat.binnenBereik) {
+        return json({ error: bezorgzoneResultaat.foutmelding }, 400);
+      }
+      bezorgAfstandKm = bezorgzoneResultaat.afstandKm;
+      bezorgkosten = bezorgzoneResultaat.bezorgkosten || 0;
     }
 
 
@@ -296,6 +321,13 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
       }
     }
 
+    // Bezorgkosten worden pas hier, ná alle kortingen, opgeteld — een
+    // kortingscode of spaarkaartkorting slaat alleen op de bestelling zelf,
+    // niet op de bezorgkosten.
+    if (levering === "bezorgen" && bezorgkosten > 0) {
+      totaal = Math.round((totaal + bezorgkosten) * 100) / 100;
+    }
+
     if (totaal < 0.5) {
       return json({ error: "Het bedrag na korting is te laag om af te rekenen." }, 400);
     }
@@ -355,10 +387,11 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
       if (env.DB) {
         try {
           await zorgVoorGewenstTijdstipKolom(env.DB);
+          await zorgVoorBezorgzoneKolommen(env.DB);
           await env.DB
             .prepare(
-              `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, betaald_op, gewenst_tijdstip)
-               VALUES (?, 'paid', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+              `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, betaald_op, gewenst_tijdstip, bezorg_afstand_km, bezorgkosten)
+               VALUES (?, 'paid', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
             )
             .bind(
               factuurOrderId,
@@ -374,7 +407,9 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
               null,
               0,
               factuurMoment,
-              gewenstTijdstip
+              gewenstTijdstip,
+              bezorgAfstandKm,
+              bezorgkosten
             )
             .run();
         } catch (dbErr) {
@@ -391,6 +426,8 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
         zakelijkeKorting: zakelijkeKortingBedrag,
         zakelijkeKortingPercentage,
         opFactuur: true,
+        bezorgkosten,
+        bezorgAfstandKm,
       });
     }
     if (!env.MOLLIE_API_KEY) {
@@ -448,9 +485,10 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
     if (env.DB) {
       try {
         await zorgVoorGewenstTijdstipKolom(env.DB);
+        await zorgVoorBezorgzoneKolommen(env.DB);
         await env.DB.prepare(
-          `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, gewenst_tijdstip)
-           VALUES (?, 'open', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, gewenst_tijdstip, bezorg_afstand_km, bezorgkosten)
+           VALUES (?, 'open', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
           .bind(
             orderId,
@@ -465,7 +503,9 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
             new Date().toISOString(),
             loyaliteitsCodeGeldig,
             loyaliteitsKorting,
-            gewenstTijdstip
+            gewenstTijdstip,
+            bezorgAfstandKm,
+            bezorgkosten
           )
           .run();
       } catch (dbErr) {
@@ -483,6 +523,8 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
       zakelijkeKortingPercentage,
       magOpFactuur: factuurGeschiktheid.toegestaan,
       factuurReden: factuurGeschiktheid.reden || null,
+      bezorgkosten,
+      bezorgAfstandKm,
     });
   } catch (err) {
     return json({ error: "Onverwachte fout.", detail: String(err) }, 500);
@@ -685,6 +727,19 @@ async function zorgVoorGewenstTijdstipKolom(db) {
     await db.prepare(`ALTER TABLE orders ADD COLUMN gewenst_tijdstip TEXT`).run();
   } catch (e) {
     // kolom bestaat waarschijnlijk al — dat is prima, niets te doen.
+  }
+}
+
+async function zorgVoorBezorgzoneKolommen(db) {
+  for (const statement of [
+    `ALTER TABLE orders ADD COLUMN bezorg_afstand_km REAL`,
+    `ALTER TABLE orders ADD COLUMN bezorgkosten REAL DEFAULT 0`,
+  ]) {
+    try {
+      await db.prepare(statement).run();
+    } catch (e) {
+      // kolom bestaat waarschijnlijk al — dat is prima, niets te doen.
+    }
   }
 }
 
