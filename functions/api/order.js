@@ -9,6 +9,7 @@
 // Benodigde environment variables (Cloudflare Pages > Settings > Environment variables):
 //   MOLLIE_API_KEY  — test_... of live_... key uit het Mollie-dashboard
 //   DB              — D1-database binding (optioneel; als afwezig wordt orderlogging overgeslagen)
+//   MAKE_WEBHOOK_URL — optioneel; Make.com-webhook voor WeFact-facturatie bij 'op factuur'-orders (zelfde webhook als mollie-webhook.js)
 
 import { zorgVoorAccountTabellen, haalIngelogdeGebruikerOp, haalMinimumFactuurbedrag, berekenFactuurGeschiktheid } from "./auth/_lib.js";
 
@@ -17,7 +18,7 @@ export async function onRequestPost(context) {
 
   try {
     const body = await request.json();
-    const { items, customer, levering, tijdslot, couponCode, loyaliteitsCode } = body || {};
+    const { items, customer, levering, tijdslot, couponCode, loyaliteitsCode, betaalmethode } = body || {};
 
     if (!Array.isArray(items) || items.length === 0) {
       return json({ error: "Winkelwagen is leeg." }, 400);
@@ -179,7 +180,7 @@ if (tijdslot === "vrijdag-lunch") {
     // en wordt vóór de kortingscode verrekend.
     let zakelijkeKortingBedrag = 0;
     let zakelijkeKortingPercentage = 0;
-    let factuurGeschiktheid = { toegestaan: false };
+    let factuurGeschiktheid = { toegestaan: false, reden: "Op factuur betalen is niet beschikbaar voor dit account." };
     if (env.DB) {
       await zorgVoorAccountTabellen(env.DB);
       const zakelijkeGebruiker = await haalIngelogdeGebruikerOp(env.DB, request);
@@ -246,6 +247,97 @@ if (tijdslot === "vrijdag-lunch") {
       return json({ error: "Het bedrag na korting is te laag om af te rekenen." }, 400);
     }
 
+
+    // Pijler 7: 'Op factuur' betalen — alleen voor goedgekeurde zakelijke
+    // accounts en alleen als de order de factuurdrempel haalt (zie
+    // berekenFactuurGeschiktheid in auth/_lib.js, hierboven al berekend).
+    // Er wordt geen Mollie-betaling aangemaakt; de order gaat direct door
+    // naar de keuken (status 'paid') en wordt naar het Make.com-webhook
+    // gestuurd zodat WeFact een factuur kan aanmaken — hetzelfde webhook
+    // dat mollie-webhook.js ook al gebruikt.
+    if (betaalmethode === "factuur") {
+      if (!factuurGeschiktheid.toegestaan) {
+        return json({ error: factuurGeschiktheid.reden }, 400);
+      }
+
+      const factuurOrderId = "BD-" + Date.now().toString(36).toUpperCase();
+      const factuurMoment = new Date().toISOString();
+      toegepasteActies.push("Betaalmethode: op factuur");
+
+      const factuurGebruiker = await haalIngelogdeGebruikerOp(env.DB, request);
+      const factuurBusiness = factuurGebruiker && factuurGebruiker.business;
+
+      if (env.MAKE_WEBHOOK_URL) {
+        try {
+          await fetch(env.MAKE_WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: factuurOrderId,
+              betaalmethode: "factuur",
+              status: "paid",
+              bedrag: { currency: "EUR", value: totaal.toFixed(2) },
+              levering: levering || "afhalen",
+              klant: customer,
+              business: factuurBusiness
+                ? {
+                    bedrijfsnaam: factuurBusiness.bedrijfsnaam,
+                    kvkNummer: factuurBusiness.kvk_nummer,
+                    btwNummer: factuurBusiness.btw_nummer,
+                    afdeling: factuurBusiness.afdeling,
+                    factuurEmail: factuurBusiness.factuur_email,
+                  }
+                : null,
+              items: orderRegels,
+              korting,
+              zakelijkeKorting: zakelijkeKortingBedrag,
+              betaaldOp: factuurMoment,
+            }),
+          });
+        } catch (webhookErr) {
+          console.error("order.js: kon WeFact/Make-webhook niet aanroepen", webhookErr);
+        }
+      }
+
+      if (env.DB) {
+        try {
+          await env.DB
+            .prepare(
+              `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, betaald_op)
+               VALUES (?, 'paid', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            )
+            .bind(
+              factuurOrderId,
+              totaal,
+              korting,
+              toegepasteCode,
+              customer.email || null,
+              customer.telefoon || null,
+              levering || "afhalen",
+              JSON.stringify(orderRegels),
+              JSON.stringify(toegepasteActies),
+              factuurMoment,
+              null,
+              0,
+              factuurMoment
+            )
+            .run();
+        } catch (dbErr) {
+          console.error("order.js: kon factuurorder niet loggen in D1", dbErr);
+        }
+      }
+
+      return json({
+        checkoutUrl: new URL(`/bestellen-bedankt.html?order=${factuurOrderId}`, request.url).toString(),
+        orderId: factuurOrderId,
+        totaal,
+        korting,
+        loyaliteitsKorting: 0,
+        zakelijkeKorting: zakelijkeKortingBedrag,
+        zakelijkeKortingPercentage,
+        opFactuur: true,
+      });
+    }
     if (!env.MOLLIE_API_KEY) {
       return json(
         { error: "Betaalprovider is nog niet ingesteld (MOLLIE_API_KEY ontbreekt in Cloudflare Pages)." },
