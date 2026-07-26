@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bezorgzone · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+--green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
+--paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
+--rood:#8A2B1E;
+--font-body:'Roboto',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.4;font-size:17px}
+h1,h2,h3{font-weight:700;color:var(--green-ink)}
+button{font-family:inherit;user-select:none}
+
+#lockScreen{max-width:400px;margin:4rem auto;background:#fff;border:1px solid var(--paper-line);border-radius:10px;padding:2rem}
+#lockScreen h1{text-align:center;font-size:1.3rem;margin-bottom:.4rem}
+#lockScreen p{text-align:center;font-size:.9rem;color:#6b6a62}
+#lockScreen input{width:100%;padding:1rem .9rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1.1rem;margin:1rem 0}
+#lockScreen button{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:1rem;font-weight:800;font-size:1.05rem;cursor:pointer;min-height:56px}
+#lockScreen button:active{background:var(--terracotta-deep)}
+#lockFout{color:var(--rood);font-size:.9rem;min-height:1.2em;margin-top:.5rem;text-align:center}
+
+header{background:var(--green);padding:.9rem 1.3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+header h1{color:#fff;font-size:1.4rem}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem}
+
+main{padding:1.3rem;max-width:640px;margin:0 auto}
+.kaart{background:#fff;border-radius:14px;border:2px solid var(--paper-line);padding:1.2rem;margin-bottom:1.1rem}
+.kaart h2{font-size:1.1rem;margin-bottom:.3rem}
+.kaart .uitleg{font-size:.86rem;color:#6b6a62;margin-bottom:1rem}
+
+.veld{margin-bottom:1rem}
+.veld label{display:block;font-weight:700;font-size:.92rem;margin-bottom:.35rem}
+.veld input{width:100%;padding:.7rem .8rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1rem}
+
+.staffelRij{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem}
+.staffelRij .staffelVeld{flex:1;display:flex;flex-direction:column;gap:.25rem}
+.staffelRij .staffelVeld label{font-size:.76rem;font-weight:700;color:#6b6a62}
+.staffelRij .staffelVeld input{padding:.6rem .7rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit}
+.staffelRij .verwijderBtn{background:none;border:none;color:var(--rood);font-weight:700;font-size:1.3rem;cursor:pointer;padding:.4rem .6rem;line-height:1;align-self:flex-end;margin-bottom:.1rem}
+.toevoegenBtn{background:var(--paper-2);border:1.5px dashed var(--paper-line);color:var(--green-ink);border-radius:8px;padding:.6rem;width:100%;font-weight:700;cursor:pointer;margin-bottom:1rem}
+.toevoegenBtn:active{background:var(--paper-line)}
+
+.opslaanBtn{background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:.9rem;font-weight:800;font-size:1.02rem;cursor:pointer;min-height:52px;width:100%}
+.opslaanBtn:active{background:var(--terracotta-deep)}
+.opslaanStatus{font-size:.86rem;color:#6b6a62;min-height:1.2em;margin-top:.6rem;text-align:center}
+.opslaanStatus.ok{color:var(--green-ink);font-weight:700}
+.opslaanStatus.fout{color:var(--rood)}
+
+.voorbeeld{font-size:.84rem;color:#6b6a62;background:var(--paper-2);border-radius:8px;padding:.7rem .9rem;margin-top:.2rem}
+
+@media (max-width: 480px){
+body{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+<h1>Bezorgzone — personeel</h1>
+<p>Alleen voor personeel — voer het wachtwoord in.</p>
+<input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
+<button type="button" id="ontgrendelBtn">Ontgrendelen</button>
+<div id="lockFout"></div>
+</div>
+
+<div id="scherm" style="display:none">
+<header>
+<h1>Bezorgzone</h1>
+<a href="/kassa">&larr; Kassa</a>
+</header>
+<main>
+
+<div class="kaart">
+<h2>Maximale bezorgafstand</h2>
+<p class="uitleg">De werkelijke rijafstand vanaf Oleander 1a wordt per bestelling automatisch berekend. Adressen buiten deze afstand kunnen niet laten bezorgen (wel afhalen).</p>
+<div class="veld">
+<label for="maxAfstandInput">Maximale rijafstand (km)</label>
+<input type="number" id="maxAfstandInput" min="0.1" step="0.1">
+</div>
+</div>
+
+<div class="kaart">
+<h2>Gestaffelde bezorgkosten</h2>
+<p class="uitleg">Bezorgkosten op basis van rijafstand. Elke staffel geldt "tot en met" het ingevulde aantal km — de eerste staffel begint automatisch bij 0 km.</p>
+<div id="staffelsHost"></div>
+<button type="button" class="toevoegenBtn" id="staffelToevoegenBtn">+ Staffel toevoegen</button>
+<div class="voorbeeld" id="staffelsVoorbeeld"></div>
+</div>
+
+<button type="button" class="opslaanBtn" id="opslaanBtn">Instellingen opslaan</button>
+<div class="opslaanStatus" id="opslaanStatus"></div>
+
+</main>
+</div>
+
+<script>
+(function(){
+var wachtwoordInput = document.getElementById('wachtwoordInput');
+var ontgrendelBtn = document.getElementById('ontgrendelBtn');
+var lockFout = document.getElementById('lockFout');
+var huidigWachtwoord = null;
+
+// Zelfde wachtwoord-check + sessionStorage-sleutel als kassa.html,
+// kassa-keuken.html, kassa-loyaliteit.html en kassa-zakelijke-klanten.html:
+// één keer inloggen in de balie-omgeving volstaat voor alle personeelsschermen.
+function controleerWachtwoord(wachtwoord){
+lockFout.textContent = 'Controleren...';
+fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(wachtwoord) + '&code=___check___')
+.then(function(res){
+if (res.status === 401) { lockFout.textContent = 'Onjuist wachtwoord.'; return; }
+if (res.status === 500) {
+return res.json().then(function(d){ lockFout.textContent = (d && d.error) || 'Kon niet inloggen.'; });
+}
+huidigWachtwoord = wachtwoord;
+try { sessionStorage.setItem('bd_loyalty_pw', wachtwoord); } catch(e){}
+document.getElementById('lockScreen').style.display = 'none';
+document.getElementById('scherm').style.display = 'block';
+ladenInstellingen();
+})
+.catch(function(){ lockFout.textContent = 'Kon geen verbinding maken.'; });
+}
+ontgrendelBtn.addEventListener('click', function(){ controleerWachtwoord(wachtwoordInput.value); });
+wachtwoordInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') controleerWachtwoord(wachtwoordInput.value); });
+var opgeslagen = null;
+try { opgeslagen = sessionStorage.getItem('bd_loyalty_pw'); } catch(e){}
+if (opgeslagen) controleerWachtwoord(opgeslagen);
+
+function euro(n){ return '€' + (n||0).toFixed(2).replace('.', ','); }
+
+var staffelsHost = document.getElementById('staffelsHost');
+var maxAfstandInput = document.getElementById('maxAfstandInput');
+
+function tekenStaffelRij(staffel){
+var rij = document.createElement('div');
+rij.className = 'staffelRij';
+rij.innerHTML =
+'<div class="staffelVeld"><label>Tot (km)</label><input type="number" min="0.1" step="0.1" class="staffelTot" value="' + (staffel.totKm != null ? staffel.totKm : '') + '"></div>' +
+'<div class="staffelVeld"><label>Bezorgkosten (€)</label><input type="number" min="0" step="0.05" class="staffelBedrag" value="' + (staffel.bedrag != null ? staffel.bedrag : '') + '"></div>' +
+'<button type="button" class="verwijderBtn" title="Verwijder staffel">&times;</button>';
+rij.querySelector('.verwijderBtn').addEventListener('click', function(){
+rij.remove();
+werkVoorbeeldBij();
+});
+rij.querySelectorAll('input').forEach(function(inp){ inp.addEventListener('input', werkVoorbeeldBij); });
+staffelsHost.appendChild(rij);
+}
+
+document.getElementById('staffelToevoegenBtn').addEventListener('click', function(){
+tekenStaffelRij({ totKm: null, bedrag: null });
+werkVoorbeeldBij();
+});
+
+function huidigeStaffels(){
+var staffels = [];
+staffelsHost.querySelectorAll('.staffelRij').forEach(function(rij){
+var totKm = Number(rij.querySelector('.staffelTot').value);
+var bedrag = Number(rij.querySelector('.staffelBedrag').value);
+if (Number.isFinite(totKm) && totKm > 0 && Number.isFinite(bedrag) && bedrag >= 0) {
+staffels.push({ totKm: totKm, bedrag: bedrag });
+}
+});
+staffels.sort(function(a, b){ return a.totKm - b.totKm; });
+return staffels;
+}
+
+function werkVoorbeeldBij(){
+var staffels = huidigeStaffels();
+var voorbeeldEl = document.getElementById('staffelsVoorbeeld');
+if (staffels.length === 0) { voorbeeldEl.textContent = 'Nog geen (geldige) staffels ingevuld.'; return; }
+var vanaf = 0;
+var regels = staffels.map(function(s){
+var tekst = vanaf.toFixed(1).replace('.', ',') + ' – ' + s.totKm.toFixed(1).replace('.', ',') + ' km: ' + euro(s.bedrag);
+vanaf = s.totKm;
+return tekst;
+});
+voorbeeldEl.textContent = regels.join(' · ');
+}
+
+function ladenInstellingen(){
+fetch('/api/admin/bezorgzone-instellingen?wachtwoord=' + encodeURIComponent(huidigWachtwoord))
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { document.getElementById('opslaanStatus').textContent = (r.data && r.data.error) || 'Kon instellingen niet laden.'; return; }
+maxAfstandInput.value = r.data.maxBezorgafstandKm;
+staffelsHost.innerHTML = '';
+(r.data.staffels || []).forEach(tekenStaffelRij);
+werkVoorbeeldBij();
+})
+.catch(function(){ document.getElementById('opslaanStatus').textContent = 'Kon geen verbinding maken.'; });
+}
+
+document.getElementById('opslaanBtn').addEventListener('click', function(){
+var statusEl = document.getElementById('opslaanStatus');
+var maxAfstand = Number(maxAfstandInput.value);
+if (!Number.isFinite(maxAfstand) || maxAfstand <= 0) {
+statusEl.textContent = 'Vul een geldige maximale afstand in.'; statusEl.className = 'opslaanStatus fout'; return;
+}
+var staffels = huidigeStaffels();
+if (staffels.length === 0) {
+statusEl.textContent = 'Vul minimaal één geldige staffel in.'; statusEl.className = 'opslaanStatus fout'; return;
+}
+statusEl.textContent = 'Opslaan...'; statusEl.className = 'opslaanStatus';
+fetch('/api/admin/bezorgzone-instellingen?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ maxBezorgafstandKm: maxAfstand, staffels: staffels }),
+})
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { statusEl.textContent = (r.data && r.data.error) || 'Opslaan mislukt.'; statusEl.className = 'opslaanStatus fout'; return; }
+statusEl.textContent = 'Opgeslagen ✓'; statusEl.className = 'opslaanStatus ok';
+ladenInstellingen();
+})
+.catch(function(){ statusEl.textContent = 'Kon geen verbinding maken.'; statusEl.className = 'opslaanStatus fout'; });
+});
+})();
+</script>
+</body>
+</html>

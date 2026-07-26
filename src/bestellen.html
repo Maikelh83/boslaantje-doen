@@ -205,6 +205,7 @@ main{padding:1.4rem 0 3rem}
 .coupon-status.ok{color:var(--green-ink);font-weight:700}
 .coupon-status.fout{color:#8a2b1e}
 .korting-rij{display:flex;justify-content:space-between;font-size:.87rem;color:var(--green-ink);font-weight:700;margin-top:.4rem}
+.bezorgkosten-rij{display:flex;justify-content:space-between;font-size:.87rem;color:#4a4338;font-weight:700;margin-top:.4rem}
 
 .cart-total{display:flex;justify-content:space-between;font-weight:800;font-size:1.1rem;border-top:2px solid var(--paper-line);margin-top:.9rem;padding-top:.9rem;color:var(--green-ink)}
 
@@ -393,6 +394,8 @@ main{padding:1.4rem 0 3rem}
           </div>
 
           <div class="cart-total"><span>Totaal</span><span id="cartTotal">&euro;0,00</span></div>
+          <div class="bezorgkosten-rij" id="bezorgkostenRij" style="display:none"><span>Bezorgkosten</span><span id="bezorgkostenBedrag">&euro;0,00</span></div>
+          <div class="cart-total" id="eindTotaalRij" style="display:none"><span>Totaal incl. bezorgkosten</span><span id="eindTotaalBedrag">&euro;0,00</span></div>
 
           <form class="cart-form" id="checkoutForm">
           <div class="checkout-progress" id="checkoutProgress">
@@ -439,6 +442,7 @@ main{padding:1.4rem 0 3rem}
                 <label for="plaats">Plaats</label>
                 <input type="text" id="plaats" name="plaats" value="Veenendaal">
               </div>
+              <div class="coupon-status" id="bezorgzoneStatus"></div>
             </div>
           </div>
 
@@ -1742,6 +1746,155 @@ bijwerkenFactuurStatus();
       if (magZakelijkBezorgenVrijdag) opnieuwOpbouwen();
     }).catch(function () { /* faalt stil - particulier bezorgvenster blijft gelden */ });
   });
+})();
+</script>
+<script>
+(function(){
+  // Bezorgzone-check (geografische afstandscontrole bij bezorgen). Bewust
+  // ontkoppeld van de hoofd-checkout-IIFE en de tijdslot-kiezer-IIFE hierboven
+  // (zelfde patroon): raakt geen bestaande cart/checkout-logica aan, communiceert
+  // alleen via DOM-waarden (levering-radio's, adres/postcode/plaats-velden, de
+  // Volgende-knop en het cartTotal-element). De server (order.js) voert vóór
+  // het accepteren van de betaling exact dezelfde controle opnieuw uit — dit
+  // script is puur live UI-feedback tijdens het invullen.
+  var adresVeld = document.getElementById('adres');
+  var postcodeVeld = document.getElementById('postcode');
+  var plaatsVeld = document.getElementById('plaats');
+  var statusEl = document.getElementById('bezorgzoneStatus');
+  var volgendeBtn = document.getElementById('checkoutVolgendeBtn');
+  var bezorgkostenRij = document.getElementById('bezorgkostenRij');
+  var bezorgkostenBedrag = document.getElementById('bezorgkostenBedrag');
+  var eindTotaalRij = document.getElementById('eindTotaalRij');
+  var eindTotaalBedrag = document.getElementById('eindTotaalBedrag');
+  var cartTotalEl = document.getElementById('cartTotal');
+
+  if (!adresVeld || !postcodeVeld || !plaatsVeld || !statusEl || !volgendeBtn || !cartTotalEl) return;
+
+  var status = 'nvt'; // 'nvt' | 'bezig' | 'binnen' | 'buiten' | 'fout'
+  var huidigeBezorgkosten = 0;
+  var debounceTimer = null;
+  var laatsteAanvraagId = 0;
+
+  function euroTekst(bedrag) { return '\u20AC' + bedrag.toFixed(2).replace('.', ','); }
+  function euroNaarGetal(tekst) {
+    var cijfers = String(tekst || '').replace(/[^\d,.-]/g, '').replace(',', '.');
+    var getal = parseFloat(cijfers);
+    return isNaN(getal) ? 0 : getal;
+  }
+
+  function huidigeLeveringIsBezorgen() {
+    var radio = document.querySelector('input[name="levering"][value="bezorgen"]');
+    return !!(radio && radio.checked);
+  }
+
+  function werkVolgendeKnopBij() {
+    volgendeBtn.disabled = huidigeLeveringIsBezorgen() && status !== 'binnen';
+  }
+
+  function werkEindtotaalBij() {
+    if (huidigeLeveringIsBezorgen() && status === 'binnen' && huidigeBezorgkosten > 0) {
+      bezorgkostenRij.style.display = 'flex';
+      bezorgkostenBedrag.textContent = euroTekst(huidigeBezorgkosten);
+      eindTotaalRij.style.display = 'flex';
+      eindTotaalBedrag.textContent = euroTekst(euroNaarGetal(cartTotalEl.textContent) + huidigeBezorgkosten);
+    } else {
+      bezorgkostenRij.style.display = 'none';
+      eindTotaalRij.style.display = 'none';
+    }
+  }
+
+  // Herbereken het eindtotaal ook als het productensubtotaal wijzigt (aantal
+  // +/-, coupon, loyaliteit) — zonder de bestaande renderCart-functie aan te raken.
+  if (window.MutationObserver) {
+    new MutationObserver(werkEindtotaalBij).observe(cartTotalEl, { childList: true, characterData: true, subtree: true });
+  }
+
+  function toonStatus(tekst, klasse) {
+    statusEl.textContent = tekst;
+    statusEl.className = 'coupon-status' + (klasse ? ' ' + klasse : '');
+  }
+
+  function controleerAdres() {
+    if (!huidigeLeveringIsBezorgen()) return;
+    var adres = adresVeld.value.trim();
+    var postcode = postcodeVeld.value.trim();
+    var plaats = plaatsVeld.value.trim();
+    if (!adres || !postcode) {
+      status = 'nvt';
+      huidigeBezorgkosten = 0;
+      toonStatus('', '');
+      werkVolgendeKnopBij();
+      werkEindtotaalBij();
+      return;
+    }
+
+    status = 'bezig';
+    huidigeBezorgkosten = 0;
+    toonStatus('Adres controleren...', 'bezig');
+    werkVolgendeKnopBij();
+    werkEindtotaalBij();
+
+    var aanvraagId = ++laatsteAanvraagId;
+    fetch('/api/bezorgzone-afstand', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adres: adres, postcode: postcode, plaats: plaats })
+    })
+      .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+      .then(function (result) {
+        if (aanvraagId !== laatsteAanvraagId) return; // verouderd antwoord, negeren
+        if (!result.ok) {
+          status = 'fout';
+          huidigeBezorgkosten = 0;
+          toonStatus((result.data && result.data.error) || 'Kon het adres niet controleren.', 'fout');
+        } else if (!result.data.binnenBereik) {
+          status = 'buiten';
+          huidigeBezorgkosten = 0;
+          toonStatus(result.data.foutmelding || 'Dit adres ligt buiten onze bezorgzone.', 'fout');
+        } else {
+          status = 'binnen';
+          huidigeBezorgkosten = result.data.bezorgkosten || 0;
+          toonStatus('Binnen bezorgzone (' + String(result.data.afstandKm).replace('.', ',') + ' km) \u2014 bezorgkosten ' + euroTekst(huidigeBezorgkosten), 'ok');
+        }
+        werkVolgendeKnopBij();
+        werkEindtotaalBij();
+      })
+      .catch(function () {
+        if (aanvraagId !== laatsteAanvraagId) return;
+        status = 'fout';
+        huidigeBezorgkosten = 0;
+        toonStatus('Kon geen verbinding maken om het adres te controleren.', 'fout');
+        werkVolgendeKnopBij();
+        werkEindtotaalBij();
+      });
+  }
+
+  function debounceControleer() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(controleerAdres, 700);
+  }
+
+  document.querySelectorAll('input[name="levering"]').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+      if (huidigeLeveringIsBezorgen()) {
+        controleerAdres();
+      } else {
+        status = 'nvt';
+        huidigeBezorgkosten = 0;
+        toonStatus('', '');
+        werkVolgendeKnopBij();
+        werkEindtotaalBij();
+      }
+    });
+  });
+
+  [adresVeld, postcodeVeld, plaatsVeld].forEach(function (veld) {
+    veld.addEventListener('input', debounceControleer);
+    veld.addEventListener('blur', controleerAdres);
+  });
+
+  werkVolgendeKnopBij();
+  werkEindtotaalBij();
 })();
 </script>
 <script src="/pwa-install.js" defer></script>
