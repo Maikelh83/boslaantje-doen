@@ -10,12 +10,14 @@
 //   MOLLIE_API_KEY  — test_... of live_... key uit het Mollie-dashboard
 //   DB              — D1-database binding (optioneel; als afwezig wordt orderlogging overgeslagen)
 
+import { zorgVoorAccountTabellen, haalIngelogdeGebruikerOp } from "./auth/_lib.js";
+
 export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
     const body = await request.json();
-    const { items, customer, levering, couponCode, loyaliteitsCode } = body || {};
+    const { items, customer, levering, tijdslot, couponCode, loyaliteitsCode } = body || {};
 
     if (!Array.isArray(items) || items.length === 0) {
       return json({ error: "Winkelwagen is leeg." }, 400);
@@ -27,6 +29,32 @@ export async function onRequestPost(context) {
       return json({ error: "Adres, postcode en plaats zijn verplicht bij bezorgen." }, 400);
     }
 
+
+// Pijler 7: het exclusieve tijdslot 'vrijdag-lunch' is alleen bedoeld voor
+// goedgekeurde zakelijke klanten, en alleen vóór de cut-off (zie
+// vrijdagLunchCutoffBereikt hieronder). bestellen.html toont deze optie
+// alleen als UI-gemak aan klanten die volgens /api/auth/me goedgekeurd
+// zakelijk zijn — dat wordt hier nooit vertrouwd: de server controleert
+// de sessie en de cut-off zelf, opnieuw, vanaf nul.
+if (tijdslot === "vrijdag-lunch") {
+ if (vrijdagLunchCutoffBereikt(new Date())) {
+ return json({ error: "Het tijdslot 'Vrijdag lunch' is niet meer beschikbaar (de cut-off is gepasseerd)." }, 400);
+ }
+ if (!env.DB) {
+ return json({ error: "Dit tijdslot is momenteel niet beschikbaar." }, 400);
+ }
+ await zorgVoorAccountTabellen(env.DB);
+ const gebruiker = await haalIngelogdeGebruikerOp(env.DB, request);
+ const magVrijdagLunch = !!(
+ gebruiker &&
+ gebruiker.account.account_type === "business" &&
+ gebruiker.business &&
+ gebruiker.business.business_approved
+ );
+ if (!magVrijdagLunch) {
+ return json({ error: "Het tijdslot 'Vrijdag lunch' is alleen beschikbaar voor goedgekeurde zakelijke klanten." }, 400);
+ }
+}
     // Productenlijst + prijzen ophalen van de eigen, live site (nooit de
     // prijs die de klant meestuurt vertrouwen).
     const productenUrl = new URL("/producten.json", request.url);
@@ -278,6 +306,34 @@ async function laadActies(request) {
   if (!res.ok) return [];
   const data = await res.json();
   return Array.isArray(data.coupons) ? data.coupons : [];
+}
+
+// Pijler 7: cut-off voor het exclusieve 'vrijdag lunch'-tijdslot.
+// LET OP: deze regel moet functioneel gelijk blijven aan de UI-check in
+// src/bestellen.html (functie vrijdagLunchCutoffBereikt in de losse
+// script-blok onderaan die pagina). Hier gebruiken we expliciet de
+// Europe/Amsterdam-tijdzone, omdat de Cloudflare Worker zelf in UTC
+// draait en anders 's zomers/'s winters een uur zou verschuiven t.o.v.
+// de klant in de browser.
+function amsterdamDagEnUur(nu) {
+ const fmt = new Intl.DateTimeFormat("en-US", {
+ timeZone: "Europe/Amsterdam",
+ weekday: "short",
+ hour: "numeric",
+ hour12: false,
+ });
+ const parts = fmt.formatToParts(nu);
+ const weekdayStr = parts.find((p) => p.type === "weekday").value;
+ const uurStr = parts.find((p) => p.type === "hour").value;
+ const dagMap = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+ return { dag: dagMap[weekdayStr], uur: parseInt(uurStr, 10) % 24 };
+}
+
+function vrijdagLunchCutoffBereikt(nu) {
+ const { dag, uur } = amsterdamDagEnUur(nu);
+ if (dag >= 1 && dag <= 3) return false; // ma/di/wo: ruim op tijd
+ if (dag === 4) return uur >= 17; // do: cut-off om 17:00
+ return true; // vr/weekend: cut-off al gepasseerd
 }
 
 function actieBinnenBereik(actie) {
