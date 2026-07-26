@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Zakelijke klanten · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+--green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
+--paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
+--geel:#B08900;--geel-bg:#FFF6DC;--rood:#8A2B1E;--rood-bg:#FBE4E0;--groen-bg:#EAF1E4;
+--font-body:'Roboto',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.4;font-size:17px}
+h1,h2,h3{font-weight:700;color:var(--green-ink)}
+button{font-family:inherit;user-select:none}
+
+#lockScreen{max-width:400px;margin:4rem auto;background:#fff;border:1px solid var(--paper-line);border-radius:10px;padding:2rem}
+#lockScreen h1{text-align:center;font-size:1.3rem;margin-bottom:.4rem}
+#lockScreen p{text-align:center;font-size:.9rem;color:#6b6a62}
+#lockScreen input{width:100%;padding:1rem .9rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1.1rem;margin:1rem 0}
+#lockScreen button{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:1rem;font-weight:800;font-size:1.05rem;cursor:pointer;min-height:56px}
+#lockScreen button:active{background:var(--terracotta-deep)}
+#lockFout{color:var(--rood);font-size:.9rem;min-height:1.2em;margin-top:.5rem;text-align:center}
+
+header{background:var(--green);padding:.9rem 1.3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+header h1{color:#fff;font-size:1.4rem}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem}
+
+#instellingenBalk{background:#fff;border-bottom:1px solid var(--paper-line);padding:.9rem 1.3rem;display:flex;align-items:center;flex-wrap:wrap;gap:.7rem}
+#instellingenBalk label{font-weight:700;font-size:.95rem}
+#instellingenBalk input{width:6rem;padding:.5rem .6rem;border:1px solid var(--paper-line);border-radius:6px;font:inherit;font-size:1rem}
+#instellingenBalk button{background:var(--green);color:#fff;border:none;border-radius:6px;padding:.55rem 1.1rem;font-weight:700;cursor:pointer}
+#instellingenBalk button:active{background:var(--green-ink)}
+#instellingenStatus{font-size:.85rem;color:#6b6a62;min-height:1.2em}
+
+#klantenHost{padding:1.1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1.1rem;align-content:start}
+.leeg{grid-column:1/-1;text-align:center;color:#6b6a62;font-size:1.1rem;padding:4rem 0}
+
+.klantKaart{background:#fff;border-radius:14px;border:2px solid var(--paper-line);padding:1.1rem;display:flex;flex-direction:column;gap:.7rem;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.klantKop{display:flex;justify-content:space-between;align-items:flex-start;gap:.6rem}
+.klantKop .bedrijfsnaam{font-size:1.2rem;font-weight:900;color:var(--green-ink)}
+.klantKop .contact{font-size:.88rem;color:#4a4940;margin-top:.15rem}
+.badge{display:inline-block;font-size:.76rem;font-weight:800;padding:.25rem .6rem;border-radius:20px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.badge.wacht{background:var(--geel-bg);color:var(--geel)}
+.badge.goedgekeurd{background:var(--groen-bg);color:var(--green-ink)}
+
+.klantDetails{font-size:.86rem;color:#4a4940;border-top:1px dashed var(--paper-line);border-bottom:1px dashed var(--paper-line);padding:.6rem 0;display:flex;flex-direction:column;gap:.25rem}
+
+.veldenGrid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem .9rem}
+.veldRij{display:flex;align-items:center;gap:.5rem;font-size:.9rem}
+.veldRij input[type="checkbox"]{width:1.15rem;height:1.15rem}
+.veldRij.discount{grid-column:1/-1}
+.veldRij.discount input[type="number"]{width:5rem;padding:.4rem .5rem;border:1px solid var(--paper-line);border-radius:6px;font:inherit}
+
+.opslaanBtn{background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:.8rem;font-weight:800;font-size:1rem;cursor:pointer;min-height:48px}
+.opslaanBtn:active{background:var(--terracotta-deep)}
+.opslaanStatus{font-size:.82rem;color:#6b6a62;min-height:1.2em;text-align:center}
+
+@media (max-width: 640px){
+body{font-size:15px}
+#klantenHost{grid-template-columns:1fr}
+.veldenGrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+<h1>Zakelijke klanten — personeel</h1>
+<p>Alleen voor personeel — voer het wachtwoord in.</p>
+<input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
+<button type="button" id="ontgrendelBtn">Ontgrendelen</button>
+<div id="lockFout"></div>
+</div>
+
+<div id="scherm" style="display:none">
+<header>
+<h1>Zakelijke klanten</h1>
+<a href="/kassa">&larr; Kassa</a>
+</header>
+<div id="instellingenBalk">
+<label for="minimumInput">Drempel voor Op Factuur Betalen (€)</label>
+<input type="number" id="minimumInput" min="0" step="1">
+<button type="button" id="minimumOpslaanBtn">Opslaan</button>
+<span id="instellingenStatus"></span>
+</div>
+<div id="klantenHost"></div>
+</div>
+
+<script>
+(function(){
+var wachtwoordInput = document.getElementById('wachtwoordInput');
+var ontgrendelBtn = document.getElementById('ontgrendelBtn');
+var lockFout = document.getElementById('lockFout');
+var huidigWachtwoord = null;
+
+// --- Zelfde wachtwoord-check + sessionStorage-sleutel als kassa.html,
+// kassa-keuken.html en kassa-loyaliteit.html: één keer inloggen in de
+// balie-omgeving volstaat voor alle personeelsschermen.
+function controleerWachtwoord(wachtwoord){
+lockFout.textContent = 'Controleren...';
+fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(wachtwoord) + '&code=___check___')
+.then(function(res){
+if (res.status === 401) { lockFout.textContent = 'Onjuist wachtwoord.'; return; }
+if (res.status === 500) {
+return res.json().then(function(d){ lockFout.textContent = (d && d.error) || 'Kon niet inloggen.'; });
+}
+huidigWachtwoord = wachtwoord;
+try { sessionStorage.setItem('bd_loyalty_pw', wachtwoord); } catch(e){}
+document.getElementById('lockScreen').style.display = 'none';
+document.getElementById('scherm').style.display = 'block';
+ladenKlanten();
+})
+.catch(function(){ lockFout.textContent = 'Kon geen verbinding maken.'; });
+}
+ontgrendelBtn.addEventListener('click', function(){ controleerWachtwoord(wachtwoordInput.value); });
+wachtwoordInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') controleerWachtwoord(wachtwoordInput.value); });
+var opgeslagen = null;
+try { opgeslagen = sessionStorage.getItem('bd_loyalty_pw'); } catch(e){}
+if (opgeslagen) controleerWachtwoord(opgeslagen);
+
+function datumTekst(iso){
+if (!iso) return '—';
+var d = new Date(iso);
+if (isNaN(d.getTime())) return '—';
+return d.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function tekenKlanten(klanten){
+var host = document.getElementById('klantenHost');
+if (!klanten.length) {
+host.innerHTML = '<div class="leeg">Nog geen zakelijke aanvragen.</div>';
+return;
+}
+
+host.innerHTML = '';
+klanten.forEach(function(klant){
+var kaart = document.createElement('div');
+kaart.className = 'klantKaart';
+
+kaart.innerHTML =
+'<div class="klantKop">' +
+'<div>' +
+'<div class="bedrijfsnaam">' + (klant.bedrijfsnaam || '—') + '</div>' +
+'<div class="contact">' + (klant.naam || '') + ' · ' + (klant.email || '') + (klant.telefoon ? ' · ' + klant.telefoon : '') + '</div>' +
+'</div>' +
+'<span class="badge ' + (klant.businessApproved ? 'goedgekeurd' : 'wacht') + '">' + (klant.businessApproved ? 'Goedgekeurd' : 'In afwachting') + '</span>' +
+'</div>' +
+'<div class="klantDetails">' +
+'<div>KVK: ' + (klant.kvkNummer || '—') + ' · BTW: ' + (klant.btwNummer || '—') + '</div>' +
+'<div>Afdeling: ' + (klant.afdeling || '—') + '</div>' +
+'<div>Factuur-e-mail: ' + (klant.factuurEmail || klant.email || '—') + '</div>' +
+'<div>Aangevraagd op: ' + datumTekst(klant.aangevraagdOp) + (klant.goedgekeurdOp ? ' · Goedgekeurd op: ' + datumTekst(klant.goedgekeurdOp) : '') + '</div>' +
+'</div>' +
+'<div class="veldenGrid">' +
+'<label class="veldRij"><input type="checkbox" class="veldGoedgekeurd"' + (klant.businessApproved ? ' checked' : '') + '> Goedgekeurd</label>' +
+'<label class="veldRij"><input type="checkbox" class="veldFactuur"' + (klant.factuurToegestaan ? ' checked' : '') + '> Op factuur betalen</label>' +
+'<label class="veldRij"><input type="checkbox" class="veldOverride"' + (klant.overrideMinimumInvoiceAmount ? ' checked' : '') + '> VIP: geen factuurdrempel</label>' +
+'<label class="veldRij"><input type="checkbox" class="veldMaandfactuur"' + (klant.enableMonthlyConsolidatedInvoice ? ' checked' : '') + '> Maandelijkse verzamelfactuur</label>' +
+'<label class="veldRij discount">Vaste korting: <input type="number" class="veldKorting" min="0" max="100" step="0.5" value="' + (klant.customDiscountPercentage || 0) + '"> %</label>' +
+'</div>' +
+'<button type="button" class="opslaanBtn">Wijzigingen opslaan</button>' +
+'<div class="opslaanStatus"></div>';
+
+var statusEl = kaart.querySelector('.opslaanStatus');
+kaart.querySelector('.opslaanBtn').addEventListener('click', function(){
+statusEl.textContent = 'Opslaan...';
+var payload = {
+accountId: klant.accountId,
+businessApproved: kaart.querySelector('.veldGoedgekeurd').checked,
+factuurToegestaan: kaart.querySelector('.veldFactuur').checked,
+overrideMinimumInvoiceAmount: kaart.querySelector('.veldOverride').checked,
+enableMonthlyConsolidatedInvoice: kaart.querySelector('.veldMaandfactuur').checked,
+customDiscountPercentage: Number(kaart.querySelector('.veldKorting').value) || 0,
+};
+fetch('/api/admin/zakelijke-klanten?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify(payload),
+})
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { statusEl.textContent = (r.data && r.data.error) || 'Opslaan mislukt.'; return; }
+statusEl.textContent = 'Opgeslagen ✓';
+ladenKlanten();
+})
+.catch(function(){ statusEl.textContent = 'Kon geen verbinding maken.'; });
+});
+
+host.appendChild(kaart);
+});
+}
+
+function ladenKlanten(){
+fetch('/api/admin/zakelijke-klanten?wachtwoord=' + encodeURIComponent(huidigWachtwoord))
+.then(function(res){ return res.json(); })
+.then(function(data){
+if (!data) return;
+if (Array.isArray(data.klanten)) tekenKlanten(data.klanten);
+if (typeof data.minimumFactuurbedrag !== 'undefined') {
+document.getElementById('minimumInput').value = data.minimumFactuurbedrag;
+}
+})
+.catch(function(){ /* laat de vorige weergave gewoon staan */ });
+}
+
+document.getElementById('minimumOpslaanBtn').addEventListener('click', function(){
+var status = document.getElementById('instellingenStatus');
+var waarde = document.getElementById('minimumInput').value;
+status.textContent = 'Opslaan...';
+fetch('/api/admin/zakelijke-klanten?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ instelling: 'minimum_factuurbedrag', waarde: waarde }),
+})
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+status.textContent = r.ok ? 'Opgeslagen ✓' : ((r.data && r.data.error) || 'Opslaan mislukt.');
+})
+.catch(function(){ status.textContent = 'Kon geen verbinding maken.'; });
+});
+})();
+</script>
+</body>
+</html>
