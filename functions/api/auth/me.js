@@ -3,7 +3,7 @@
 // weten of er een ingelogde particuliere/zakelijke klant is, en om de
 // exclusieve vrijdaglunch-tijdsloten + korting + factuuroptie te tonen).
 
-import { zorgVoorAccountTabellen, haalIngelogdeGebruikerOp, json } from "./_lib.js";
+import { zorgVoorAccountTabellen, haalIngelogdeGebruikerOp, haalMinimumFactuurbedrag, json } from "./_lib.js";
 
 export async function onRequestGet(context) {
   const { request, env } = context;
@@ -13,6 +13,11 @@ export async function onRequestGet(context) {
     const gebruiker = await haalIngelogdeGebruikerOp(env.DB, request);
     if (!gebruiker) return json({ ingelogd: false });
 
+
+    let minimumFactuurbedrag = null;
+    if (gebruiker.business) {
+      minimumFactuurbedrag = await haalMinimumFactuurbedrag(env.DB);
+    }
     return json({
       ingelogd: true,
       account: {
@@ -33,6 +38,7 @@ export async function onRequestGet(context) {
             factuurToegestaan: !!gebruiker.business.factuur_toegestaan,
             customDiscountPercentage: gebruiker.business.custom_discount_percentage,
             overrideMinimumInvoiceAmount: !!gebruiker.business.override_minimum_invoice_amount,
+            minimumFactuurbedrag,
           }
         : null,
     });
