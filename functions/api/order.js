@@ -200,7 +200,26 @@ if (tijdslot === "vrijdag-lunch") {
         factuurGeschiktheid = berekenFactuurGeschiktheid(zakelijkeGebruiker.business, minimumFactuurbedrag, totaal);
       }
     }
-    // Kortingscode — server-side de enige bron van waarheid.
+    
+    // Onthoud het laatst gebruikte bezorgadres op het account (particulier +
+    // zakelijk), zodat bestellen.html dit de volgende keer kan voorinvullen.
+    // Puur gemaks-functie - heeft geen invloed op prijsberekening, korting of
+    // factuurlogica hierboven, en faalt stil als het niet lukt.
+    if (env.DB && levering === "bezorgen" && customer && customer.adres) {
+      try {
+        const ingelogdeKlant = await haalIngelogdeGebruikerOp(env.DB, request);
+        if (ingelogdeKlant) {
+          await env.DB
+            .prepare(`UPDATE accounts SET laatst_adres = ?, laatst_postcode = ?, laatst_plaats = ? WHERE id = ?`)
+            .bind(customer.adres || null, customer.postcode || null, customer.plaats || null, ingelogdeKlant.account.id)
+            .run();
+        }
+      } catch (adresErr) {
+        console.error("order.js: kon laatst gebruikte adres niet opslaan", adresErr);
+      }
+    }
+
+// Kortingscode — server-side de enige bron van waarheid.
     let korting = 0;
     let toegepasteCode = null;
     if (couponCode) {
