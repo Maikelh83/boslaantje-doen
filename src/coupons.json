@@ -1,5 +1,5 @@
 {
-  "_opmerking": "Promotie-engine Boslaantje Doen. Elke actie hieronder is óf een kortingscode (vul 'code' in, klant typt hem in) óf een automatische actie (code: null, automatisch: true — activeert vanzelf zodra de trigger klopt, geen code nodig). type: 'percentage' | 'vast' | 'gratis_product'. trigger.minimumBedrag = drempelbedrag; trigger.vereistCategorie / trigger.vereistProductId = alleen ontgrendelen als die categorie/dat product al in de bestelling zit (bijv. 'gratis saus bij een menu'). geldigVanaf/geldigTot: 'YYYY-MM-DD' voor seizoensacties/flyercodes, of null voor geen limiet. actief: false zet een actie direct uit zonder hem te verwijderen (handig om per maand te wisselen).",
+  "_opmerking": "Promotie-engine Boslaantje Doen. Elke actie hieronder is óf een kortingscode (vul 'code' in, klant typt hem in) óf een automatische actie (code: null, automatisch: true — activeert vanzelf zodra de trigger klopt, geen code nodig). type: 'percentage' | 'vast' | 'gratis_product'. trigger.minimumBedrag = drempelbedrag; trigger.vereistCategorie / trigger.vereistProductId = alleen ontgrendelen als die categorie/dat product al in de bestelling zit (bijv. 'gratis saus bij een menu'). geldigVanaf/geldigTot: 'YYYY-MM-DD' voor seizoensacties/flyercodes, of null voor geen limiet. actief: false zet een actie direct uit zonder hem te verwijderen (handig om per maand te wisselen). toonInCarrousel/titelCarrousel/subtitelCarrousel/linkCategorie zijn optioneel en sturen de promo-carrousel bovenaan de bestelpagina.",
   "coupons": [
     {
       "code": "WELKOM10",
@@ -7,11 +7,16 @@
       "omschrijving": "10% korting op je bestelling",
       "type": "percentage",
       "waarde": 10,
-      "trigger": { "minimumBedrag": 10 },
+      "trigger": {
+        "minimumBedrag": 10
+      },
       "geldigVanaf": null,
       "geldigTot": null,
       "actief": true,
-      "automatisch": false
+      "automatisch": false,
+      "toonInCarrousel": true,
+      "titelCarrousel": "10% korting met code WELKOM10",
+      "subtitelCarrousel": "Vanaf €10 bestellen"
     },
     {
       "code": "BOSLAAN5",
@@ -19,11 +24,16 @@
       "omschrijving": "€5 korting",
       "type": "vast",
       "waarde": 5,
-      "trigger": { "minimumBedrag": 25 },
+      "trigger": {
+        "minimumBedrag": 25
+      },
       "geldigVanaf": null,
       "geldigTot": null,
       "actief": true,
-      "automatisch": false
+      "automatisch": false,
+      "toonInCarrousel": true,
+      "titelCarrousel": "€5 korting met code BOSLAAN5",
+      "subtitelCarrousel": "Vanaf €25 bestellen"
     },
     {
       "code": null,
@@ -31,11 +41,16 @@
       "omschrijving": "Gratis milkshake naar keuze (vanille)",
       "type": "gratis_product",
       "gratisProductId": "milkshake-vanille",
-      "trigger": { "minimumBedrag": 25 },
+      "trigger": {
+        "minimumBedrag": 25
+      },
       "geldigVanaf": null,
       "geldigTot": null,
       "actief": true,
-      "automatisch": true
+      "automatisch": true,
+      "toonInCarrousel": true,
+      "titelCarrousel": "Gratis milkshake vanaf €25",
+      "subtitelCarrousel": "Automatisch toegevoegd aan je bestelling"
     },
     {
       "code": null,
@@ -43,11 +58,17 @@
       "omschrijving": "Gratis sausje bij ieder menu",
       "type": "gratis_product",
       "gratisProductId": "saus-basis-bakje",
-      "trigger": { "vereistCategorie": "Menu's" },
+      "trigger": {
+        "vereistCategorie": "Menu's"
+      },
       "geldigVanaf": null,
       "geldigTot": null,
       "actief": true,
-      "automatisch": true
+      "automatisch": true,
+      "toonInCarrousel": true,
+      "titelCarrousel": "Gratis saus bij elk menu",
+      "subtitelCarrousel": "Bekijk onze menu's",
+      "linkCategorie": "menu-s"
     }
   ]
 }
