@@ -21,8 +21,24 @@ export async function zorgVoorAccountTabellen(db) {
     account_type TEXT NOT NULL DEFAULT 'private',
     naam TEXT,
     telefoon TEXT,
-    aangemaakt_op TEXT NOT NULL
+    laatst_adres TEXT,
+laatst_postcode TEXT,
+laatst_plaats TEXT,
+aangemaakt_op TEXT NOT NULL
   )`).run();
+
+  // Additieve migratie voor bestaande databases: CREATE TABLE IF NOT EXISTS
+  // raakt een reeds bestaande accounts-tabel niet aan, dus deze kolommen
+  // worden hier los toegevoegd. ALTER TABLE ... ADD COLUMN gooit een fout
+  // als de kolom al bestaat - dat vangen we stil af als teken dat de
+  // migratie al eerder is uitgevoerd.
+  for (const kolom of ["laatst_adres", "laatst_postcode", "laatst_plaats"]) {
+    try {
+      await db.prepare(`ALTER TABLE accounts ADD COLUMN ${kolom} TEXT`).run();
+    } catch (migratieErr) {
+      // kolom bestaat waarschijnlijk al - genegeerd
+    }
+  }
 
   await db.prepare(`CREATE TABLE IF NOT EXISTS business_profiles (
     account_id TEXT PRIMARY KEY,
@@ -126,7 +142,7 @@ export async function haalIngelogdeGebruikerOp(db, request) {
   if (new Date(sessie.verloopt_op).getTime() < Date.now()) return null;
 
   const account = await db
-    .prepare(`SELECT id, email, account_type, naam, telefoon FROM accounts WHERE id = ?`)
+    .prepare(`SELECT id, email, account_type, naam, telefoon, laatst_adres, laatst_postcode, laatst_plaats FROM accounts WHERE id = ?`)
     .bind(sessie.account_id)
     .first();
   if (!account) return null;
