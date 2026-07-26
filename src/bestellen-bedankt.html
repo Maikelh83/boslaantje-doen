@@ -13,7 +13,7 @@
 
 <style>
 :root{
-  --green:#4A5D3D;
+  --green:#4A5D3E;
   --green-ink:#37472E;
   --paper-2:#F5F3EF;
   --paper-line:#E6E2DA;
@@ -40,6 +40,15 @@ body{
 h1{font-size:1.5rem;color:var(--green-ink);margin-bottom:.7rem}
 p{color:#4a4338;font-size:.98rem;margin-bottom:.5rem}
 .order-id{font-weight:800;color:var(--green-ink)}
+.status-tracker{display:flex;align-items:flex-start;justify-content:center;margin:1.5rem 0}
+.status-stap{display:flex;flex-direction:column;align-items:center;gap:.4rem;flex:1;max-width:110px}
+.status-bol{width:20px;height:20px;border-radius:50%;background:var(--paper-2);border:2px solid var(--paper-line);transition:background .3s,border-color .3s}
+.status-label{font-size:.72rem;color:#8a8275;line-height:1.2;transition:color .3s}
+.status-stap.actief .status-bol{background:var(--green);border-color:var(--green)}
+.status-stap.actief .status-label{color:var(--green-ink);font-weight:700}
+.status-stap.gehad .status-bol{background:var(--green);border-color:var(--green)}
+.status-stap.gehad .status-label{color:var(--green-ink)}
+.status-lijn{flex:0 0 24px;height:2px;background:var(--paper-line);margin:9px -2px 0}
 a.terug{
   display:inline-block;margin-top:1.4rem;background:var(--green);color:#fff;
   text-decoration:none;font-weight:800;padding:.7rem 1.4rem;border-radius:999px;
@@ -53,6 +62,24 @@ a.terug:hover{background:var(--green-ink)}
     <h1>Bedankt voor je bestelling!</h1>
     <p>We hebben je betaling ontvangen en gaan direct voor je aan de slag.</p>
     <p id="orderRegel"></p>
+
+    <div class="status-tracker" id="statusTracker">
+      <div class="status-stap" id="statusStapBetaald" data-stap="betaald">
+        <span class="status-bol"></span>
+        <span class="status-label">Betaling ontvangen</span>
+      </div>
+      <div class="status-lijn"></div>
+      <div class="status-stap" id="statusStapBereiden" data-stap="bereiden">
+        <span class="status-bol"></span>
+        <span class="status-label">Wordt bereid</span>
+      </div>
+      <div class="status-lijn"></div>
+      <div class="status-stap" id="statusStapKlaar" data-stap="klaar">
+        <span class="status-bol"></span>
+        <span class="status-label" id="statusKlaarLabel">Klaar</span>
+      </div>
+    </div>
+
     <p>Heb je toch nog een vraag over je bestelling? Bel ons gerust op <strong>0318&nbsp;514916</strong>.</p>
     <a class="terug" href="/">Terug naar de homepage</a>
   </div>
@@ -63,6 +90,65 @@ a.terug:hover{background:var(--green-ink)}
     if (orderId) {
       document.getElementById('orderRegel').innerHTML = 'Bestelnummer: <span class="order-id">' + orderId + '</span>';
     }
+
+    (function () {
+      if (!orderId) return;
+      var stappen = {
+        betaald: document.getElementById('statusStapBetaald'),
+        bereiden: document.getElementById('statusStapBereiden'),
+        klaar: document.getElementById('statusStapKlaar')
+      };
+      var klaarLabel = document.getElementById('statusKlaarLabel');
+      var pollCount = 0;
+      var maxPolls = 240;
+
+      function zetActief(volgorde) {
+        var volgordeLijst = ['betaald', 'bereiden', 'klaar'];
+        var idx = volgordeLijst.indexOf(volgorde);
+        volgordeLijst.forEach(function (naam, i) {
+          var el = stappen[naam];
+          el.classList.remove('actief', 'gehad');
+          if (i < idx) el.classList.add('gehad');
+          else if (i === idx) el.classList.add('actief');
+        });
+      }
+
+      function verwerkStatus(data) {
+        if (data.status === 'wachten_op_betaling') {
+          zetActief('betaald');
+          return false;
+        }
+        if (data.status === 'bereiden') {
+          klaarLabel.textContent = data.levering === 'bezorgen' ? 'Onderweg' : 'Klaar om af te halen';
+          zetActief('bereiden');
+          return false;
+        }
+        if (data.status === 'klaar') {
+          klaarLabel.textContent = data.levering === 'bezorgen' ? 'Onderweg' : 'Klaar om af te halen';
+          zetActief('klaar');
+          return true;
+        }
+        return false;
+      }
+
+      function poll() {
+        pollCount++;
+        fetch('/api/order-status?order=' + encodeURIComponent(orderId))
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            var klaar = verwerkStatus(data);
+            if (!klaar && pollCount < maxPolls) {
+              setTimeout(poll, 5000);
+            }
+          })
+          .catch(function () {
+            if (pollCount < maxPolls) setTimeout(poll, 8000);
+          });
+      }
+
+      zetActief('betaald');
+      poll();
+    })();
   </script>
 </body>
 </html>
