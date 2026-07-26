@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+undefined<!DOCTYPE html>
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
@@ -259,6 +259,26 @@ main{padding:1.4rem 0 3rem}
   .sticky-cart-cta{font-weight:800;font-size:.95rem;white-space:nowrap}
   body.heeft-sticky-cart{padding-bottom:0}
 }
+
+/* ---------- wizard-configurator (gestapte productwizard) ---------- */
+.modal-close{position:absolute;top:.6rem;right:.7rem;width:2rem;height:2rem;border:none;background:rgba(20,22,16,.06);border-radius:50%;font-size:1.2rem;line-height:1;cursor:pointer;color:#4a4838}
+.modal-close:hover{background:rgba(20,22,16,.12)}
+.modal.modal-wizard{position:relative;display:flex;flex-direction:column;overflow:hidden}
+.modal-wizard .modal-body{flex:1;overflow-y:auto}
+.wizard-progress{display:none;gap:.5rem;margin-top:.7rem;overflow-x:auto}
+.wizard-dot{display:flex;align-items:center;gap:.35rem;padding:.3rem .6rem;border-radius:999px;background:#f2f0e6;font-size:.72rem;font-weight:700;color:#8a8a80;white-space:nowrap;flex-shrink:0}
+.wizard-dot .wizard-dot-nr{display:inline-flex;align-items:center;justify-content:center;width:1.1rem;height:1.1rem;border-radius:50%;background:#d8d4c8;color:#fff;font-size:.66rem}
+.wizard-dot.actief{background:var(--terracotta);color:#fff}
+.wizard-dot.actief .wizard-dot-nr{background:#fff;color:var(--terracotta)}
+.wizard-dot.gehad{background:#e8e5da;color:var(--green-ink)}
+.wizard-dot.gehad .wizard-dot-nr{background:var(--green-ink);color:#fff}
+.wizard-step{display:none}
+.wizard-step.actief{display:block}
+.wizard-footer{padding:.8rem 1.2rem 1.05rem;border-top:1px solid var(--paper-line);display:flex;align-items:center;gap:.7rem;position:sticky;bottom:0;background:#fff}
+.wizard-terug{display:none;align-items:center;gap:.3rem;border:none;background:transparent;color:#7a786f;font-weight:700;font-size:.85rem;cursor:pointer;padding:.5rem .2rem;flex-shrink:0}
+.wizard-footer .modal-btn-toevoegen{flex:1;border:none;border-radius:8px;padding:.85rem 1rem;font-weight:800;font-size:.92rem;cursor:pointer;background:var(--terracotta);color:#fff}
+.wizard-footer .modal-btn-toevoegen:hover{background:var(--terracotta-deep)}
+.wizard-footer .modal-btn-toevoegen:disabled{background:#d8d4c8;color:#8a8a80;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -373,16 +393,17 @@ main{padding:1.4rem 0 3rem}
 </main>
 
 <div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
+  <div class="modal modal-wizard">
+    <button type="button" class="modal-close" id="modalCloseBtn" aria-label="Sluiten">&times;</button>
     <div class="modal-head">
       <h3 id="modalNaam"></h3>
       <p id="modalBeschrijving"></p>
+      <div class="wizard-progress" id="wizardProgress"></div>
     </div>
     <div class="modal-body" id="modalBody"></div>
-    <div class="modal-foot">
-      <div class="modal-totaal"><span>Prijs</span><span id="modalTotaal"></span></div>
-      <button type="button" class="modal-btn-toevoegen" id="modalToevoegenBtn">Toevoegen aan bestelling</button>
-      <button type="button" class="modal-btn-annuleren" id="modalAnnulerenBtn">Annuleren</button>
+    <div class="wizard-footer">
+      <button type="button" class="wizard-terug" id="wizardTerugBtn">&larr; Vorige</button>
+      <button type="button" class="modal-btn-toevoegen" id="modalToevoegenBtn">Toevoegen aan winkelmand</button>
     </div>
   </div>
 </div>
@@ -427,6 +448,7 @@ function categorieIcon(catId, extraClass){
   var toegepasteLoyaliteit = null; // { code, beschikbareKorting }
   var modalProduct = null;
   var modalSelectie = {};
+  var modalStap = 0;
 
   function euro(bedrag) {
     var teken = bedrag < 0 ? '-€' : '€';
@@ -586,6 +608,7 @@ function categorieIcon(catId, extraClass){
   function openModal(product) {
     modalProduct = product;
     modalSelectie = {};
+    modalStap = 0;
     product.extras.forEach(function (groep) {
       if (groep.type === 'keuze' && groep.verplicht) modalSelectie[groep.id] = 0;
     });
@@ -593,10 +616,27 @@ function categorieIcon(catId, extraClass){
     document.getElementById('modalNaam').textContent = product.naam;
     document.getElementById('modalBeschrijving').textContent = product.beschrijving || '';
 
+    var meerdereStappen = product.extras.length > 1;
+    var progress = document.getElementById('wizardProgress');
+    progress.innerHTML = '';
+    progress.style.display = meerdereStappen ? 'flex' : 'none';
+    if (meerdereStappen) {
+      product.extras.forEach(function (groep, i) {
+        var dot = document.createElement('div');
+        dot.className = 'wizard-dot';
+        dot.innerHTML = '<span class="wizard-dot-nr">' + (i + 1) + '</span><span class="wizard-dot-naam">' + groep.naam + '</span>';
+        progress.appendChild(dot);
+      });
+    }
+
     var body = document.getElementById('modalBody');
     body.innerHTML = '';
 
-    product.extras.forEach(function (groep) {
+    product.extras.forEach(function (groep, stapIdx) {
+      var stap = document.createElement('div');
+      stap.className = 'wizard-step';
+      stap.setAttribute('data-stap', stapIdx);
+
       var wrap = document.createElement('div');
       wrap.className = 'extra-groep';
 
@@ -621,7 +661,8 @@ function categorieIcon(catId, extraClass){
         wrap.appendChild(rij);
       });
 
-      body.appendChild(wrap);
+      stap.appendChild(wrap);
+      body.appendChild(stap);
     });
 
     body.querySelectorAll('input').forEach(function (input) {
@@ -635,8 +676,42 @@ function categorieIcon(catId, extraClass){
       });
     });
 
+    toonWizardStap(0);
     updateModalTotaal();
     document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function toonWizardStap(stapIdx) {
+    modalStap = stapIdx;
+    var stappen = document.querySelectorAll('#modalBody .wizard-step');
+    stappen.forEach(function (el) {
+      el.classList.toggle('actief', parseInt(el.getAttribute('data-stap'), 10) === stapIdx);
+    });
+    var dots = document.querySelectorAll('#wizardProgress .wizard-dot');
+    dots.forEach(function (el, i) {
+      el.classList.toggle('actief', i === stapIdx);
+      el.classList.toggle('gehad', i < stapIdx);
+    });
+    document.getElementById('wizardTerugBtn').style.display = stapIdx > 0 ? 'inline-flex' : 'none';
+    updateWizardKnop();
+  }
+
+  function huidigeStapGeldig() {
+    if (!modalProduct) return false;
+    var groep = modalProduct.extras[modalStap];
+    if (!groep) return true;
+    if (!groep.verplicht) return true;
+    return modalSelectie[groep.id] !== undefined;
+  }
+
+  function updateWizardKnop() {
+    if (!modalProduct) return;
+    var btn = document.getElementById('modalToevoegenBtn');
+    var laatsteStap = modalStap === modalProduct.extras.length - 1;
+    btn.disabled = !huidigeStapGeldig();
+    btn.textContent = laatsteStap
+      ? 'Toevoegen aan winkelmand (' + euro(modalProduct.prijs + berekenExtras().prijs) + ')'
+      : 'Volgende';
   }
 
   function berekenExtras() {
@@ -654,22 +729,27 @@ function categorieIcon(catId, extraClass){
   }
 
   function updateModalTotaal() {
-    var extra = berekenExtras();
-    document.getElementById('modalTotaal').textContent = euro(modalProduct.prijs + extra.prijs);
+    updateWizardKnop();
   }
 
-  document.getElementById('modalAnnulerenBtn').addEventListener('click', function () {
+  function sluitModal() {
     document.getElementById('modalOverlay').classList.remove('open');
-  });
+  }
+
+  document.getElementById('modalCloseBtn').addEventListener('click', sluitModal);
   document.getElementById('modalOverlay').addEventListener('click', function (e) {
-    if (e.target === document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('open');
+    if (e.target === document.getElementById('modalOverlay')) sluitModal();
+  });
+  document.getElementById('wizardTerugBtn').addEventListener('click', function () {
+    if (modalStap > 0) toonWizardStap(modalStap - 1);
   });
   document.getElementById('modalToevoegenBtn').addEventListener('click', function () {
-    var ontbreekt = modalProduct.extras.some(function (groep) { return groep.verplicht && modalSelectie[groep.id] === undefined; });
-    if (ontbreekt) { alert('Kies een optie bij de verplichte keuze hierboven.'); return; }
+    if (!huidigeStapGeldig()) { alert('Kies een optie bij de verplichte keuze hierboven.'); return; }
+    var laatsteStap = modalStap === modalProduct.extras.length - 1;
+    if (!laatsteStap) { toonWizardStap(modalStap + 1); return; }
     var extra = berekenExtras();
     voegToe(modalProduct.id, modalSelectie, extra.prijs, extra.omschrijving);
-    document.getElementById('modalOverlay').classList.remove('open');
+    sluitModal();
   });
 
   // ---------------- winkelwagen ----------------
