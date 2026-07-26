@@ -42,6 +42,11 @@ eleventyConfig.addPassthroughCopy('src/kassa-keuken.html');
 // Koppelt via /api/admin/zakelijke-klanten (staff-wachtwoord-gated).
 eleventyConfig.addPassthroughCopy('src/kassa-zakelijke-klanten.html');
 
+// Klant-facing account-pagina's voor pijler 7 (zakelijke accounts): registreren
+// en inloggen. Koppelen via /api/auth/register en /api/auth/login.
+eleventyConfig.addPassthroughCopy('src/account-registreren.html');
+eleventyConfig.addPassthroughCopy('src/account-inloggen.html');
+
 // Actie-pop-up (homepage): platte JSON-databestand, door Decap CMS
 // rechtstreeks in dit formaat weggeschreven (geen Eleventy-verwerking
 // nodig — index.html haalt 'm zelf op met fetch('actie.json')).
