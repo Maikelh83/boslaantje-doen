@@ -54,6 +54,10 @@ eleventyConfig.addPassthroughCopy('src/actie.json');
 
 // Decap CMS admin-UI (config.yml + index.html) gewoon meekopiëren.
 eleventyConfig.addPassthroughCopy('admin');
+  // PWA-fundament: manifest, service worker en install-bannerscript.
+  eleventyConfig.addPassthroughCopy('src/manifest.json');
+  eleventyConfig.addPassthroughCopy('src/sw.js');
+  eleventyConfig.addPassthroughCopy('src/pwa-install.js');
 
 // Collectie 'vacatures': open functies voor solliciteren.html.
 eleventyConfig.addCollection('vacatures', (api) =>
