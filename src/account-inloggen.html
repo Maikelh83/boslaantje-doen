@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inloggen · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--green:#4A5D3E;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;--paper-2:#F5F3EF;--paper-line:#E6E2DA;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Roboto',system-ui,-apple-system,Segoe UI,sans-serif;background:var(--paper-2);color:#000;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.card{background:#fff;border:1.5px solid var(--paper-line);border-radius:16px;padding:2.4rem 2rem;max-width:420px;width:100%;box-shadow:0 14px 34px -20px rgba(0,0,0,.3);}
+h1{font-size:1.5rem;color:var(--green-ink);margin-bottom:.4rem;text-align:center}
+.sub{color:#4a4338;font-size:.94rem;margin-bottom:1.5rem;text-align:center}
+label{display:block;font-weight:700;font-size:.85rem;margin:0 0 .3rem;color:var(--green-ink)}
+input{width:100%;padding:.75rem .85rem;border:1.5px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1rem;margin-bottom:1.1rem}
+input:focus{outline:none;border-color:var(--terracotta)}
+button[type="submit"]{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:999px;padding:.9rem;font-weight:800;font-size:1.02rem;cursor:pointer;min-height:52px;margin-top:.3rem;}
+button[type="submit"]:hover{background:var(--terracotta-deep)}
+button[type="submit"]:disabled{background:#c9beb8;cursor:not-allowed}
+.melding{font-size:.88rem;min-height:1.2em;margin-top:.8rem;text-align:center}
+.melding.fout{color:#8a2b1e}
+.melding.ok{color:var(--green-ink)}
+.wissel{text-align:center;font-size:.9rem;color:#4a4338;margin-top:1.4rem}
+.wissel a{color:var(--terracotta-deep);font-weight:700;text-decoration:underline}
+a.terug{display:block;text-align:center;margin-top:1rem;color:#8a8275;font-size:.85rem;text-decoration:none}
+a.terug:hover{color:#4a4338}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>Inloggen</h1>
+<p class="sub">Log in met je e-mailadres en wachtwoord.</p>
+<form id="inlogForm" novalidate>
+<label for="email">E-mailadres</label>
+<input type="email" id="email" name="email" autocomplete="email" required>
+<label for="wachtwoord">Wachtwoord</label>
+<input type="password" id="wachtwoord" name="wachtwoord" autocomplete="current-password" required>
+<button type="submit" id="inlogBtn">Inloggen</button>
+<div class="melding" id="melding"></div>
+</form>
+<p class="wissel">Nog geen account? <a href="/account-registreren">Registreer je hier</a></p>
+<a class="terug" href="/bestellen">&larr; Terug naar bestellen</a>
+</div>
+<script>
+(function () {
+var form = document.getElementById('inlogForm');
+var melding = document.getElementById('melding');
+var inlogBtn = document.getElementById('inlogBtn');
+function toonMelding(tekst, type) { melding.textContent = tekst; melding.className = 'melding' + (type ? ' ' + type : ''); }
+function volgendePagina() { var params = new URLSearchParams(window.location.search); return params.get('volgende') || '/bestellen'; }
+form.addEventListener('submit', function (e) {
+e.preventDefault();
+var email = document.getElementById('email').value.trim();
+var wachtwoord = document.getElementById('wachtwoord').value;
+if (!email || !wachtwoord) { toonMelding('Vul e-mailadres en wachtwoord in.', 'fout'); return; }
+inlogBtn.disabled = true;
+toonMelding('Bezig met inloggen...', '');
+fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, wachtwoord: wachtwoord }) })
+.then(function (res) { return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
+.then(function (result) {
+inlogBtn.disabled = false;
+if (!result.ok) { toonMelding((result.data && result.data.error) || 'Inloggen mislukt.', 'fout'); return; }
+toonMelding('Ingelogd! Je wordt doorgestuurd...', 'ok');
+window.location.href = volgendePagina();
+})
+.catch(function () { inlogBtn.disabled = false; toonMelding('Kon geen verbinding maken. Probeer het opnieuw.', 'fout'); });
+});
+})();
+</script>
+</body>
+</html>
