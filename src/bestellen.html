@@ -63,6 +63,8 @@ header .wrap{display:flex;align-items:center;justify-content:space-between;gap:1
 .brand .logo{width:118px;height:38px;background:var(--logo) left center/contain no-repeat}
 .back-link{color:rgba(255,255,255,.82);font-weight:600;font-size:.85rem;text-decoration:none}
 .back-link:hover{color:#fff}
+.account-status{font-size:.85rem;color:#fff;opacity:.85;margin-left:12px}
+.account-status a{color:#fff;text-decoration:underline}
 .cart-toggle-mobile{
   display:none;position:relative;background:var(--terracotta);color:#fff;border:none;
   border-radius:var(--r);padding:.5rem .8rem;font-weight:700;font-size:.85rem;cursor:pointer;
@@ -320,6 +322,7 @@ main{padding:1.4rem 0 3rem}
     <a class="brand" href="/"><span class="logo"></span></a>
     <div style="display:flex;align-items:center;gap:1rem">
       <a class="back-link" href="/">&larr; Homepage</a>
+      <span class="account-status" id="accountStatus"></span>
       <button type="button" class="cart-toggle-mobile" id="cartToggleMobile">
         Bestelling<span class="badge" id="cartBadge" style="display:none">0</span>
       </button>
@@ -1337,6 +1340,52 @@ if (dag === 4) return nu.getHours() >= 17;
 return true;
 }
 fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (data) {
+      // Login-status indicator in de header + voorinvullen van klantgegevens
+      // uit het account. Toegevoegd bovenop de bestaande vrijdaglunch/factuur-
+      // logica hieronder, raakt die niet aan en faalt stil bij problemen.
+      try {
+        var accountStatusEl = document.getElementById('accountStatus');
+        if (accountStatusEl) {
+          while (accountStatusEl.firstChild) accountStatusEl.removeChild(accountStatusEl.firstChild);
+          if (data && data.ingelogd && data.account) {
+            var accountLabel = (data.account.accountType === 'business' && data.business && data.business.bedrijfsnaam)
+              ? data.business.bedrijfsnaam
+              : (data.account.naam || data.account.email);
+            accountStatusEl.appendChild(document.createTextNode('Ingelogd als ' + accountLabel + ' \u00b7 '));
+            var uitloggenLink = document.createElement('a');
+            uitloggenLink.href = '#';
+            uitloggenLink.textContent = 'Uitloggen';
+            uitloggenLink.addEventListener('click', function (ev) {
+              ev.preventDefault();
+              fetch('/api/auth/logout', { method: 'POST' }).then(function () {
+                window.location.reload();
+              });
+            });
+            accountStatusEl.appendChild(uitloggenLink);
+
+            var veldNaam = document.getElementById('naam');
+            var veldTelefoon = document.getElementById('telefoon');
+            var veldEmail = document.getElementById('email');
+            var veldAdres = document.getElementById('adres');
+            var veldPostcode = document.getElementById('postcode');
+            var veldPlaats = document.getElementById('plaats');
+            if (veldNaam && !veldNaam.value && data.account.naam) veldNaam.value = data.account.naam;
+            if (veldTelefoon && !veldTelefoon.value && data.account.telefoon) veldTelefoon.value = data.account.telefoon;
+            if (veldEmail && !veldEmail.value && data.account.email) veldEmail.value = data.account.email;
+            if (veldAdres && !veldAdres.value && data.account.laatstAdres) veldAdres.value = data.account.laatstAdres;
+            if (veldPostcode && !veldPostcode.value && data.account.laatstPostcode) veldPostcode.value = data.account.laatstPostcode;
+            if (veldPlaats && (!veldPlaats.value || veldPlaats.value === 'Veenendaal') && data.account.laatstPlaats) veldPlaats.value = data.account.laatstPlaats;
+          } else {
+            var inlogLink = document.createElement('a');
+            inlogLink.href = '/account-inloggen';
+            inlogLink.textContent = 'Inloggen';
+            accountStatusEl.appendChild(inlogLink);
+          }
+        }
+      } catch (accountUiErr) {
+        console.error('bestellen.html: kon account-status/voorinvullen niet verwerken', accountUiErr);
+      }
+
 var magVrijdagLunch = data && data.ingelogd && data.account && data.account.accountType === 'business' &&
 data.business && data.business.businessApproved && !vrijdagLunchCutoffBereikt(new Date());
 if (magVrijdagLunch) {
