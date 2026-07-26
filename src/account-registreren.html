@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account aanmaken · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--green:#4A5D3E;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;--paper-2:#F5F3EF;--paper-line:#E6E2DA;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Roboto',system-ui,-apple-system,Segoe UI,sans-serif;background:var(--paper-2);color:#000;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.card{background:#fff;border:1.5px solid var(--paper-line);border-radius:16px;padding:2.4rem 2rem;max-width:480px;width:100%;box-shadow:0 14px 34px -20px rgba(0,0,0,.3);}
+h1{font-size:1.5rem;color:var(--green-ink);margin-bottom:.4rem;text-align:center}
+.sub{color:#4a4338;font-size:.94rem;margin-bottom:1.5rem;text-align:center}
+label{display:block;font-weight:700;font-size:.85rem;margin:0 0 .3rem;color:var(--green-ink)}
+input{width:100%;padding:.75rem .85rem;border:1.5px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1rem;margin-bottom:1.1rem}
+input:focus{outline:none;border-color:var(--terracotta)}
+.typeKeuze{display:flex;gap:.6rem;margin-bottom:1.3rem}
+.typeKnop{flex:1;padding:.7rem;border:1.5px solid var(--paper-line);border-radius:8px;background:#fff;font-weight:700;font-size:.9rem;cursor:pointer;color:#4a4338;}
+.typeKnop.actief{border-color:var(--green);color:var(--green-ink);background:#f2f4ef}
+#zakelijkVelden{display:none;border-top:1px dashed var(--paper-line);padding-top:1rem;margin-bottom:.2rem}
+#zakelijkVelden.actief{display:block}
+.rij2{display:grid;grid-template-columns:1fr 1fr;gap:0 .8rem}
+button[type="submit"]{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:999px;padding:.9rem;font-weight:800;font-size:1.02rem;cursor:pointer;min-height:52px;margin-top:.3rem;}
+button[type="submit"]:hover{background:var(--terracotta-deep)}
+button[type="submit"]:disabled{background:#c9beb8;cursor:not-allowed}
+.melding{font-size:.88rem;min-height:1.2em;margin-top:.8rem;text-align:center}
+.melding.fout{color:#8a2b1e}
+.melding.ok{color:var(--green-ink)}
+.wissel{text-align:center;font-size:.9rem;color:#4a4338;margin-top:1.4rem}
+.wissel a{color:var(--terracotta-deep);font-weight:700;text-decoration:underline}
+a.terug{display:block;text-align:center;margin-top:1rem;color:#8a8275;font-size:.85rem;text-decoration:none}
+a.terug:hover{color:#4a4338}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>Account aanmaken</h1>
+<p class="sub">Maak een account aan om sneller te bestellen.</p>
+<div class="typeKeuze">
+<button type="button" class="typeKnop actief" id="typeParticulierBtn">Particulier</button>
+<button type="button" class="typeKnop" id="typeZakelijkBtn">Zakelijk</button>
+</div>
+<form id="registreerForm" novalidate>
+<label for="naam">Naam</label>
+<input type="text" id="naam" name="naam" autocomplete="name" required>
+<label for="email">E-mailadres</label>
+<input type="email" id="email" name="email" autocomplete="email" required>
+<label for="telefoon">Telefoonnummer</label>
+<input type="tel" id="telefoon" name="telefoon" autocomplete="tel">
+<label for="wachtwoord">Wachtwoord</label>
+<input type="password" id="wachtwoord" name="wachtwoord" autocomplete="new-password" required>
+<label for="wachtwoordHerhaal">Herhaal wachtwoord</label>
+<input type="password" id="wachtwoordHerhaal" name="wachtwoordHerhaal" autocomplete="new-password" required>
+<div id="zakelijkVelden">
+<label for="bedrijfsnaam">Bedrijfsnaam</label>
+<input type="text" id="bedrijfsnaam" name="bedrijfsnaam">
+<div class="rij2">
+<div>
+<label for="kvkNummer">KvK-nummer</label>
+<input type="text" id="kvkNummer" name="kvkNummer">
+</div>
+<div>
+<label for="btwNummer">Btw-nummer</label>
+<input type="text" id="btwNummer" name="btwNummer">
+</div>
+</div>
+<label for="afdeling">Afdeling (optioneel)</label>
+<input type="text" id="afdeling" name="afdeling">
+<label for="factuurEmail">Factuur e-mailadres (optioneel)</label>
+<input type="email" id="factuurEmail" name="factuurEmail">
+</div>
+<button type="submit" id="registreerBtn">Account aanmaken</button>
+<div class="melding" id="melding"></div>
+</form>
+<p class="wissel">Heb je al een account? <a href="/account-inloggen">Log hier in</a></p>
+<a class="terug" href="/bestellen">&larr; Terug naar bestellen</a>
+</div>
+<script>
+(function () {
+var accountType = 'private';
+var typeParticulierBtn = document.getElementById('typeParticulierBtn');
+var typeZakelijkBtn = document.getElementById('typeZakelijkBtn');
+var zakelijkVelden = document.getElementById('zakelijkVelden');
+var form = document.getElementById('registreerForm');
+var melding = document.getElementById('melding');
+var registreerBtn = document.getElementById('registreerBtn');
+function zetType(nieuwType) {
+  accountType = nieuwType;
+  typeParticulierBtn.classList.toggle('actief', nieuwType === 'private');
+  typeZakelijkBtn.classList.toggle('actief', nieuwType === 'business');
+  zakelijkVelden.classList.toggle('actief', nieuwType === 'business');
+}
+typeParticulierBtn.addEventListener('click', function () { zetType('private'); });
+typeZakelijkBtn.addEventListener('click', function () { zetType('business'); });
+function toonMelding(tekst, type) { melding.textContent = tekst; melding.className = 'melding' + (type ? ' ' + type : ''); }
+function volgendePagina() { var params = new URLSearchParams(window.location.search); return params.get('volgende') || '/bestellen'; }
+form.addEventListener('submit', function (e) {
+  e.preventDefault();
+  var naam = document.getElementById('naam').value.trim();
+  var email = document.getElementById('email').value.trim();
+  var telefoon = document.getElementById('telefoon').value.trim();
+  var wachtwoord = document.getElementById('wachtwoord').value;
+  var wachtwoordHerhaal = document.getElementById('wachtwoordHerhaal').value;
+  if (!naam) { toonMelding('Vul je naam in.', 'fout'); return; }
+  if (!email || email.indexOf('@') === -1) { toonMelding('Vul een geldig e-mailadres in.', 'fout'); return; }
+  if (wachtwoord.length < 8) { toonMelding('Wachtwoord moet minimaal 8 tekens zijn.', 'fout'); return; }
+  if (wachtwoord !== wachtwoordHerhaal) { toonMelding('De wachtwoorden komen niet overeen.', 'fout'); return; }
+  var body = { naam: naam, email: email, telefoon: telefoon, wachtwoord: wachtwoord, accountType: accountType };
+  if (accountType === 'business') {
+    var bedrijfsnaam = document.getElementById('bedrijfsnaam').value.trim();
+    if (!bedrijfsnaam) { toonMelding('Vul een bedrijfsnaam in.', 'fout'); return; }
+    body.business = {
+      bedrijfsnaam: bedrijfsnaam,
+      kvkNummer: document.getElementById('kvkNummer').value.trim(),
+      btwNummer: document.getElementById('btwNummer').value.trim(),
+      afdeling: document.getElementById('afdeling').value.trim(),
+      factuurEmail: document.getElementById('factuurEmail').value.trim(),
+    };
+  }
+  registreerBtn.disabled = true;
+  toonMelding('Bezig met aanmaken...', '');
+  fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+  .then(function (res) { return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
+  .then(function (result) {
+    registreerBtn.disabled = false;
+    if (!result.ok) { toonMelding((result.data && result.data.error) || 'Registreren mislukt.', 'fout'); return; }
+    if (result.data.inBehandeling) {
+      toonMelding('Account aangemaakt! Je zakelijke aanvraag wordt beoordeeld — je ontvangt bericht zodra deze is goedgekeurd. Je wordt doorgestuurd...', 'ok');
+    } else {
+      toonMelding('Account aangemaakt! Je wordt doorgestuurd...', 'ok');
+    }
+    setTimeout(function () { window.location.href = volgendePagina(); }, result.data.inBehandeling ? 2600 : 900);
+  })
+  .catch(function () { registreerBtn.disabled = false; toonMelding('Kon geen verbinding maken. Probeer het opnieuw.', 'fout'); });
+});
+})();
+</script>
+</body>
+</html>
