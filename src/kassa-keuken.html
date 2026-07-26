@@ -14,6 +14,7 @@
 --green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
 --paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
 --geel:#B08900;--geel-bg:#FFF6DC;--rood:#8A2B1E;--rood-bg:#FBE4E0;--groen-bg:#EAF1E4;
+--tb-oranje:#FF8000;--tb-oranje-bg:#FFF1E0;
 --font-body:'Roboto',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -42,6 +43,7 @@ header a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem}
 .orderKaart.wacht-normaal{border-color:var(--paper-line)}
 .orderKaart.wacht-geel{border-color:var(--geel);background:var(--geel-bg)}
 .orderKaart.wacht-rood{border-color:var(--rood);background:var(--rood-bg)}
+.orderKaart.bron-thuisbezorgd{border-color:var(--tb-oranje)}
 .orderKaart.nieuw{animation:pulseNieuw 1.6s ease-in-out 2}
 @keyframes pulseNieuw{
 0%,100%{box-shadow:0 1px 3px rgba(0,0,0,.06)}
@@ -53,14 +55,19 @@ header a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem}
 .kaartKop .rechts{text-align:right}
 .tijdWachtend{font-weight:800;font-size:1rem}
 .tijdstip{font-size:.82rem;color:#6b6a62}
-.leveringBadge{display:inline-block;font-size:.78rem;font-weight:800;padding:.2rem .55rem;border-radius:20px;text-transform:uppercase;letter-spacing:.03em;margin-top:.3rem}
+.badgeRij{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.3rem}
+.leveringBadge{display:inline-block;font-size:.78rem;font-weight:800;padding:.2rem .55rem;border-radius:20px;text-transform:uppercase;letter-spacing:.03em}
 .leveringBadge.kassa{background:var(--paper-2);color:var(--green-ink)}
 .leveringBadge.afhalen{background:#E4EEF6;color:#2C5C7A}
 .leveringBadge.bezorgen{background:#F1E6F6;color:#5C2C7A}
+.bronBadge.thuisbezorgd{background:var(--tb-oranje);color:#fff;display:inline-block;font-size:.78rem;font-weight:900;padding:.2rem .6rem;border-radius:20px;text-transform:uppercase;letter-spacing:.03em}
 
 .itemsLijst{border-top:1px dashed var(--paper-line);border-bottom:1px dashed var(--paper-line);padding:.6rem 0;display:flex;flex-direction:column;gap:.55rem}
 .item .itemNaam{font-weight:700;font-size:1.08rem}
 .item .itemExtras{font-size:.92rem;color:#4a4940;margin-top:.1rem;line-height:1.3}
+
+.opmerkingBox{background:var(--tb-oranje-bg);border:1px solid var(--tb-oranje);border-radius:8px;padding:.55rem .7rem;font-size:.92rem;color:#7A3D00}
+.opmerkingBox b{color:#7A3D00}
 
 .klaarBtn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:.9rem;font-weight:800;font-size:1.1rem;cursor:pointer;min-height:56px}
 .klaarBtn:active{background:var(--green-ink)}
@@ -158,6 +165,12 @@ if (lev === 'bezorgen') return 'Bezorgen';
 return 'Kassa';
 }
 
+function escapeHtml(tekst){
+var div = document.createElement('div');
+div.textContent = tekst == null ? '' : String(tekst);
+return div.innerHTML;
+}
+
 function tekenBord(orders){
 var host = document.getElementById('bordHost');
 document.getElementById('telAantal').textContent = orders.length + (orders.length === 1 ? ' openstaand' : ' openstaand');
@@ -172,31 +185,45 @@ orders.forEach(function(order){
 var minuten = minutenGeleden(order.aangemaaktOp);
 var urgentie = minuten >= 10 ? 'wacht-rood' : (minuten >= 5 ? 'wacht-geel' : 'wacht-normaal');
 var isNieuw = !eersteLading && !bekendeOrderIds.has(order.orderId);
+var isThuisbezorgd = order.bron === 'thuisbezorgd';
 
 var kaart = document.createElement('div');
-kaart.className = 'orderKaart ' + urgentie + (isNieuw ? ' nieuw' : '');
+kaart.className = 'orderKaart ' + urgentie + (isThuisbezorgd ? ' bron-thuisbezorgd' : '') + (isNieuw ? ' nieuw' : '');
 
 var tijd = new Date(order.aangemaaktOp);
 var tijdstipTekst = tijd.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
 
 var itemsHtml = order.items.map(function(it){
 return '<div class="item">' +
-'<div class="itemNaam">' + it.aantal + '× ' + it.naam + '</div>' +
-(it.extras ? '<div class="itemExtras">' + it.extras + '</div>' : '') +
+'<div class="itemNaam">' + it.aantal + '× ' + escapeHtml(it.naam) + '</div>' +
+(it.extras ? '<div class="itemExtras">' + escapeHtml(it.extras) + '</div>' : '') +
 '</div>';
 }).join('');
+
+// Thuisbezorgd-bestellingen krijgen een duidelijk, apart merk-label
+// (spec-onderdeel B) bovenop het gewone Bezorgen/Afhalen-label, plus een
+// losse opmerkingenbalk als de bezorgplatform bijzonderheden meestuurde
+// (bijv. "graag aanbellen" of allergie-opmerkingen per product).
+var badgesHtml =
+'<span class="leveringBadge ' + order.levering + '">' + leveringLabel(order.levering) + '</span>' +
+(isThuisbezorgd ? '<span class="bronBadge thuisbezorgd">Thuisbezorgd</span>' : '');
+
+var opmerkingHtml = order.opmerkingen
+? '<div class="opmerkingBox"><b>Let op:</b> ' + escapeHtml(order.opmerkingen) + '</div>'
+: '';
 
 kaart.innerHTML =
 '<div class="kaartKop">' +
 '<div>' +
 '<div class="ticket">#' + order.ticket + '</div>' +
-'<span class="leveringBadge ' + order.levering + '">' + leveringLabel(order.levering) + '</span>' +
+'<div class="badgeRij">' + badgesHtml + '</div>' +
 '</div>' +
 '<div class="rechts">' +
 '<div class="tijdWachtend">' + minuten + ' min</div>' +
 '<div class="tijdstip">' + tijdstipTekst + ' uur</div>' +
 '</div>' +
 '</div>' +
+opmerkingHtml +
 '<div class="itemsLijst">' + itemsHtml + '</div>' +
 '<button type="button" class="klaarBtn">Klaar ✓</button>';
 
