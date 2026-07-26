@@ -307,6 +307,10 @@ main{padding:1.4rem 0 3rem}
 .tijdslot-optie{display:flex;align-items:center;gap:.6rem;padding:.7rem .9rem;border:1.5px solid #e6e2da;border-radius:12px;cursor:pointer;font-weight:600;color:#4a4338}
 .tijdslot-optie:has(input:checked){border-color:var(--terracotta);background:#fdf3ee}
 .tijdslot-optie input{accent-color:var(--terracotta)}
+.factuur-optie{margin-top:.6rem;padding:.7rem .9rem;border:1.5px solid #e6e2da;border-radius:12px}
+.factuur-optie label{display:flex;align-items:center;gap:.6rem;font-weight:600;color:#4a4338;cursor:pointer}
+.factuur-optie input{accent-color:var(--terracotta)}
+.factuur-note{font-size:.78rem;color:#7a786f;margin:.35rem 0 0}
 </style>
 </head>
 <body>
@@ -432,7 +436,11 @@ main{padding:1.4rem 0 3rem}
               <textarea id="opmerking" name="opmerking" rows="2" placeholder="Bijv. allergie, geen uitjes, etc."></textarea>
             </div>
 
-            <button type="submit" class="afrekenen-btn" id="afrekenenBtn" disabled>Afrekenen met iDEAL</button>
+            <div class="factuur-optie" id="factuurOptie" style="display:none">
+<label><input type="checkbox" id="factuurCheckbox"><span>Op factuur betalen (zakelijk account)</span></label>
+<p class="factuur-note" id="factuurNote"></p>
+</div>
+<button type="submit" class="afrekenen-btn" id="afrekenenBtn" disabled>Afrekenen met iDEAL</button>
             <div class="form-status" id="formStatus"></div>
           </div>
 
@@ -1188,7 +1196,7 @@ function categorieIcon(catId, extraClass){
 
     fetch('/api/order', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items: items, customer: customer, levering: levering, tijdslot: (document.querySelector('input[name="tijdslot"]:checked') || {}).value || null, couponCode: toegepasteCoupon ? toegepasteCoupon.code : null, loyaliteitsCode: toegepasteLoyaliteit ? toegepasteLoyaliteit.code : null })
+      body: JSON.stringify({ items: items, customer: customer, levering: levering, tijdslot: (document.querySelector('input[name="tijdslot"]:checked') || {}).value || null, couponCode: toegepasteCoupon ? toegepasteCoupon.code : null, loyaliteitsCode: toegepasteLoyaliteit ? toegepasteLoyaliteit.code : null, betaalmethode: (document.getElementById('factuurCheckbox') && document.getElementById('factuurCheckbox').checked) ? 'factuur' : null })
     }).then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
       .then(function (result) {
         if (!result.ok || !result.data.checkoutUrl) {
@@ -1334,6 +1342,45 @@ data.business && data.business.businessApproved && !vrijdagLunchCutoffBereikt(ne
 if (magVrijdagLunch) {
 var optie = document.getElementById('tijdslotVrijdagLunchOptie');
 if (optie) optie.style.display = '';
+}
+
+// Pijler 7: 'Op factuur' betalen tonen als het account is goedgekeurd en
+// toestemming heeft (factuurToegestaan). De drempel hier is alleen ter info --
+// order.js/berekenFactuurGeschiktheid blijft de enige bron van waarheid en
+// wijst het bedrag bij het afrekenen zo nodig alsnog af.
+var magOpFactuur = data && data.ingelogd && data.account && data.account.accountType === 'business' &&
+data.business && data.business.businessApproved && data.business.factuurToegestaan;
+if (magOpFactuur) {
+var factuurOptie = document.getElementById('factuurOptie');
+var factuurCheckbox = document.getElementById('factuurCheckbox');
+var factuurNote = document.getElementById('factuurNote');
+var factuurAfrekenenBtn = document.getElementById('afrekenenBtn');
+if (factuurOptie && factuurCheckbox) {
+factuurOptie.style.display = '';
+var minimumFactuurbedrag = data.business.overrideMinimumInvoiceAmount ? 0 : (data.business.minimumFactuurbedrag || 50);
+var bijwerkenFactuurStatus = function () {
+var totalEl = document.getElementById('cartTotal');
+var tekst = totalEl ? totalEl.textContent.replace(/[^0-9,.-]/g, '').replace(',', '.') : '0';
+var totaal = parseFloat(tekst) || 0;
+var magNu = totaal >= minimumFactuurbedrag;
+factuurCheckbox.disabled = !magNu;
+if (!magNu) {
+factuurCheckbox.checked = false;
+factuurNote.textContent = minimumFactuurbedrag > 0 ? 'Op factuur betalen kan vanaf €' + minimumFactuurbedrag.toFixed(2).replace('.', ',') + '.' : '';
+} else {
+factuurNote.textContent = '';
+}
+if (factuurAfrekenenBtn) {
+factuurAfrekenenBtn.textContent = factuurCheckbox.checked ? 'Bestelling plaatsen (op factuur)' : 'Afrekenen met iDEAL';
+}
+};
+factuurCheckbox.addEventListener('change', bijwerkenFactuurStatus);
+var factuurCartTotalEl = document.getElementById('cartTotal');
+if (factuurCartTotalEl) {
+new MutationObserver(bijwerkenFactuurStatus).observe(factuurCartTotalEl, { childList: true, characterData: true, subtree: true });
+}
+bijwerkenFactuurStatus();
+}
 }
 }).catch(function () { });
 })();
