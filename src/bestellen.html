@@ -447,7 +447,17 @@ main{padding:1.4rem 0 3rem}
               <label class="tijdslot-optie"><input type="radio" name="tijdslot" value="zo-snel-mogelijk" checked><span>Zo snel mogelijk</span></label>
               <label class="tijdslot-optie"><input type="radio" name="tijdslot" value="over-30-min"><span>Over 30 minuten</span></label>
               <label class="tijdslot-optie"><input type="radio" name="tijdslot" value="over-45-min"><span>Over 45 minuten</span></label>
-              <label class="tijdslot-optie"><input type="radio" name="tijdslot" value="over-60-min"><span>Over 1 uur</span></label><label class="tijdslot-optie" id="tijdslotVrijdagLunchOptie" style="display:none"><input type="radio" name="tijdslot" value="vrijdag-lunch"><span>Vrijdag lunch 12:00-13:00 (zakelijk)</span></label>
+              <label class="tijdslot-optie"><input type="radio" name="tijdslot" value="over-60-min"><span>Over 1 uur</span></label><label class="tijdslot-optie" id="tijdslotVrijdagLunchOptie" style="display:none"><input type="radio" name="tijdslot" value="vrijdag-lunch"><span>Vrijdag lunch 12:00-13:00 (zakelijk)</span></label><label class="tijdslot-optie" id="tijdslotEigenOptie"><input type="radio" name="tijdslot" id="tijdslotEigenRadio" value=""><span>Kies zelf een moment</span></label>
+            </div>
+            <div id="tijdslotEigenKiezer" style="display:none;margin-top:.5rem;padding:.7rem .9rem;border:1.5px solid #e6e2da;border-radius:12px">
+              <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+                <label style="display:flex;flex-direction:column;gap:.25rem;font-weight:700;font-size:.8rem;flex:1;min-width:150px">Datum
+                  <select id="tijdslotEigenDatum" style="padding:.5rem;border:1.5px solid #e6e2da;border-radius:8px;font:inherit"></select>
+                </label>
+                <label style="display:flex;flex-direction:column;gap:.25rem;font-weight:700;font-size:.8rem;flex:1;min-width:120px">Tijd
+                  <select id="tijdslotEigenTijd" style="padding:.5rem;border:1.5px solid #e6e2da;border-radius:8px;font:inherit"></select>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -1484,6 +1494,213 @@ bijwerkenFactuurStatus();
 }
 }
 }).catch(function () { });
+})();
+</script>
+<script>
+(function () {
+  // Datum+tijdslot-kiezer ("Kies zelf een moment"). Bewust ontkoppeld van de
+  // hoofd-checkout-IIFE hierboven (zelfde patroon als de Bezorgen/Afhalen-topbar-
+  // koppeling en de vrijdaglunch-IIFE): raakt geen bestaande cart/checkout-logica
+  // aan. Zet alleen de waarde van #tijdslotEigenRadio naar een leesbare
+  // "DD-MM-JJJJ UU:MM"-string; de bestaande submit-handler en
+  // bijwerkenOpmerkingMetTijdslot() lezen die waarde al automatisch mee.
+  //
+  // LET OP: openingstijden en vakantiedata hieronder moeten functioneel gelijk
+  // blijven aan de server-side check in functions/api/order.js (functie
+  // valideerEigenTijdslot) en aan de data in src/index.html (checkVakantie).
+  var OPENINGSTIJDEN = {
+    0: null,           // zondag: gesloten
+    1: [16, 0, 21, 0],
+    2: [16, 0, 21, 0],
+    3: [16, 0, 21, 0],
+    4: [16, 0, 21, 0],
+    5: [11, 0, 21, 0],
+    6: [16, 0, 21, 0]
+  };
+  var VAKANTIES = [
+    { schoonmaakZaterdag: "2026-08-01", dichtVanaf: "2026-08-03", dichtTotEnMet: "2026-08-16" },
+    { schoonmaakZaterdag: "2027-07-31", dichtVanaf: "2027-08-02", dichtTotEnMet: "2027-08-15" },
+    { schoonmaakZaterdag: "2028-07-22", dichtVanaf: "2028-07-24", dichtTotEnMet: "2028-08-06" }
+  ];
+  var VOORUIT_DAGEN = 6;
+  var MIN_VOORBEREIDING_MIN = 20;
+
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function maakDatum(jaar, maand, dag) { return new Date(jaar, maand - 1, dag); }
+  function parseIsoDatum(s) {
+    var d = s.split("-");
+    return maakDatum(parseInt(d[0], 10), parseInt(d[1], 10), parseInt(d[2], 10));
+  }
+
+  function amsterdamNu() {
+    var parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Amsterdam", year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hour12: false
+    }).formatToParts(new Date());
+    var map = {};
+    parts.forEach(function (p) { map[p.type] = p.value; });
+    return {
+      jaar: parseInt(map.year, 10), maand: parseInt(map.month, 10), dag: parseInt(map.day, 10),
+      uur: parseInt(map.hour, 10) % 24, minuut: parseInt(map.minute, 10)
+    };
+  }
+
+  function vindVakantie(datumObj) {
+    for (var i = 0; i < VAKANTIES.length; i++) {
+      var v = VAKANTIES[i];
+      var dichtVanaf = parseIsoDatum(v.dichtVanaf);
+      var dichtTot = parseIsoDatum(v.dichtTotEnMet);
+      if (datumObj >= dichtVanaf && datumObj <= dichtTot) return { gesloten: true, vroegSluiten: null };
+      var schoonmaak = parseIsoDatum(v.schoonmaakZaterdag);
+      if (datumObj.getTime() === schoonmaak.getTime()) return { gesloten: false, vroegSluiten: [19, 30] };
+    }
+    return { gesloten: false, vroegSluiten: null };
+  }
+
+  function openingstijdenVoorDag(datumObj) {
+    var vak = vindVakantie(datumObj);
+    if (vak.gesloten) return null;
+    var basis = OPENINGSTIJDEN[datumObj.getDay()];
+    if (!basis) return null;
+    if (vak.vroegSluiten) return [basis[0], basis[1], vak.vroegSluiten[0], vak.vroegSluiten[1]];
+    return basis;
+  }
+
+  function formatDagLabel(datumObj, vandaag) {
+    var dagNamen = ["zondag", "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag"];
+    var morgen = new Date(vandaag);
+    morgen.setDate(morgen.getDate() + 1);
+    var datumStr = pad(datumObj.getDate()) + "-" + pad(datumObj.getMonth() + 1) + "-" + datumObj.getFullYear();
+    if (datumObj.getTime() === vandaag.getTime()) return "Vandaag (" + datumStr + ")";
+    if (datumObj.getTime() === morgen.getTime()) return "Morgen (" + datumStr + ")";
+    var naam = dagNamen[datumObj.getDay()];
+    return naam.charAt(0).toUpperCase() + naam.slice(1) + " " + datumStr;
+  }
+
+  function huidigeIntervalMinuten() {
+    var bezorgenRadio = document.querySelector('input[name="levering"][value="bezorgen"]');
+    return (bezorgenRadio && bezorgenRadio.checked) ? 45 : 30;
+  }
+
+  function vulDatums() {
+    var select = document.getElementById("tijdslotEigenDatum");
+    if (!select) return;
+    var huidigeWaarde = select.value;
+    select.innerHTML = "";
+    var nu = amsterdamNu();
+    var vandaag = maakDatum(nu.jaar, nu.maand, nu.dag);
+    var toegevoegd = 0;
+    for (var i = 0; i <= VOORUIT_DAGEN; i++) {
+      var d = new Date(vandaag);
+      d.setDate(d.getDate() + i);
+      if (!openingstijdenVoorDag(d)) continue;
+      var iso = d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+      var optie = document.createElement("option");
+      optie.value = iso;
+      optie.textContent = formatDagLabel(d, vandaag);
+      select.appendChild(optie);
+      toegevoegd++;
+    }
+    if (toegevoegd === 0) {
+      var lege = document.createElement("option");
+      lege.value = "";
+      lege.textContent = "Geen dagen beschikbaar";
+      select.appendChild(lege);
+    } else if (huidigeWaarde && Array.prototype.some.call(select.options, function (o) { return o.value === huidigeWaarde; })) {
+      select.value = huidigeWaarde;
+    }
+  }
+
+  function vulTijden() {
+    var datumSelect = document.getElementById("tijdslotEigenDatum");
+    var tijdSelect = document.getElementById("tijdslotEigenTijd");
+    if (!datumSelect || !tijdSelect) return;
+    tijdSelect.innerHTML = "";
+    var isoWaarde = datumSelect.value;
+    if (!isoWaarde) { bijwerkenRadioWaarde(); return; }
+    var gekozenDag = parseIsoDatum(isoWaarde);
+    var venster = openingstijdenVoorDag(gekozenDag);
+    if (!venster) { bijwerkenRadioWaarde(); return; }
+
+    var nu = amsterdamNu();
+    var vandaag = maakDatum(nu.jaar, nu.maand, nu.dag);
+    var isVandaag = gekozenDag.getTime() === vandaag.getTime();
+    var interval = huidigeIntervalMinuten();
+
+    var startMin = venster[0] * 60 + venster[1];
+    var eindMin = venster[2] * 60 + venster[3];
+
+    if (isVandaag) {
+      var nuMin = nu.uur * 60 + nu.minuut + MIN_VOORBEREIDING_MIN;
+      var opgerond = Math.ceil(nuMin / interval) * interval;
+      if (opgerond > startMin) startMin = opgerond;
+    }
+
+    var toegevoegd = 0;
+    for (var m = startMin; m <= eindMin; m += interval) {
+      var uur = Math.floor(m / 60);
+      var minuut = m % 60;
+      var waarde = pad(uur) + ":" + pad(minuut);
+      var optie = document.createElement("option");
+      optie.value = waarde;
+      optie.textContent = waarde;
+      tijdSelect.appendChild(optie);
+      toegevoegd++;
+    }
+    if (toegevoegd === 0) {
+      var lege = document.createElement("option");
+      lege.value = "";
+      lege.textContent = "Geen tijden meer beschikbaar";
+      tijdSelect.appendChild(lege);
+    }
+    bijwerkenRadioWaarde();
+  }
+
+  function bijwerkenRadioWaarde() {
+    var radio = document.getElementById("tijdslotEigenRadio");
+    var datumSelect = document.getElementById("tijdslotEigenDatum");
+    var tijdSelect = document.getElementById("tijdslotEigenTijd");
+    if (!radio || !datumSelect || !tijdSelect) return;
+    var isoWaarde = datumSelect.value;
+    var tijdWaarde = tijdSelect.value;
+    if (!isoWaarde || !tijdWaarde) { radio.value = ""; return; }
+    var delen = isoWaarde.split("-");
+    radio.value = delen[2] + "-" + delen[1] + "-" + delen[0] + " " + tijdWaarde;
+  }
+
+  function bijwerkenZichtbaarheid() {
+    var kiezer = document.getElementById("tijdslotEigenKiezer");
+    var radio = document.getElementById("tijdslotEigenRadio");
+    if (!kiezer || !radio) return;
+    kiezer.style.display = radio.checked ? "block" : "none";
+  }
+
+  function opnieuwOpbouwen() {
+    vulDatums();
+    vulTijden();
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var radio = document.getElementById("tijdslotEigenRadio");
+    var datumSelect = document.getElementById("tijdslotEigenDatum");
+    var tijdSelect = document.getElementById("tijdslotEigenTijd");
+    if (!radio || !datumSelect || !tijdSelect) return;
+
+    opnieuwOpbouwen();
+    bijwerkenZichtbaarheid();
+
+    datumSelect.addEventListener("change", vulTijden);
+    tijdSelect.addEventListener("change", bijwerkenRadioWaarde);
+    document.querySelectorAll('input[name="tijdslot"]').forEach(function (r) {
+      r.addEventListener("change", bijwerkenZichtbaarheid);
+    });
+    // De Bezorgen/Afhalen-topbar (elders op deze pagina) synchroniseert zichzelf
+    // altijd naar de radio's via radio.dispatchEvent(new Event('change', ...)),
+    // dus een listener op de radio's zelf volstaat ook voor topbar-klikken.
+    document.querySelectorAll('input[name="levering"]').forEach(function (r) {
+      r.addEventListener("change", opnieuwOpbouwen);
+    });
+  });
 })();
 </script>
 <script src="/pwa-install.js" defer></script>

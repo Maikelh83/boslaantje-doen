@@ -68,6 +68,7 @@ header a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem}
 
 .opmerkingBox{background:var(--tb-oranje-bg);border:1px solid var(--tb-oranje);border-radius:8px;padding:.55rem .7rem;font-size:.92rem;color:#7A3D00}
 .opmerkingBox b{color:#7A3D00}
+.geplandBox{background:var(--groen-bg);border:1px solid var(--green);border-radius:8px;padding:.55rem .7rem;font-size:.92rem;color:var(--green-ink);font-weight:700}
 
 .klaarBtn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:.9rem;font-weight:800;font-size:1.1rem;cursor:pointer;min-height:56px}
 .klaarBtn:active{background:var(--green-ink)}
@@ -92,7 +93,7 @@ body{font-size:16px}
 <header>
 <h1>Keuken</h1>
 <span id="telAantal">0 openstaand</span>
-<a href="/kassa">&larr; Kassa</a>
+<a href="/kassa">← Kassa</a>
 </header>
 <div id="bordHost"></div>
 </div>
@@ -212,6 +213,14 @@ var opmerkingHtml = order.opmerkingen
 ? '<div class="opmerkingBox"><b>Let op:</b> ' + escapeHtml(order.opmerkingen) + '</div>'
 : '';
 
+// "Kies zelf een moment" op bestellen.html slaat het gewenste tijdstip op als
+// leesbare "DD-MM-JJJJ UU:MM"-tekst (gewenstTijdstip). Dat tonen we hier
+// prominent, zodat de keuken weet dat een bestelling NIET meteen bereid hoeft
+// te worden maar pas tegen een later tijdstip klaar moet zijn.
+var geplandHtml = order.gewenstTijdstip
+? '<div class="geplandBox">Gepland voor: ' + escapeHtml(order.gewenstTijdstip) + ' uur</div>'
+: '';
+
 kaart.innerHTML =
 '<div class="kaartKop">' +
 '<div>' +
@@ -223,6 +232,7 @@ kaart.innerHTML =
 '<div class="tijdstip">' + tijdstipTekst + ' uur</div>' +
 '</div>' +
 '</div>' +
+geplandHtml +
 opmerkingHtml +
 '<div class="itemsLijst">' + itemsHtml + '</div>' +
 '<button type="button" class="klaarBtn">Klaar ✓</button>';
