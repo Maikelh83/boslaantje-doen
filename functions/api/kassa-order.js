@@ -27,19 +27,38 @@
 // Alleen voor personeel, achter hetzelfde wachtwoord als de
 // loyaliteitspagina (STAFF_LOYALTY_PASSWORD) — dezelfde balie-omgeving.
 //
+// 'Bezorgen aan de deur' (juli 2026, op verzoek van Maikel): 'aan de deur
+// betalen' is uit de openbare bestelsite (bestellen.html/order.js)
+// verwijderd omdat een klant die optie kon kiezen zonder ENIGE
+// betaalcontrole vooraf - dat maakte onbeperkte onbetaalde
+// 'spookbestellingen' mogelijk. Hier, achter het personeelswachtwoord, kan
+// het wél: personeel neemt bijvoorbeeld een telefonische bestelling aan,
+// vult het bezorgadres in en kiest 'Bezorgen' i.p.v. 'Afhalen'. Body krijgt
+// dan optioneel levering: 'bezorgen' + customer: {naam, telefoon, adres,
+// postcode, plaats, email?}. Dezelfde bezorgzone-check (Mapbox, via
+// controleerBezorgzone in auth/_lib.js) als bestellen.html/order.js bepaalt
+// of het adres binnen bereik ligt en wat de bezorgkosten zijn - er is hier
+// geen kortere weg. De order komt net als een website-bezorgorder met
+// status='paid' + betaalmethode='aan_de_deur' + betaalstatus='onbetaald' in
+// de database, zodat hij ongewijzigd door de bestaande ritten/bezorger-app-
+// flow (admin/ritten.js, bezorger-ritten.js, kassa-bezorger.html) kan.
+//
 // Benodigde environment variables:
 //   STAFF_LOYALTY_PASSWORD — wachtwoord voor personeelspagina's
 //   DB                     — D1-database binding
+//   MAPBOX_ACCESS_TOKEN    — nodig voor de bezorgzone-afstandscontrole bij levering: 'bezorgen'
 //
-// Body: { wachtwoord, items: [{id, aantal, extras?}], loyaliteitsCode?, kortingGebruikt? }
-// Antwoord: { orderId, totaal, items, loyaliteit? }
+// Body: { wachtwoord, items: [{id, aantal, extras?}], loyaliteitsCode?, kortingGebruikt?, levering?: 'kassa'|'bezorgen', customer?: {naam, telefoon, adres, postcode, plaats, email?} }
+// Antwoord: { orderId, totaal, items, loyaliteit?, levering, bezorgkosten?, bezorgAfstandKm? }
+
+import { controleerBezorgzone, zorgVoorAccountTabellen, zorgVoorKlantgegevensKolommen, zorgVoorBetaalmethodeKolommen } from "./auth/_lib.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
     const body = await request.json();
-    const { wachtwoord, items, loyaliteitsCode, kortingGebruikt } = body || {};
+    const { wachtwoord, items, loyaliteitsCode, kortingGebruikt, levering, customer } = body || {};
 
     if (!env.STAFF_LOYALTY_PASSWORD) {
       return json({ error: "Personeelspagina is nog niet ingesteld (STAFF_LOYALTY_PASSWORD ontbreekt)." }, 500);
@@ -52,6 +71,23 @@ export async function onRequestPost(context) {
     }
     if (!env.DB) {
       return json({ error: "Database is niet gekoppeld (D1-binding 'DB' ontbreekt)." }, 500);
+    }
+
+    const isBezorgen = levering === "bezorgen";
+    let klantGegevens = null;
+    if (isBezorgen) {
+      const c = (customer && typeof customer === "object") ? customer : {};
+      klantGegevens = {
+        naam: (c.naam || "").trim(),
+        telefoon: (c.telefoon || "").trim(),
+        email: (c.email || "").trim() || null,
+        adres: (c.adres || "").trim(),
+        postcode: (c.postcode || "").trim(),
+        plaats: (c.plaats || "").trim(),
+      };
+      if (!klantGegevens.naam || !klantGegevens.telefoon || !klantGegevens.adres || !klantGegevens.postcode || !klantGegevens.plaats) {
+        return json({ error: "Naam, telefoon, adres, postcode en plaats zijn verplicht bij bezorgen." }, 400);
+      }
     }
 
     // Productenlijst + prijzen server-side ophalen — nooit de prijs
@@ -129,6 +165,24 @@ export async function onRequestPost(context) {
       return json({ error: "Ongeldig totaalbedrag." }, 400);
     }
 
+    // Bezorgzone-check (werkelijke rijafstand via Mapbox) — exact dezelfde
+    // controleerBezorgzone-functie (auth/_lib.js) als bestellen.html/order.js
+    // gebruiken, zodat kassa en website altijd dezelfde uitkomst geven.
+    let bezorgAfstandKm = null;
+    let bezorgkosten = 0;
+    if (isBezorgen) {
+      await zorgVoorAccountTabellen(env.DB);
+      const bezorgzoneResultaat = await controleerBezorgzone(env, klantGegevens);
+      if (!bezorgzoneResultaat.ok) {
+        return json({ error: bezorgzoneResultaat.error }, bezorgzoneResultaat.status || 400);
+      }
+      if (!bezorgzoneResultaat.binnenBereik) {
+        return json({ error: bezorgzoneResultaat.foutmelding }, 400);
+      }
+      bezorgAfstandKm = bezorgzoneResultaat.afstandKm;
+      bezorgkosten = bezorgzoneResultaat.bezorgkosten || 0;
+    }
+
     // Loyaliteit: personeel mag aangeven hoeveel van de beschikbare korting nu
     // verzilverd wordt, maar de server bepaalt zelf het maximum (nooit het
     // scherm vertrouwen) — zelfde regels als loyalty-stempel.js.
@@ -158,27 +212,66 @@ export async function onRequestPost(context) {
       totaal = nettoBedrag; // het daadwerkelijk te betalen bedrag is na korting
     }
 
+    // Bezorgkosten worden pas hier, ná een eventuele loyaliteitskorting,
+    // opgeteld — zelfde volgorde als order.js: een korting slaat alleen op
+    // de bestelling zelf, niet op de bezorgkosten.
+    if (isBezorgen && bezorgkosten > 0) {
+      totaal = Math.round((totaal + bezorgkosten) * 100) / 100;
+    }
+
     const orderId = "BD-KASSA-" + Date.now().toString(36).toUpperCase();
     const nu = new Date().toISOString();
 
-    // Order meteen als 'paid' opslaan: personeel bevestigt dit scherm pas
-    // ná fysiek afrekenen, dus er is (nog) geen aparte betaalbevestiging
-    // zoals bij Mollie nodig.
+    // Order meteen als 'paid' opslaan. Bij 'kassa' (afhalen aan de balie)
+    // betekent dat: personeel bevestigt dit scherm pas ná fysiek afrekenen,
+    // dus geen aparte betaalbevestiging nodig. Bij 'bezorgen' betekent
+    // status='paid' hetzelfde als bij een website-bezorgorder met
+    // betaalmethode='aan_de_deur': "bevestigd, mag door naar keuken/rit" -
+    // NIET "geld al ontvangen" (dat gebeurt pas aan de deur, zie
+    // betaalstatus='onbetaald' en zorgVoorBetaalmethodeKolommen in
+    // auth/_lib.js voor de uitleg van dat onderscheid).
     try {
-      await env.DB.prepare(
-        `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, betaald_op, loyalty_code, loyalty_korting_gebruikt)
-         VALUES (?, 'paid', ?, 0, NULL, NULL, NULL, 'kassa', ?, '[]', ?, ?, ?, ?)`
-      )
-        .bind(
-          orderId,
-          totaal,
-          JSON.stringify(orderRegels),
-          nu,
-          nu,
-          loyaliteitContext ? loyaliteitContext.code : null,
-          loyaliteitContext ? loyaliteitContext.kortingGebruikt : 0
+      if (isBezorgen) {
+        await zorgVoorKlantgegevensKolommen(env.DB);
+        await zorgVoorBetaalmethodeKolommen(env.DB);
+        await zorgVoorBezorgzoneKolommen(env.DB);
+        await env.DB.prepare(
+          `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, klant_naam, adres, postcode, plaats, betaalmethode, betaalstatus, bezorg_afstand_km, bezorgkosten)
+           VALUES (?, 'paid', ?, 0, NULL, ?, ?, 'bezorgen', ?, '[]', ?, ?, ?, ?, ?, ?, ?, 'aan_de_deur', 'onbetaald', ?, ?)`
         )
-        .run();
+          .bind(
+            orderId,
+            totaal,
+            klantGegevens.email,
+            klantGegevens.telefoon,
+            JSON.stringify(orderRegels),
+            nu,
+            loyaliteitContext ? loyaliteitContext.code : null,
+            loyaliteitContext ? loyaliteitContext.kortingGebruikt : 0,
+            klantGegevens.naam,
+            klantGegevens.adres,
+            klantGegevens.postcode,
+            klantGegevens.plaats,
+            bezorgAfstandKm,
+            bezorgkosten
+          )
+          .run();
+      } else {
+        await env.DB.prepare(
+          `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, betaald_op, loyalty_code, loyalty_korting_gebruikt)
+           VALUES (?, 'paid', ?, 0, NULL, NULL, NULL, 'kassa', ?, '[]', ?, ?, ?, ?)`
+        )
+          .bind(
+            orderId,
+            totaal,
+            JSON.stringify(orderRegels),
+            nu,
+            nu,
+            loyaliteitContext ? loyaliteitContext.code : null,
+            loyaliteitContext ? loyaliteitContext.kortingGebruikt : 0
+          )
+          .run();
+      }
     } catch (dbErr) {
       return json({ error: "Kon de verkoop niet opslaan.", detail: String(dbErr) }, 500);
     }
@@ -219,7 +312,15 @@ export async function onRequestPost(context) {
       }
     }
 
-    return json({ orderId, totaal, items: orderRegels, loyaliteit: loyaliteitAntwoord });
+    return json({
+      orderId,
+      totaal,
+      items: orderRegels,
+      loyaliteit: loyaliteitAntwoord,
+      levering: isBezorgen ? "bezorgen" : "kassa",
+      bezorgkosten: isBezorgen ? bezorgkosten : undefined,
+      bezorgAfstandKm: isBezorgen ? bezorgAfstandKm : undefined,
+    });
   } catch (err) {
     return json({ error: "Onverwachte fout.", detail: String(err) }, 500);
   }
@@ -252,6 +353,24 @@ function berekenZegels({ restBedragOud, zegelsOud, beschikbareKortingOud, nettoB
     kortingErbij: kortingErbijCenten / 100,
     beschikbareKortingNieuw: Math.max(0, beschikbareKortingCentenNieuw) / 100,
   };
+}
+
+// Additieve migratie: bezorg_afstand_km/bezorgkosten-kolommen op de
+// bestaande orders-tabel. Zelfde idempotente stijl + zelfde kolomnamen als
+// order.js's eigen zorgVoorBezorgzoneKolommen (bewust hier gedupliceerd,
+// niet geïmporteerd — "elke Cloudflare Pages Function staat op zichzelf",
+// zie de projectstijl in auth/_lib.js).
+async function zorgVoorBezorgzoneKolommen(db) {
+  for (const statement of [
+    `ALTER TABLE orders ADD COLUMN bezorg_afstand_km REAL`,
+    `ALTER TABLE orders ADD COLUMN bezorgkosten REAL DEFAULT 0`,
+  ]) {
+    try {
+      await db.prepare(statement).run();
+    } catch (e) {
+      // kolom bestaat waarschijnlijk al — dat is prima, niets te doen.
+    }
+  }
 }
 
 function json(data, status = 200) {
