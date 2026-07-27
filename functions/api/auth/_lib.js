@@ -347,8 +347,13 @@ export async function controleerBezorgzone(env, customer) {
 // orders-tabel opgeslagen (alleen e-mail/telefoon) - dat is nodig zodra
 // een bezorger per stop een adres en klantnaam moet kunnen tonen. Additieve
 // migratie, zelfde idempotente stijl als de rest van dit bestand.
+// 'opmerkingen' hoort hier ook bij: admin/ritten.js en bezorger-ritten.js
+// selecteren deze kolom bij elke stop, maar tot deze fix werd hij alleen
+// aangemaakt door de (nog niet actieve) Thuisbezorgd-webhook - waardoor
+// /kassa-ritten met "Onverwachte fout." crashte zolang die kolom nog niet
+// bestond.
 export async function zorgVoorKlantgegevensKolommen(db) {
-  for (const kolom of ["klant_naam", "adres", "postcode", "plaats"]) {
+  for (const kolom of ["klant_naam", "adres", "postcode", "plaats", "opmerkingen"]) {
     try {
       await db.prepare(`ALTER TABLE orders ADD COLUMN ${kolom} TEXT`).run();
     } catch (migratieErr) {
