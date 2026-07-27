@@ -412,6 +412,27 @@ export async function zorgVoorPersoneelTabel(db) {
     actief INTEGER NOT NULL DEFAULT 1,
     aangemaakt_op TEXT NOT NULL
   )`).run();
+
+  // NFC-druppel als snelle alternatieve inlogmethode voor de bezorger-app
+  // (kassa-bezorger.html): de chauffeur tikt zijn druppel tegen de telefoon
+  // in plaats van personeelsnummer + pincode te typen. Additieve migratie,
+  // zelfde idempotente stijl als de rest van dit bestand. Een gewone (niet-
+  // partial) UNIQUE index volstaat: SQLite/D1 behandelt meerdere NULLs in
+  // een UNIQUE index als onderling verschillend, dus medewerkers zonder
+  // gekoppelde tag (nfc_tag_id = NULL) botsen niet met elkaar - alleen een
+  // dubbel gebruikte, echte tag-id wordt geweigerd.
+  try {
+    await db.prepare(`ALTER TABLE medewerkers ADD COLUMN nfc_tag_id TEXT`).run();
+  } catch (migratieErr) {
+    // kolom bestaat waarschijnlijk al - genegeerd
+  }
+  try {
+    await db.prepare(
+      `CREATE UNIQUE INDEX IF NOT EXISTS idx_medewerkers_nfc_tag_id ON medewerkers(nfc_tag_id)`
+    ).run();
+  } catch (migratieErr) {
+    // index bestaat waarschijnlijk al - genegeerd
+  }
 }
 
 export function json(data, status = 200, extraHeaders) {
