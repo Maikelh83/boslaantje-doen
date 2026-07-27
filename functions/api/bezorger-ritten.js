@@ -14,16 +14,27 @@
 //   Geeft de volledige details (incl. stops) van één specifieke rit terug -
 //   gebruikt om een net gestarte of eerder gestarte rit (opnieuw) te tonen.
 // GET ?wachtwoord=...&chauffeur=<personeelsnummer>
-//   Geeft { beschikbareRitten: [...], actieveRit: {...} | null } terug:
-//   beschikbareRitten is elke rit met status PENDING (klaar om te starten),
+//   Geeft { beschikbareRitten: [...], actieveRit: {...} | null, openstaandeOrders: [...] }
+//   terug: beschikbareRitten is elke rit met status PENDING (klaar om te
+//   starten, meestal door personeel klaargezet via /api/admin/ritten.js),
 //   actieveRit is - als het personeelsnummer meegegeven is - de rit die deze
-//   chauffeur al IN_TRANSIT heeft staan (voor het geval de app ververst is).
+//   chauffeur al IN_TRANSIT heeft staan (voor het geval de app ververst is),
+//   openstaandeOrders zijn de nog niet ingedeelde bezorgorders (rit_id NULL)
+//   zodat de bezorger ze evt. zelf tot een rit kan bundelen (zie 'start_eigen_rit'
+//   hieronder) zonder de personeelspagina kassa-ritten.html nodig te hebben.
 //
 // POST ?wachtwoord=... body { actie: 'start', ritId, personeelsnummer }
 //   Koppelt de rit aan de chauffeur (naam wordt hier server-side opgezocht
 //   in de medewerkers-tabel, nooit van de client aangenomen), zet de rit +
 //   alle orders erin op IN_TRANSIT, en geeft de volledige rit-details terug
 //   (1-druk-op-de-knop).
+// POST ?wachtwoord=... body { actie: 'start_eigen_rit', orderIds: [...], personeelsnummer }
+//   Zelfde controles als /api/admin/ritten.js (elke order moet bestaan,
+//   bezorgen zijn, betaald zijn en nog niet in een rit zitten), maar in
+//   plaats van een PENDING rit klaar te zetten voor een willekeurige
+//   bezorger, wordt de rit meteen aan déze chauffeur gekoppeld en op
+//   IN_TRANSIT gezet - de bezorger kiest dus zelf zijn orders in de app en
+//   rijdt meteen weg, zonder tussenstap via kassa-ritten.html.
 // POST ?wachtwoord=... body { actie: 'afgeleverd', orderId }
 //   Zet deze ene stop op DELIVERED. Als dit de laatste openstaande stop in
 //   de rit was, wordt de hele rit automatisch op COMPLETED gezet.
@@ -139,7 +150,28 @@ export async function onRequestGet(context) {
       if (rit) actieveRit = await haalRitDetail(env.DB, rit.id);
     }
 
-    return json({ beschikbareRitten, actieveRit });
+    // Nog niet ingedeelde bezorgorders - zodat de bezorger-app deze zelf kan
+    // tonen om er (via 'start_eigen_rit' hieronder) een eigen rit mee te
+    // starten. Zelfde query als /api/admin/ritten.js.
+    const { results: openstaand } = await env.DB.prepare(
+      `SELECT order_id, klant_naam, klant_telefoon, adres, postcode, plaats, opmerkingen, totaal, aangemaakt_op
+       FROM orders
+       WHERE levering = 'bezorgen' AND status = 'paid' AND rit_id IS NULL
+       ORDER BY aangemaakt_op ASC`
+    ).all();
+    const openstaandeOrders = (openstaand || []).map((o) => ({
+      orderId: o.order_id,
+      klantNaam: o.klant_naam || null,
+      klantTelefoon: o.klant_telefoon || null,
+      adres: o.adres || null,
+      postcode: o.postcode || null,
+      plaats: o.plaats || null,
+      opmerkingen: o.opmerkingen || null,
+      totaal: o.totaal,
+      aangemaaktOp: o.aangemaakt_op,
+    }));
+
+    return json({ beschikbareRitten, actieveRit, openstaandeOrders });
   } catch (err) {
     return json({ error: "Onverwachte fout.", detail: String(err) }, 500);
   }
@@ -191,6 +223,53 @@ export async function onRequestPost(context) {
       await env.DB.prepare(
         `UPDATE orders SET bezorg_status = 'IN_TRANSIT' WHERE rit_id = ?`
       ).bind(ritId).run();
+
+      const detail = await haalRitDetail(env.DB, ritId);
+      return json({ rit: detail });
+    }
+
+    // Bezorger kiest zelf orders (geen tussenstap via kassa-ritten.html):
+    // zelfde validaties als /api/admin/ritten.js bij het aanmaken van een
+    // rit, maar de rit wordt hier meteen aan déze chauffeur gekoppeld en op
+    // IN_TRANSIT gezet - "1-druk-op-de-knop" voor de bezorger zelf.
+    if (body && body.actie === "start_eigen_rit") {
+      const orderIds = Array.isArray(body.orderIds) ? body.orderIds : null;
+      const personeelsnummer = (body.personeelsnummer || "").trim();
+      if (!orderIds || orderIds.length === 0) {
+        return json({ error: "Kies minimaal één bestelling voor de rit." }, 400);
+      }
+      if (!personeelsnummer) return json({ error: "Log opnieuw in voordat je een rit start." }, 400);
+
+      const medewerker = await env.DB.prepare(
+        `SELECT naam, actief FROM medewerkers WHERE personeelsnummer = ?`
+      ).bind(personeelsnummer).first();
+      if (!medewerker || !medewerker.actief) {
+        return json({ error: "Onbekend of niet-actief personeelsnummer. Log opnieuw in." }, 401);
+      }
+
+      // Elke order opnieuw controleren (nooit de client vertrouwen): moet
+      // bestaan, bezorgen zijn, betaald zijn, en nog niet in een rit zitten.
+      for (const orderId of orderIds) {
+        const order = await env.DB.prepare(
+          `SELECT order_id, levering, status, rit_id FROM orders WHERE order_id = ?`
+        ).bind(orderId).first();
+        if (!order) return json({ error: `Bestelling ${orderId} niet gevonden.` }, 400);
+        if (order.levering !== "bezorgen") return json({ error: `Bestelling ${orderId} is geen bezorgorder.` }, 400);
+        if (order.status !== "paid") return json({ error: `Bestelling ${orderId} is (nog) niet betaald.` }, 400);
+        if (order.rit_id) return json({ error: `Bestelling ${orderId} zit al in een andere rit.` }, 400);
+      }
+
+      const ritId = crypto.randomUUID();
+      const nu = new Date().toISOString();
+      await env.DB.prepare(
+        `INSERT INTO ritten (id, chauffeur_naam, chauffeur_personeelsnummer, status, aangemaakt_op, gestart_op) VALUES (?, ?, ?, 'IN_TRANSIT', ?, ?)`
+      ).bind(ritId, medewerker.naam, personeelsnummer, nu, nu).run();
+
+      for (let i = 0; i < orderIds.length; i++) {
+        await env.DB.prepare(
+          `UPDATE orders SET rit_id = ?, stop_volgorde = ?, bezorg_status = 'IN_TRANSIT' WHERE order_id = ?`
+        ).bind(ritId, i + 1, orderIds[i]).run();
+      }
 
       const detail = await haalRitDetail(env.DB, ritId);
       return json({ rit: detail });
