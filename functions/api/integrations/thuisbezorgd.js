@@ -140,8 +140,8 @@ export async function onRequestPost(context) {
     const nu = new Date().toISOString();
 
     await env.DB.prepare(
-      `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, betaald_op, loyalty_code, loyalty_korting_gebruikt, bron, opmerkingen, extern_order_id)
-       VALUES (?, 'paid', ?, 0, NULL, ?, ?, ?, ?, '[]', ?, ?, NULL, 0, 'thuisbezorgd', ?, ?)`
+      `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, betaald_op, loyalty_code, loyalty_korting_gebruikt, bron, opmerkingen, extern_order_id, klant_naam, adres, postcode, plaats)
+       VALUES (?, 'paid', ?, 0, NULL, ?, ?, ?, ?, '[]', ?, ?, NULL, 0, 'thuisbezorgd', ?, ?, ?, ?, ?, ?)`
     )
       .bind(
         orderId,
@@ -153,7 +153,11 @@ export async function onRequestPost(context) {
         nu,
         nu,
         opmerkingen || null,
-        externOrderId
+        externOrderId,
+        klant.naam || null,
+        klant.adres || null,
+        klant.postcode || null,
+        klant.plaats || null
       )
       .run();
 
@@ -181,6 +185,15 @@ async function zorgVoorThuisbezorgdKolommen(db) {
     "ALTER TABLE orders ADD COLUMN bron TEXT",
     "ALTER TABLE orders ADD COLUMN opmerkingen TEXT",
     "ALTER TABLE orders ADD COLUMN extern_order_id TEXT",
+    // Toegevoegd voor de PWA Bezorger-app (src/kassa-bezorger.html +
+    // src/kassa-ritten.html): zonder deze kolommen kwam een Thuisbezorgd-
+    // bestelling wel als 'openstaande order' in /kassa-ritten terecht, maar
+    // zonder klantnaam/adres zichtbaar voor de bezorger. Zelfde kolommen als
+    // zorgVoorKlantgegevensKolommen in functions/api/auth/_lib.js.
+    "ALTER TABLE orders ADD COLUMN klant_naam TEXT",
+    "ALTER TABLE orders ADD COLUMN adres TEXT",
+    "ALTER TABLE orders ADD COLUMN postcode TEXT",
+    "ALTER TABLE orders ADD COLUMN plaats TEXT",
   ]) {
     try {
       await db.prepare(migratie).run();
