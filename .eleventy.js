@@ -55,6 +55,14 @@ eleventyConfig.addPassthroughCopy('src/kassa-bezorgzone.html');
 eleventyConfig.addPassthroughCopy('src/kassa-ritten.html');
 eleventyConfig.addPassthroughCopy('src/kassa-bezorger.html');
 
+// 'Aan de deur betalen': callback-pagina waar SumUp de chauffeur naartoe
+// terugstuurt na een PIN-betaling (Tap to Pay), gestart vanuit
+// kassa-bezorger.html (generateSumUpUrl()). Koppelt via de bestaande
+// 'markeer_betaald'-actie in /api/bezorger-ritten - zelfde staff-wachtwoord-
+// gate als de rest van de bezorger-app, alleen via het wachtwoord in de
+// meegegeven callback-URL i.p.v. een lockscreen (zie het bestand zelf).
+eleventyConfig.addPassthroughCopy('src/kassa-bezorger-betaling.html');
+
 // Personeelsnummer-fundament: medewerkers toevoegen/pincode resetten,
 // koppelt via /api/admin/medewerkers (staff-wachtwoord-gated). Wordt door
 // kassa-bezorger.html gebruikt via /api/personeel/login.
