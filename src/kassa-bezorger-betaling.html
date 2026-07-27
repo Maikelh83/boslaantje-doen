@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Betaling verwerken · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!--
+  functions/api/bezorger-ritten.js roept dit bestand nooit aan - dit is de
+  callback-pagina waar SumUp's app (na een PIN-betaling gestart vanuit
+  kassa-bezorger.html, zie generateSumUpUrl() aldaar) de chauffeur naar
+  terugstuurt. SumUp plakt zelf de query-parameters smp-status/smp-tx-code/
+  smp-failure-cause/smp-message achter de callback-URL die we meegaven (zie
+  Payment API for Mobile Web / App-Switch-documentatie van SumUp); orderId en
+  wachtwoord kregen we zelf al mee in diezelfde callback-URL, dus die staan
+  er ook nog steeds in bij terugkeer.
+
+  Bij status=success: bevestigt de betaling via de bestaande
+  'markeer_betaald'-actie in /api/bezorger-ritten (dezelfde actie als de
+  "Contant ontvangen"-knop in kassa-bezorger.html gebruikt), met de
+  meegekregen sumupTxCode als referentie.
+  Bij status=failed (of iets onverwachts): toont een foutmelding met de
+  keuze om het opnieuw te proberen (terug naar de rit) of het bedrag
+  alsnog contant te innemen.
+
+  Geen eigen NFC/pincode-login hier nodig: het gedeelde personeelswachtwoord
+  volstaat om deze ene actie uit te voeren (zelfde poort als alle andere
+  /kassa-*-schermen), en de chauffeur-identiteit is voor déze actie niet
+  relevant (die staat al vast op de order/rit zelf).
+-->
+<style>
+:root{
+--green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
+--paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
+--rood:#8A2B1E;
+--font-body:'Roboto',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.4;font-size:18px;min-height:100vh}
+main{max-width:420px;margin:0 auto;padding:1.3rem;min-height:100vh;display:flex;align-items:center}
+.kaart{background:#fff;border:1px solid var(--paper-line);border-radius:14px;padding:2rem 1.6rem;text-align:center;width:100%}
+.icoon{font-size:3.5rem;margin-bottom:1rem}
+h1{font-size:1.3rem;color:var(--green-ink);margin-bottom:.5rem}
+p{color:#6b6a62;font-size:.95rem;margin-bottom:1.5rem}
+p.detail{font-size:.85rem;color:#8a887e}
+button, a.knop{display:block;width:100%;text-decoration:none;text-align:center;border:none;border-radius:10px;padding:1.1rem;font-weight:800;font-size:1.05rem;cursor:pointer;min-height:60px;margin-top:.7rem;font-family:inherit}
+.primair{background:var(--terracotta);color:#fff}
+.primair:active{background:var(--terracotta-deep)}
+.secundair{background:var(--paper-2);color:var(--green-ink);border:2px solid var(--paper-line) !important}
+.fout{color:var(--rood)}
+</style>
+</head>
+<body>
+<main>
+<div class="kaart" id="kaart">
+<div class="icoon">⏳</div>
+<h1>Even geduld...</h1>
+<p>De betaling wordt verwerkt.</p>
+</div>
+</main>
+
+<script>
+(function(){
+var params = new URLSearchParams(window.location.search);
+var orderId = params.get('orderId');
+var wachtwoord = params.get('wachtwoord');
+var smpStatus = params.get('smp-status');
+var smpTxCode = params.get('smp-tx-code');
+var smpFailureCause = params.get('smp-failure-cause');
+var kaart = document.getElementById('kaart');
+
+var FAILURE_TEKST = {
+'transaction-failed': 'De betaling is niet gelukt (geweigerd of afgebroken).',
+'geolocation-required': 'SumUp kon de locatie van dit toestel niet bepalen.',
+'invalid-param': 'Er ging iets mis met de betaalgegevens.',
+'invalid-token': 'De koppeling met SumUp is (nog) niet goed ingesteld.',
+};
+
+function toonTerugNaarRitLink(tekstKaart){
+var url = '/kassa-bezorger.html' + (wachtwoord ? ('?wachtwoord=' + encodeURIComponent(wachtwoord)) : '');
+return tekstKaart + '<a class="knop primair" href="' + url + '">Terug naar de rit</a>';
+}
+
+function toonFout(reden){
+kaart.innerHTML =
+'<div class="icoon">⚠️</div>' +
+'<h1 class="fout">Betaling niet gelukt</h1>' +
+'<p>' + reden + '</p>' +
+(orderId && wachtwoord
+? '<button type="button" class="secundair" id="contantBtn">💶 Toch contant ontvangen</button>'
+: '') +
+toonTerugNaarRitLink('');
+var contantBtn = document.getElementById('contantBtn');
+if (contantBtn) contantBtn.addEventListener('click', markeerContantBetaald);
+}
+
+function toonSucces(){
+kaart.innerHTML =
+'<div class="icoon">✅</div>' +
+'<h1>Betaling gelukt</h1>' +
+'<p>De PIN-betaling is bevestigd.</p>' +
+toonTerugNaarRitLink('');
+}
+
+function toonOnverwachteFout(bericht){
+kaart.innerHTML =
+'<div class="icoon">⚠️</div>' +
+'<h1 class="fout">Kon de betaling niet verwerken</h1>' +
+'<p>' + bericht + '</p>' +
+(orderId && wachtwoord
+? '<button type="button" class="secundair" id="contantBtn">💶 Toch contant ontvangen</button>'
+: '') +
+toonTerugNaarRitLink('');
+var contantBtn = document.getElementById('contantBtn');
+if (contantBtn) contantBtn.addEventListener('click', markeerContantBetaald);
+}
+
+function markeerBetaald(sumupTxCode, opSucces, opFout){
+if (!orderId || !wachtwoord) { opFout('Ontbrekende gegevens - open deze pagina niet los, gebruik de knop in de bezorger-app.'); return; }
+fetch('/api/bezorger-ritten?wachtwoord=' + encodeURIComponent(wachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie: 'markeer_betaald', orderId: orderId, sumupTxCode: sumupTxCode || null }),
+})
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { opFout((r.data && r.data.error) || 'Kon de betaling niet bevestigen.'); return; }
+opSucces();
+})
+.catch(function(){ opFout('Kon geen verbinding maken.'); });
+}
+
+function markeerContantBetaald(){
+if (!window.confirm('Bevestig: heb je dit bedrag alsnog contant ontvangen van de klant?')) return;
+kaart.innerHTML = '<div class="icoon">⏳</div><h1>Even geduld...</h1><p>Bezig met bevestigen.</p>';
+markeerBetaald(null, toonSucces, toonOnverwachteFout);
+}
+
+if (!orderId || !wachtwoord) {
+toonOnverwachteFout('Deze pagina mist gegevens - open hem niet los, gebruik altijd de PIN-knop in de bezorger-app.');
+} else if (smpStatus === 'success') {
+markeerBetaald(smpTxCode, toonSucces, toonOnverwachteFout);
+} else if (smpStatus === 'failed') {
+toonFout(FAILURE_TEKST[smpFailureCause] || 'De betaling is niet gelukt. Probeer het opnieuw of neem het bedrag contant aan.');
+} else {
+// Onbekende/ontbrekende status (bijv. de chauffeur is via de terug-knop
+// in de SumUp-app teruggekeerd, zonder dat er een status is meegestuurd) -
+// niet aannemen dat er betaald is, gewoon terug laten gaan naar de rit.
+toonOnverwachteFout('Geen duidelijke betaalstatus ontvangen van SumUp.');
+}
+})();
+</script>
+</body>
+</html>
