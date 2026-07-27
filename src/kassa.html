@@ -69,6 +69,23 @@ header a{color:#fff;text-decoration:none;font-weight:700;font-size:.9rem}
 .klantkaart .rij{display:flex;justify-content:space-between;margin-top:.2rem}
 .klein{font-size:.82rem;color:#6b6a62;background:none;border:none;cursor:pointer;text-decoration:underline;padding:.4rem 0 0}
 
+/* --- Levering: Afhalen/Bezorgen-toggle + adresvelden (juli 2026, op verzoek
+     van Maikel: 'aan de deur betalen' mag alleen nog via de kassa, niet meer
+     via de openbare bestelsite - dit is de plek waar personeel dat voor een
+     telefonische bestelling kan aanmaken). --- */
+#leveringKeuzeBlok{border-top:1px solid var(--paper-line);padding:1.1rem 1.1rem 0}
+#leveringKeuzeBlok .label{font-size:.85rem;font-weight:700;color:var(--green-ink);margin-bottom:.6rem}
+.leveringKnoppenRij{display:flex;gap:.7rem;margin-bottom:.9rem}
+.levering-keuze-btn{flex:1;background:var(--paper-2);color:var(--green-ink);border:1.5px solid var(--paper-line);border-radius:8px;padding:.8rem .5rem;font-weight:700;font-size:.92rem;cursor:pointer;min-height:52px}
+.levering-keuze-btn.actief{background:var(--terracotta);color:#fff;border-color:var(--terracotta)}
+.levering-keuze-btn:active{background:var(--terracotta-deep);color:#fff}
+#bezorgVeldenKassa{display:none;margin-bottom:.9rem}
+#bezorgVeldenKassa label{display:block;font-size:.8rem;font-weight:700;color:var(--green-ink);margin-bottom:.3rem}
+#bezorgVeldenKassa input{width:100%;padding:.7rem .8rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:.95rem;margin-bottom:.6rem}
+#bezorgVeldenKassa .postcodePlaatsRij{display:flex;gap:.6rem}
+#bezorgVeldenKassa .postcodePlaatsRij > div{flex:1}
+.bezorgKassaMelding{font-size:.85rem;color:#8a2b1e;min-height:1.1em;margin-bottom:.6rem}
+
 #afrekenBlok{border-top:1px solid var(--paper-line);padding:1.1rem}
 #totaalRij{display:flex;justify-content:space-between;font-size:1.35rem;font-weight:800;margin-bottom:.9rem;color:var(--green-ink)}
 button.primair{background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:1.1rem;font-weight:800;cursor:pointer;width:100%;font-size:1.15rem;min-height:60px}
@@ -187,6 +204,33 @@ button.secundair:active{background:var(--paper-line)}
         <div id="loyKlantkaart" style="display:none"></div>
       </div>
 
+      <div id="leveringKeuzeBlok">
+        <div class="label">Levering</div>
+        <div class="leveringKnoppenRij">
+          <button type="button" class="levering-keuze-btn actief" data-levering="kassa">Afhalen aan de balie</button>
+          <button type="button" class="levering-keuze-btn" data-levering="bezorgen">Bezorgen (aan de deur betalen)</button>
+        </div>
+        <div id="bezorgVeldenKassa">
+          <label for="kassaBezorgNaam">Naam</label>
+          <input type="text" id="kassaBezorgNaam" autocomplete="off">
+          <label for="kassaBezorgTelefoon">Telefoon</label>
+          <input type="tel" id="kassaBezorgTelefoon" autocomplete="off">
+          <label for="kassaBezorgAdres">Adres (straat + huisnummer)</label>
+          <input type="text" id="kassaBezorgAdres" autocomplete="off">
+          <div class="postcodePlaatsRij">
+            <div>
+              <label for="kassaBezorgPostcode">Postcode</label>
+              <input type="text" id="kassaBezorgPostcode" autocomplete="off">
+            </div>
+            <div>
+              <label for="kassaBezorgPlaats">Plaats</label>
+              <input type="text" id="kassaBezorgPlaats" value="Veenendaal" autocomplete="off">
+            </div>
+          </div>
+          <div class="bezorgKassaMelding" id="bezorgKassaMelding"></div>
+        </div>
+      </div>
+
       <div id="afrekenBlok">
         <div id="totaalRij"><span>Totaal</span><span id="totaalBedrag">€0,00</span></div>
         <button type="button" class="primair" id="afrekenBtn" disabled>Afrekenen</button>
@@ -194,7 +238,9 @@ button.secundair:active{background:var(--paper-line)}
 
         <!-- Verschijnt na een geslaagde afrekening (kassa-order.js is dan al
              klaar, de verkoop staat vast) i.p.v. de knop hierboven — dit gaat
-             alleen nog over hoe het geld ontvangen wordt. -->
+             alleen nog over hoe het geld ontvangen wordt. Bij een
+             bezorgorder wordt dit blok overgeslagen: daar wordt pas aan de
+             deur betaald, niet aan de balie - zie toonBezorgBevestiging(). -->
         <div id="betaalInline">
           <div id="inlineKeuze">
             <div class="label">Hoe wordt er betaald?</div>
@@ -254,8 +300,9 @@ button.secundair:active{background:var(--paper-line)}
 
 <!-- Afreken-eindscherm: het intoetsen (pin/contant kiezen, numpad) gebeurt
      nu in de winkelwagen-kolom hiernaast — dit scherm toont alleen nog
-     groot het eindresultaat (te pinnen bedrag of wisselgeld). De order
-     zelf is op dit punt al afgerond via /api/kassa-order. -->
+     groot het eindresultaat (te pinnen bedrag of wisselgeld), of bij een
+     bezorgorder de bevestiging dat die is aangemaakt. De order zelf is op
+     dit punt al afgerond via /api/kassa-order. -->
 <div id="betaalOverlay">
   <div class="label" id="betaalEindLabel">Te pinnen</div>
   <div class="bedrag" id="betaalEindBedrag">€0,00</div>
@@ -631,9 +678,38 @@ button.secundair:active{background:var(--paper-line)}
     }
   }
 
+  // --- Levering: Afhalen/Bezorgen-toggle (juli 2026) ---
+  // 'Aan de deur betalen' bestaat alleen nog hier, achter het
+  // personeelswachtwoord - niet meer op de openbare bestelsite (zie
+  // order.js en bestellen.html). Bij 'bezorgen' worden adresvelden getoond
+  // en verplicht; /api/kassa-order doet daarna zelf de bezorgzone-check
+  // (Mapbox) en berekent de bezorgkosten, exact zoals de website dat deed.
+  var huidigeLevering = 'kassa';
+  document.querySelectorAll('.levering-keuze-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      huidigeLevering = btn.dataset.levering;
+      document.querySelectorAll('.levering-keuze-btn').forEach(function(b){ b.classList.toggle('actief', b === btn); });
+      document.getElementById('bezorgVeldenKassa').style.display = huidigeLevering === 'bezorgen' ? 'block' : 'none';
+      document.getElementById('bezorgKassaMelding').textContent = '';
+    });
+  });
+
+  function resetLeveringKeuze(){
+    huidigeLevering = 'kassa';
+    document.querySelectorAll('.levering-keuze-btn').forEach(function(b){ b.classList.toggle('actief', b.dataset.levering === 'kassa'); });
+    document.getElementById('bezorgVeldenKassa').style.display = 'none';
+    document.getElementById('kassaBezorgNaam').value = '';
+    document.getElementById('kassaBezorgTelefoon').value = '';
+    document.getElementById('kassaBezorgAdres').value = '';
+    document.getElementById('kassaBezorgPostcode').value = '';
+    document.getElementById('kassaBezorgPlaats').value = 'Veenendaal';
+    document.getElementById('bezorgKassaMelding').textContent = '';
+  }
+
   // --- Afrekenen ---
   document.getElementById('afrekenBtn').addEventListener('click', function(){
     var melding = document.getElementById('afrekenMelding');
+    var bezorgMelding = document.getElementById('bezorgKassaMelding');
     if (cart.length === 0) return;
     var totaal = cart.reduce(function(s, r){ return s + Math.round(r.prijsPerStuk * r.aantal * 100) / 100; }, 0);
     totaal = Math.round(totaal * 100) / 100;
@@ -645,6 +721,21 @@ button.secundair:active{background:var(--paper-line)}
     if (loyaliteitAccount) {
       body.loyaliteitsCode = loyaliteitAccount.code;
       body.kortingGebruikt = gewensteKorting(totaal);
+    }
+
+    if (huidigeLevering === 'bezorgen') {
+      var naam = document.getElementById('kassaBezorgNaam').value.trim();
+      var telefoon = document.getElementById('kassaBezorgTelefoon').value.trim();
+      var adres = document.getElementById('kassaBezorgAdres').value.trim();
+      var postcode = document.getElementById('kassaBezorgPostcode').value.trim();
+      var plaats = document.getElementById('kassaBezorgPlaats').value.trim();
+      if (!naam || !telefoon || !adres || !postcode || !plaats) {
+        bezorgMelding.textContent = 'Vul naam, telefoon, adres, postcode en plaats in voor een bezorgorder.';
+        return;
+      }
+      bezorgMelding.textContent = '';
+      body.levering = 'bezorgen';
+      body.customer = { naam: naam, telefoon: telefoon, adres: adres, postcode: postcode, plaats: plaats };
     }
 
     melding.textContent = '';
@@ -659,10 +750,18 @@ button.secundair:active{background:var(--paper-line)}
       .then(function(result){
         document.getElementById('afrekenBtn').disabled = cart.length === 0;
         if (!result.ok) {
-          melding.textContent = (result.data && result.data.error) || 'Kon de verkoop niet verwerken.';
+          if (huidigeLevering === 'bezorgen') {
+            bezorgMelding.textContent = (result.data && result.data.error) || 'Kon de bezorgorder niet verwerken.';
+          } else {
+            melding.textContent = (result.data && result.data.error) || 'Kon de verkoop niet verwerken.';
+          }
           return;
         }
-        toonBetaalKeuze(result.data);
+        if (huidigeLevering === 'bezorgen') {
+          toonBezorgBevestiging(result.data);
+        } else {
+          toonBetaalKeuze(result.data);
+        }
       })
       .catch(function(){
         melding.textContent = 'Kon geen verbinding maken.';
@@ -686,8 +785,7 @@ button.secundair:active{background:var(--paper-line)}
     document.getElementById('inlineContant').style.display = 'none';
   }
 
-  function toonBetaalKeuze(data){
-    betaalTotaal = Number(data.totaal) || 0;
+  function bijwerkenLoyaliteitTekst(data){
     if (data.loyaliteit && !data.loyaliteit.fout) {
       var extra = data.loyaliteit.kortingErbij > 0 ? ' Er is €5 korting bijgeschreven omdat 20 zegels bereikt zijn!' : '';
       laatsteLoyaliteitTekst = '+' + data.loyaliteit.zegelsErbij + ' zegel(s) toegekend (' + data.loyaliteit.zegelsNieuw + '/20).' + extra;
@@ -696,10 +794,27 @@ button.secundair:active{background:var(--paper-line)}
     } else {
       laatsteLoyaliteitTekst = '';
     }
+  }
+
+  function toonBetaalKeuze(data){
+    betaalTotaal = Number(data.totaal) || 0;
+    bijwerkenLoyaliteitTekst(data);
     document.getElementById('betaalLoyaliteitInfo').textContent = laatsteLoyaliteitTekst;
     resetBetaalInline();
     document.getElementById('afrekenBtn').style.display = 'none';
     document.getElementById('betaalInline').style.display = 'block';
+  }
+
+  // Bezorgorder ('aan de deur betalen'): de order staat al vast in D1 (status
+  // 'paid', betaalmethode 'aan_de_deur', betaalstatus 'onbetaald') en komt
+  // vanzelf tussen de openstaande bezorgorders terecht (kassa-ritten.html /
+  // kassa-bezorger.html "Zelf orders kiezen"). Hier aan de balie is er dus
+  // niets meer te pinnen/contant te ontvangen - alleen een bevestiging tonen,
+  // met het bedrag dat de bezorger straks aan de deur ophaalt.
+  function toonBezorgBevestiging(data){
+    bijwerkenLoyaliteitTekst(data);
+    document.getElementById('afrekenBtn').style.display = 'none';
+    toonBetaalEind('Bezorgorder ' + data.orderId + ' — aan de deur betalen', data.totaal);
   }
 
   function toonBetaalEind(label, bedrag){
@@ -796,6 +911,7 @@ button.secundair:active{background:var(--paper-line)}
     document.getElementById('loyKlantkaart').style.display = 'none';
     document.getElementById('loyMelding').textContent = '';
     document.getElementById('afrekenMelding').textContent = '';
+    resetLeveringKeuze();
     tekenCart();
     document.getElementById('betaalOverlay').classList.remove('actief');
     document.getElementById('betaalInline').style.display = 'none';
