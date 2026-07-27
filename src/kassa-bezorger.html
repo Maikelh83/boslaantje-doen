@@ -9,6 +9,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- Los installeerbare PWA voor de bezorger-app: eigen manifest met scope
+     '/kassa-bezorger', zodat de chauffeur een apart app-icoon op zijn
+     homescreen krijgt (niet de hele personeelspagina). Zie het losse
+     install-script onderaan dit bestand voor de service-worker-registratie
+     (met dezelfde engere scope) en de install-knop-logica. -->
+<link rel="manifest" href="/manifest-bezorger.json">
+<meta name="theme-color" content="#4A5D3D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Bezorger">
+<link rel="apple-touch-icon" href="/images/icon-192.png">
 <style>
 :root{
 --green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
@@ -34,6 +45,16 @@ button{font-family:inherit;user-select:none}
 header{background:var(--green);padding:1rem 1.3rem;display:flex;align-items:center;justify-content:space-between}
 header h1{color:#fff;font-size:1.3rem}
 header .chauffeurTag{color:#fff;font-size:.85rem;opacity:.85}
+header .headerRechts{display:flex;align-items:center;gap:.7rem}
+#installBtn{display:none;background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:.5rem .8rem;font-size:.85rem;font-weight:700;cursor:pointer;white-space:nowrap}
+#installBtn:active{background:rgba(255,255,255,.3)}
+
+#iosInstallOverlay{display:none;position:fixed;inset:0;background:rgba(27,27,24,.55);z-index:1000;align-items:flex-end;justify-content:center}
+#iosInstallOverlay .kaart{background:#fff;border-radius:16px 16px 0 0;padding:1.5rem 1.5rem 2rem;max-width:420px;width:100%;text-align:left}
+#iosInstallOverlay h2{font-size:1.15rem;margin-bottom:.8rem}
+#iosInstallOverlay ol{padding-left:1.2rem;font-size:.95rem;color:#3a392f;line-height:1.7}
+#iosInstallOverlay ol b{color:var(--green-ink)}
+#iosInstallOverlay button{width:100%;margin-top:1.3rem;background:var(--paper-2);border:2px solid var(--paper-line);border-radius:8px;padding:.9rem;font-weight:700;cursor:pointer;min-height:50px}
 
 main{padding:1.3rem;max-width:560px;margin:0 auto}
 
@@ -94,7 +115,10 @@ body{font-size:16px}
 <div id="app" style="display:none">
 <header>
 <h1>Bezorger</h1>
+<div class="headerRechts">
 <span class="chauffeurTag" id="chauffeurTag"></span>
+<button type="button" id="installBtn">📲 App installeren</button>
+</div>
 </header>
 <main>
 <div id="lijstScherm"></div>
@@ -107,6 +131,20 @@ body{font-size:16px}
 </div>
 <div class="foutMelding" id="foutMelding"></div>
 </main>
+</div>
+
+<!-- iOS Safari heeft geen beforeinstallprompt-API - daar tonen we in plaats
+     daarvan deze overlay met de handmatige 'Zet op beginscherm'-stappen. -->
+<div id="iosInstallOverlay">
+<div class="kaart">
+<h2>📲 App installeren op je iPhone</h2>
+<ol>
+<li>Tik onderin op het <b>Deel-icoon</b> (vierkant met pijl omhoog)</li>
+<li>Kies <b>'Zet op beginscherm'</b></li>
+<li>Tik rechtsboven op <b>'Voeg toe'</b></li>
+</ol>
+<button type="button" id="iosOverlaySluiten">Sluiten</button>
+</div>
 </div>
 
 <script>
@@ -310,6 +348,61 @@ document.getElementById('terugNaarLijstBtn').addEventListener('click', function(
 huidigeRit = null;
 laden();
 });
+})();
+</script>
+
+<!-- Los, bewust gescheiden script voor de PWA-installeerbaarheid van deze
+     pagina. Staat expres los van het bestaande, al geteste script hierboven
+     (personeelsnummer-login + ritten-flow) om regressie-risico te
+     vermijden - deze logica raakt alleen #installBtn/#iosInstallOverlay en
+     registreert de service worker met een engere scope zodat de bezorger-
+     app een eigen, apart installeerbaar app-icoon krijgt (los van de rest
+     van het personeelssysteem, dat niet installeerbaar hoeft te zijn). -->
+<script>
+(function(){
+var installBtn = document.getElementById('installBtn');
+var iosOverlay = document.getElementById('iosInstallOverlay');
+var iosOverlaySluiten = document.getElementById('iosOverlaySluiten');
+var deferredPrompt = null;
+
+function isStandalone(){
+return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+function isIos(){
+return /iphone|ipad|ipod/i.test(window.navigator.userAgent) && !window.MSStream;
+}
+
+if ('serviceWorker' in navigator && !isStandalone()) {
+navigator.serviceWorker.register('/sw.js', { scope: '/kassa-bezorger' }).catch(function(){});
+}
+
+if (isStandalone()) {
+// Al geïnstalleerd: knop hoeft niet getoond te worden.
+installBtn.style.display = 'none';
+} else if (isIos()) {
+// Geen beforeinstallprompt-API op iOS Safari - toon in plaats daarvan
+// de handmatige instructie-overlay zodra er op de knop getikt wordt.
+installBtn.style.display = 'inline-block';
+installBtn.addEventListener('click', function(){ iosOverlay.style.display = 'flex'; });
+} else {
+// Android/Chrome: wacht op het native beforeinstallprompt-event en
+// bewaar 'm om op knop-klik alsnog te tonen (de browser toont 'm
+// zelf niet automatisch als preventDefault() is aangeroepen).
+window.addEventListener('beforeinstallprompt', function(e){
+e.preventDefault();
+deferredPrompt = e;
+installBtn.style.display = 'inline-block';
+});
+installBtn.addEventListener('click', function(){
+if (!deferredPrompt) return;
+deferredPrompt.prompt();
+deferredPrompt.userChoice.then(function(){ deferredPrompt = null; installBtn.style.display = 'none'; }).catch(function(){ deferredPrompt = null; });
+});
+}
+
+if (iosOverlaySluiten) {
+iosOverlaySluiten.addEventListener('click', function(){ iosOverlay.style.display = 'none'; });
+}
 })();
 </script>
 </body>
