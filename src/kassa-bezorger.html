@@ -151,9 +151,7 @@ body{font-size:16px}
 
 <div id="lockScreen">
 <h1>Bezorger</h1>
-<p>Alleen voor bezorgers — voer eerst het wachtwoord in.</p>
-<label for="wachtwoordInput">Wachtwoord</label>
-<input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
+<p>Alleen voor bezorgers — meld je aan met je NFC-druppel of werknemernummer + pincode.</p>
 
 <!-- NFC-eerst: dit is de hoofdroute om aan te melden. -->
 <div id="identiteitSectie">
@@ -219,54 +217,32 @@ body{font-size:16px}
 <script>
 (function(){
 var LOCAL_KEY_NUMMER = 'bd_bezorger_personeelsnummer';
-var wachtwoordInput = document.getElementById('wachtwoordInput');
 var lockFout = document.getElementById('lockFout');
-var huidigWachtwoord = null;
+var huidigSessie = null;
 var huidigPersoneelsnummer = null;
 var huidigeRit = null; // { ritId, status, stops: [...] }
 var pollTimer = null;
 var sumupConfig = null; // { ingesteld, affiliateKey, appId } - opgehaald na inloggen, zie haalSumupConfigOp()
 
-// Gemak na een SumUp-betaling: de callback-pagina (kassa-bezorger-betaling.html)
-// stuurt de chauffeur hierheen terug met ?wachtwoord=... in de URL, zodat het
-// wachtwoordveld al ingevuld staat (scheelt opnieuw typen). Dit is bewust
-// alléén het gedeelde personeelswachtwoord - de chauffeur moet zijn eigen
-// identiteit (NFC-druppel of werknemernummer+pincode) hierna nog wél opnieuw
-// bevestigen, precies zoals bij elke andere paginaverversing.
-try {
-var vooringevuldWachtwoord = new URLSearchParams(window.location.search).get('wachtwoord');
-if (vooringevuldWachtwoord) wachtwoordInput.value = vooringevuldWachtwoord;
-} catch(e){}
-
-// Twee lagen: (1) het gedeelde personeelswachtwoord (STAFF_LOYALTY_PASSWORD,
-// zelfde check als de rest van /kassa-*) bepaalt of dit een personeels-
-// apparaat is, en (2) de identiteit van de chauffeur (/api/personeel/login)
-// - dat wordt de driver_id voor de rit-koppeling. Twee manieren om die
-// identiteit door te geven: NFC-druppel (hoofdroute, geen typewerk) of
-// personeelsnummer+pincode via het on-screen numpad (fallback voor als de
-// druppel er niet is). Pincode wordt bewust NOOIT bewaard - elke keer
-// opnieuw ontgrendelen vraagt 'm dus opnieuw, ook al staat het wachtwoord
-// nog in sessionStorage.
-function verifieerWachtwoordEnLogPersoneelIn(wachtwoord, personeelBody){
-if (!wachtwoord) { lockFout.textContent = 'Vul eerst het wachtwoord in.'; wachtwoordInput.focus(); return; }
+// Enige toegangspoort tot de bezorger-app: NFC-druppel (hoofdroute, geen
+// typewerk) of personeelsnummer+pincode via het on-screen numpad (fallback
+// voor als de druppel er niet is) - zie /api/personeel/login. Er is bewust
+// geen apart gedeeld wachtwoord meer: dat gaf onnodige wrijving boven op
+// een identiteitscheck die er toch al is. Bij succes geven we een
+// kortlevende sessie-token terug die voor alle volgende API-calls wordt
+// gebruikt (?sessie=...). Pincode wordt bewust NOOIT bewaard - elke keer
+// opnieuw ontgrendelen vraagt 'm dus opnieuw.
+function logPersoneelIn(personeelBody){
 lockFout.textContent = 'Controleren...';
-fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(wachtwoord) + '&code=___check___')
-.then(function(res){
-if (res.status === 401) { lockFout.textContent = 'Onjuist wachtwoord.'; return null; }
-if (res.status === 500) {
-return res.json().then(function(d){ lockFout.textContent = (d && d.error) || 'Kon niet inloggen.'; return null; });
-}
-try { sessionStorage.setItem('bd_loyalty_pw', wachtwoord); } catch(e){}
-return fetch('/api/personeel/login?wachtwoord=' + encodeURIComponent(wachtwoord), {
+fetch('/api/personeel/login', {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify(personeelBody),
-}).then(function(res2){ return res2.json().then(function(d2){ return { ok: res2.ok, data: d2 }; }); });
 })
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
 .then(function(r){
-if (!r) return; // wachtwoord-check zelf is al mislukt (foutmelding hierboven al gezet)
 if (!r.ok) { lockFout.textContent = (r.data && r.data.error) || 'Inloggen mislukt.'; return; }
-huidigWachtwoord = wachtwoord;
+huidigSessie = r.data.sessieToken;
 huidigPersoneelsnummer = r.data.personeelsnummer;
 try { localStorage.setItem(LOCAL_KEY_NUMMER, r.data.personeelsnummer); } catch(e){}
 document.getElementById('lockScreen').style.display = 'none';
@@ -284,7 +260,7 @@ laden();
 // Cloudflare Pages - dan toont de PIN-knop verderop gewoon niet, en blijft
 // 'contant ontvangen' als enige optie over.
 function haalSumupConfigOp(){
-fetch('/api/bezorger-sumup-config?wachtwoord=' + encodeURIComponent(huidigWachtwoord))
+fetch('/api/bezorger-sumup-config?sessie=' + encodeURIComponent(huidigSessie))
 .then(function(res){ return res.json(); })
 .then(function(data){ sumupConfig = (data && data.ingesteld) ? data : null; })
 .catch(function(){ sumupConfig = null; });
@@ -300,7 +276,7 @@ if (!sumupConfig) return null;
 var bedragTekst = Number(bedrag).toFixed(2);
 var callbackUrl = new URL('/kassa-bezorger-betaling.html', window.location.origin);
 callbackUrl.searchParams.set('orderId', orderId);
-callbackUrl.searchParams.set('wachtwoord', huidigWachtwoord);
+callbackUrl.searchParams.set('sessie', huidigSessie);
 var params = new URLSearchParams();
 params.set('affiliate-key', sumupConfig.affiliateKey);
 params.set('app-id', sumupConfig.appId);
@@ -312,13 +288,13 @@ params.set('foreign-tx-id', orderId);
 params.set('callback', callbackUrl.toString());
 return 'sumupmerchant://pay/1.0?' + params.toString();
 }
-function ontgrendelen(wachtwoord, personeelsnummer, pincode){
+function ontgrendelen(personeelsnummer, pincode){
 if (!personeelsnummer) { lockFout.textContent = 'Vul je werknemernummer in.'; return; }
 if (!pincode) { lockFout.textContent = 'Vul je pincode in.'; return; }
-verifieerWachtwoordEnLogPersoneelIn(wachtwoord, { personeelsnummer: personeelsnummer, pincode: pincode });
+logPersoneelIn({ personeelsnummer: personeelsnummer, pincode: pincode });
 }
-function ontgrendelenMetNfc(wachtwoord, nfcTagId){
-verifieerWachtwoordEnLogPersoneelIn(wachtwoord, { nfcTagId: nfcTagId });
+function ontgrendelenMetNfc(nfcTagId){
+logPersoneelIn({ nfcTagId: nfcTagId });
 }
 
 // --- NFC-eerst ---------------------------------------------------------
@@ -332,7 +308,6 @@ nfcScanBtn.disabled = true;
 }
 
 nfcScanBtn.addEventListener('click', function(){
-if (!wachtwoordInput.value) { lockFout.textContent = 'Vul eerst het wachtwoord in.'; wachtwoordInput.focus(); return; }
 lockFout.textContent = '';
 nfcStatus.textContent = 'Wachten op scan...';
 nfcVisual.classList.add('nfcWachten');
@@ -343,7 +318,7 @@ reader.onreading = function(event){
 var tagId = event.serialNumber || '';
 if (!tagId) { nfcStatus.textContent = 'Kon geen tag-ID uitlezen van deze druppel.'; return; }
 nfcStatus.textContent = 'Druppel gevonden, inloggen...';
-ontgrendelenMetNfc(wachtwoordInput.value, tagId);
+ontgrendelenMetNfc(tagId);
 };
 reader.onreadingerror = function(){
 nfcStatus.textContent = 'Kon de druppel niet lezen, probeer opnieuw.';
@@ -406,7 +381,7 @@ numpadWisselStap('pincode');
 return;
 }
 if (!numpadWaarden.pincode) { lockFout.textContent = 'Vul je pincode in.'; return; }
-ontgrendelen(wachtwoordInput.value, numpadWaarden.werknemernummer, numpadWaarden.pincode);
+ontgrendelen(numpadWaarden.werknemernummer, numpadWaarden.pincode);
 return;
 }
 var max = NUMPAD_MAX[numpadStap];
@@ -425,7 +400,6 @@ numpadGrid.appendChild(knop);
 });
 
 numpadFallbackBtn.addEventListener('click', function(){
-if (!wachtwoordInput.value) { lockFout.textContent = 'Vul eerst het wachtwoord in.'; wachtwoordInput.focus(); return; }
 lockFout.textContent = '';
 identiteitSectie.style.display = 'none';
 numpadSectie.style.display = 'block';
@@ -454,12 +428,26 @@ return rit.stops.find(function(s){ return s.bezorgStatus !== 'DELIVERED'; }) || 
 // Startpunt: kijk of deze chauffeur al een rit onderweg heeft staan (bijv.
 // na het verversen van de pagina) - zo ja, spring direct door naar de
 // huidige stop. Zo niet, toon de lijst met klaarstaande ritten.
+// Als de sessie verlopen/ongeldig is (401), sturen we de chauffeur terug
+// naar het slotscherm voor een nieuwe NFC/pincode-login, in plaats van een
+// kale foutmelding te tonen in een app die er nog wel ontgrendeld uitziet.
+function terugNaarLockscherm(bericht){
+huidigSessie = null;
+document.getElementById('app').style.display = 'none';
+document.getElementById('lockScreen').style.display = 'block';
+lockFout.textContent = bericht || 'Sessie verlopen, log opnieuw in.';
+}
+
 function laden(){
 toonFout('');
-fetch('/api/bezorger-ritten?wachtwoord=' + encodeURIComponent(huidigWachtwoord) + '&chauffeur=' + encodeURIComponent(huidigPersoneelsnummer))
-.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+fetch('/api/bezorger-ritten?sessie=' + encodeURIComponent(huidigSessie))
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, status: res.status, data: d }; }); })
 .then(function(r){
-if (!r.ok) { toonFout((r.data && r.data.error) || 'Kon niet laden.'); return; }
+if (!r.ok) {
+if (r.status === 401) { terugNaarLockscherm(r.data && r.data.error); return; }
+toonFout((r.data && r.data.error) || 'Kon niet laden.');
+return;
+}
 if (r.data.actieveRit) {
 huidigeRit = r.data.actieveRit;
 toonStopScherm();
@@ -584,14 +572,17 @@ function startEigenRit(orderIds, btn){
 btn.disabled = true;
 btn.textContent = 'Starten...';
 toonFout('');
-fetch('/api/bezorger-ritten?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+fetch('/api/bezorger-ritten?sessie=' + encodeURIComponent(huidigSessie), {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ actie: 'start_eigen_rit', orderIds: orderIds, personeelsnummer: huidigPersoneelsnummer }),
+body: JSON.stringify({ actie: 'start_eigen_rit', orderIds: orderIds }),
 })
-.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, status: res.status, data: d }; }); })
 .then(function(r){
-if (!r.ok) { toonFout((r.data && r.data.error) || 'Starten mislukt.'); btn.disabled = false; btn.textContent = '🚀 START RIT MET GEKOZEN ORDERS'; return; }
+if (!r.ok) {
+if (r.status === 401) { terugNaarLockscherm(r.data && r.data.error); return; }
+toonFout((r.data && r.data.error) || 'Starten mislukt.'); btn.disabled = false; btn.textContent = '🚀 START RIT MET GEKOZEN ORDERS'; return;
+}
 huidigeRit = r.data.rit;
 toonStopScherm();
 })
@@ -603,14 +594,17 @@ toonStopScherm();
 function startRit(ritId, btn){
 btn.disabled = true;
 btn.textContent = 'Starten...';
-fetch('/api/bezorger-ritten?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+fetch('/api/bezorger-ritten?sessie=' + encodeURIComponent(huidigSessie), {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ actie: 'start', ritId: ritId, personeelsnummer: huidigPersoneelsnummer }),
+body: JSON.stringify({ actie: 'start', ritId: ritId }),
 })
-.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, status: res.status, data: d }; }); })
 .then(function(r){
-if (!r.ok) { toonFout((r.data && r.data.error) || 'Starten mislukt.'); btn.disabled = false; btn.textContent = '🚀 START DEZE RIT'; return; }
+if (!r.ok) {
+if (r.status === 401) { terugNaarLockscherm(r.data && r.data.error); return; }
+toonFout((r.data && r.data.error) || 'Starten mislukt.'); btn.disabled = false; btn.textContent = '🚀 START DEZE RIT'; return;
+}
 huidigeRit = r.data.rit;
 toonStopScherm();
 })
@@ -627,7 +621,7 @@ var afgeleverdAantal = huidigeRit.stops.filter(function(s){ return s.bezorgStatu
 
 var mapsUrl = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(adresTekst(stop));
 var telUrl = stop.klantTelefoon ? ('tel:' + stop.klantTelefoon.replace(/\s+/g, '')) : null;
-var kaartUrl = '/api/bezorger-kaart?wachtwoord=' + encodeURIComponent(huidigWachtwoord) + '&adres=' + encodeURIComponent(stop.adres || '') + '&postcode=' + encodeURIComponent(stop.postcode || '') + '&plaats=' + encodeURIComponent(stop.plaats || '');
+var kaartUrl = '/api/bezorger-kaart?sessie=' + encodeURIComponent(huidigSessie) + '&adres=' + encodeURIComponent(stop.adres || '') + '&postcode=' + encodeURIComponent(stop.postcode || '') + '&plaats=' + encodeURIComponent(stop.plaats || '');
 
 // 'Aan de deur betalen': zolang betaalstatus 'onbetaald' is, tonen we de
 // betaalknoppen in plaats van de AFGELEVERD-knop - de chauffeur mag deze
@@ -692,14 +686,17 @@ document.getElementById('afgeleverdBtn').addEventListener('click', function(){ m
 function markeerBetaald(orderId, sumupTxCode, btn){
 if (btn) { btn.disabled = true; btn.textContent = 'Bezig...'; }
 toonFout('');
-fetch('/api/bezorger-ritten?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+fetch('/api/bezorger-ritten?sessie=' + encodeURIComponent(huidigSessie), {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ actie: 'markeer_betaald', orderId: orderId, sumupTxCode: sumupTxCode || null }),
 })
-.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, status: res.status, data: d }; }); })
 .then(function(r){
-if (!r.ok) { toonFout((r.data && r.data.error) || 'Kon betaling niet bevestigen.'); if (btn) { btn.disabled = false; btn.textContent = '💶 Contant ontvangen'; } return; }
+if (!r.ok) {
+if (r.status === 401) { terugNaarLockscherm(r.data && r.data.error); return; }
+toonFout((r.data && r.data.error) || 'Kon betaling niet bevestigen.'); if (btn) { btn.disabled = false; btn.textContent = '💶 Contant ontvangen'; } return;
+}
 huidigeRit = r.data.rit;
 toonStopScherm();
 })
@@ -710,14 +707,17 @@ function markeerAfgeleverd(orderId, btn){
 btn.disabled = true;
 btn.textContent = 'Bezig...';
 toonFout('');
-fetch('/api/bezorger-ritten?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+fetch('/api/bezorger-ritten?sessie=' + encodeURIComponent(huidigSessie), {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ actie: 'afgeleverd', orderId: orderId }),
 })
-.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, status: res.status, data: d }; }); })
 .then(function(r){
-if (!r.ok) { toonFout((r.data && r.data.error) || 'Kon niet bijwerken.'); btn.disabled = false; btn.textContent = '✅ AFGELEVERD'; return; }
+if (!r.ok) {
+if (r.status === 401) { terugNaarLockscherm(r.data && r.data.error); return; }
+toonFout((r.data && r.data.error) || 'Kon niet bijwerken.'); btn.disabled = false; btn.textContent = '✅ AFGELEVERD'; return;
+}
 huidigeRit = r.data.rit;
 if (r.data.ritVoltooid) {
 wisselScherm('klaarScherm');

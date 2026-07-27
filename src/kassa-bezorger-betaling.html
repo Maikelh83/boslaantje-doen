@@ -16,8 +16,8 @@
   terugstuurt. SumUp plakt zelf de query-parameters smp-status/smp-tx-code/
   smp-failure-cause/smp-message achter de callback-URL die we meegaven (zie
   Payment API for Mobile Web / App-Switch-documentatie van SumUp); orderId en
-  wachtwoord kregen we zelf al mee in diezelfde callback-URL, dus die staan
-  er ook nog steeds in bij terugkeer.
+  sessie (de bezorger-sessie-token, zie auth/_lib.js) kregen we zelf al mee
+  in diezelfde callback-URL, dus die staan er ook nog steeds in bij terugkeer.
 
   Bij status=success: bevestigt de betaling via de bestaande
   'markeer_betaald'-actie in /api/bezorger-ritten (dezelfde actie als de
@@ -27,10 +27,12 @@
   keuze om het opnieuw te proberen (terug naar de rit) of het bedrag
   alsnog contant te innemen.
 
-  Geen eigen NFC/pincode-login hier nodig: het gedeelde personeelswachtwoord
-  volstaat om deze ene actie uit te voeren (zelfde poort als alle andere
-  /kassa-*-schermen), en de chauffeur-identiteit is voor déze actie niet
-  relevant (die staat al vast op de order/rit zelf).
+  Geen nieuwe NFC/pincode-login hier nodig: de meegekregen sessie-token
+  volstaat om deze ene actie uit te voeren, en de chauffeur-identiteit is
+  voor déze actie niet relevant (die staat al vast op de order/rit zelf).
+  De "Terug naar de rit"-link stuurt bewust terug naar de kale
+  kassa-bezorger.html (geen sessie in de URL) - net als bij elke andere
+  paginaverversing bevestigt de chauffeur zich daar opnieuw met NFC/pincode.
 -->
 <style>
 :root{
@@ -68,7 +70,7 @@ button, a.knop{display:block;width:100%;text-decoration:none;text-align:center;b
 (function(){
 var params = new URLSearchParams(window.location.search);
 var orderId = params.get('orderId');
-var wachtwoord = params.get('wachtwoord');
+var sessie = params.get('sessie');
 var smpStatus = params.get('smp-status');
 var smpTxCode = params.get('smp-tx-code');
 var smpFailureCause = params.get('smp-failure-cause');
@@ -82,8 +84,7 @@ var FAILURE_TEKST = {
 };
 
 function toonTerugNaarRitLink(tekstKaart){
-var url = '/kassa-bezorger.html' + (wachtwoord ? ('?wachtwoord=' + encodeURIComponent(wachtwoord)) : '');
-return tekstKaart + '<a class="knop primair" href="' + url + '">Terug naar de rit</a>';
+return tekstKaart + '<a class="knop primair" href="/kassa-bezorger.html">Terug naar de rit</a>';
 }
 
 function toonFout(reden){
@@ -91,7 +92,7 @@ kaart.innerHTML =
 '<div class="icoon">⚠️</div>' +
 '<h1 class="fout">Betaling niet gelukt</h1>' +
 '<p>' + reden + '</p>' +
-(orderId && wachtwoord
+(orderId && sessie
 ? '<button type="button" class="secundair" id="contantBtn">💶 Toch contant ontvangen</button>'
 : '') +
 toonTerugNaarRitLink('');
@@ -112,7 +113,7 @@ kaart.innerHTML =
 '<div class="icoon">⚠️</div>' +
 '<h1 class="fout">Kon de betaling niet verwerken</h1>' +
 '<p>' + bericht + '</p>' +
-(orderId && wachtwoord
+(orderId && sessie
 ? '<button type="button" class="secundair" id="contantBtn">💶 Toch contant ontvangen</button>'
 : '') +
 toonTerugNaarRitLink('');
@@ -121,8 +122,8 @@ if (contantBtn) contantBtn.addEventListener('click', markeerContantBetaald);
 }
 
 function markeerBetaald(sumupTxCode, opSucces, opFout){
-if (!orderId || !wachtwoord) { opFout('Ontbrekende gegevens - open deze pagina niet los, gebruik de knop in de bezorger-app.'); return; }
-fetch('/api/bezorger-ritten?wachtwoord=' + encodeURIComponent(wachtwoord), {
+if (!orderId || !sessie) { opFout('Ontbrekende gegevens - open deze pagina niet los, gebruik de knop in de bezorger-app.'); return; }
+fetch('/api/bezorger-ritten?sessie=' + encodeURIComponent(sessie), {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
 body: JSON.stringify({ actie: 'markeer_betaald', orderId: orderId, sumupTxCode: sumupTxCode || null }),
@@ -141,7 +142,7 @@ kaart.innerHTML = '<div class="icoon">⏳</div><h1>Even geduld...</h1><p>Bezig m
 markeerBetaald(null, toonSucces, toonOnverwachteFout);
 }
 
-if (!orderId || !wachtwoord) {
+if (!orderId || !sessie) {
 toonOnverwachteFout('Deze pagina mist gegevens - open hem niet los, gebruik altijd de PIN-knop in de bezorger-app.');
 } else if (smpStatus === 'success') {
 markeerBetaald(smpTxCode, toonSucces, toonOnverwachteFout);
