@@ -471,9 +471,17 @@ main{padding:1.4rem 0 3rem}
               <textarea id="opmerking" name="opmerking" rows="2" placeholder="Bijv. allergie, geen uitjes, etc."></textarea>
             </div>
 
+            <!-- 'Aan de deur betalen' is bewust verwijderd uit de openbare bestelsite (juli 2026,
+                 op verzoek van Maikel): een klant kon deze optie kiezen zonder enige betaalcontrole
+                 vooraf, wat onbeperkte onbetaalde 'spookbestellingen' mogelijk maakte. Bezorgen kan
+                 hier voortaan alleen nog met vooraf online betalen (iDEAL). 'Aan de deur betalen'
+                 bestaat nog wél, maar uitsluitend via de kassa (personeel, telefonische bestelling) -
+                 zie functions/api/kassa-order.js en src/kassa.html. De radio-input hieronder
+                 (betaalWijzeOnlineRadio, altijd 'online', altijd checked) blijft bewust bestaan zodat
+                 de rest van dit script (bijwerkenAfrekenenBtnTekst, de submit-handler, de
+                 factuur-checkbox-logica) ongewijzigd kan blijven werken. -->
             <div class="factuur-optie" id="aanDeDeurOptie" style="display:none">
 <label><input type="radio" name="betaalWijze" value="online" id="betaalWijzeOnlineRadio" checked><span>Nu online betalen (iDEAL)</span></label>
-<label><input type="radio" name="betaalWijze" value="aan_de_deur" id="betaalWijzeAanDeDeurRadio"><span>Aan de deur betalen (contant of pin)</span></label>
 </div>
             <div class="factuur-optie" id="factuurOptie" style="display:none">
 <label><input type="checkbox" id="factuurCheckbox"><span>Op factuur betalen (zakelijk account)</span></label>
