@@ -1,9 +1,14 @@
 // functions/api/bezorger-kaart.js
-// Cloudflare Pages Function — GET /api/bezorger-kaart?wachtwoord=...&adres=...&postcode=...&plaats=...
+// Cloudflare Pages Function — GET /api/bezorger-kaart?sessie=...&adres=...&postcode=...&plaats=...
 //
 // Geeft een klein kaartplaatje (PNG) terug met een pin op het bezorgadres,
 // voor gebruik in de PWA Bezorger-app (src/kassa-bezorger.html) boven de
 // bestaande "Bel klant"/"Open in Google Maps"/"Afgeleverd"-knoppen per stop.
+//
+// Beveiligd met dezelfde sessie-token als bezorger-ritten.js (zie
+// controleerBezorgerSessie in auth/_lib.js) - de chauffeur logt in met NFC
+// of werknemernummer+pincode via /api/personeel/login, geen apart gedeeld
+// wachtwoord meer nodig.
 //
 // Het adres wordt hier server-side gegeocodeerd met dezelfde Mapbox
 // Geocoding API v6 als de bezorgzone-controle (zie geocodeAdres in
@@ -13,30 +18,31 @@
 // meerdere functions wordt geïmporteerd). Daarna wordt er bij de Mapbox
 // Static Images API een kant-en-klare kaartafbeelding opgehaald - dit
 // endpoint proxyt die afbeelding 1-op-1 door, zodat de MAPBOX_ACCESS_TOKEN
-// nooit in de HTML/JS van de bezorger-app terechtkomt (zelfde reden waarom
-// bezorger-sumup-config.js de SumUp-sleutel nooit teruggeeft aan de client,
-// alleen gebruikt).
+// nooit in de HTML/JS van de bezorger-app terechtkomt.
 //
 // Benodigde environment variables:
-// STAFF_LOYALTY_PASSWORD — zelfde personeelswachtwoord als de rest van /kassa-*
 // MAPBOX_ACCESS_TOKEN — zelfde Mapbox-token als de bezorgzone-controle
+// DB — D1-database binding
 
-import { geocodeAdres, json } from "./auth/_lib.js";
+import { geocodeAdres, zorgVoorBezorgerSessieTabel, controleerBezorgerSessie, json } from "./auth/_lib.js";
 
 export async function onRequestGet(context) {
   const { request, env } = context;
   try {
-    const url = new URL(request.url);
-    const wachtwoord = url.searchParams.get("wachtwoord") || "";
-
-    if (!env.STAFF_LOYALTY_PASSWORD) {
-      return json({ error: "De bezorger-app is nog niet ingesteld (STAFF_LOYALTY_PASSWORD ontbreekt)." }, 500);
-    }
-    if (wachtwoord !== env.STAFF_LOYALTY_PASSWORD) {
-      return json({ error: "Onjuist wachtwoord." }, 401);
+    if (!env.DB) {
+      return json({ error: "Database is niet gekoppeld (D1-binding 'DB' ontbreekt)." }, 500);
     }
     if (!env.MAPBOX_ACCESS_TOKEN) {
       return json({ error: "Kaartje is nog niet ingesteld (MAPBOX_ACCESS_TOKEN ontbreekt)." }, 500);
+    }
+
+    await zorgVoorBezorgerSessieTabel(env.DB);
+
+    const url = new URL(request.url);
+    const sessieToken = url.searchParams.get("sessie") || "";
+    const sessie = await controleerBezorgerSessie(env.DB, sessieToken);
+    if (!sessie.geldig) {
+      return json({ error: "Sessie verlopen of ongeldig. Log opnieuw in." }, 401);
     }
 
     const adres = (url.searchParams.get("adres") || "").trim();
