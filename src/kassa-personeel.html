@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Personeel · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+--green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
+--paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
+--rood:#8A2B1E;
+--font-body:'Roboto',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.4;font-size:17px}
+h1,h2,h3{font-weight:700;color:var(--green-ink)}
+button{font-family:inherit;user-select:none}
+
+#lockScreen{max-width:400px;margin:4rem auto;background:#fff;border:1px solid var(--paper-line);border-radius:10px;padding:2rem}
+#lockScreen h1{text-align:center;font-size:1.3rem;margin-bottom:.4rem}
+#lockScreen p{text-align:center;font-size:.9rem;color:#6b6a62}
+#lockScreen input{width:100%;padding:1rem .9rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1.1rem;margin:1rem 0}
+#lockScreen button{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:1rem;font-weight:800;font-size:1.05rem;cursor:pointer;min-height:56px}
+#lockScreen button:active{background:var(--terracotta-deep)}
+#lockFout{color:var(--rood);font-size:.9rem;min-height:1.2em;margin-top:.5rem;text-align:center}
+
+header{background:var(--green);padding:.9rem 1.3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+header h1{color:#fff;font-size:1.4rem}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem}
+
+main{padding:1.3rem;max-width:640px;margin:0 auto}
+.kaart{background:#fff;border-radius:14px;border:2px solid var(--paper-line);padding:1.2rem;margin-bottom:1.1rem}
+.kaart h2{font-size:1.1rem;margin-bottom:.3rem}
+.kaart .uitleg{font-size:.86rem;color:#6b6a62;margin-bottom:1rem}
+.leeg{font-size:.9rem;color:#6b6a62;padding:.5rem 0}
+
+.veld{margin-bottom:1rem}
+.veld label{display:block;font-weight:700;font-size:.92rem;margin-bottom:.35rem}
+.veld input{width:100%;padding:.7rem .8rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1rem}
+.veldenRij{display:flex;gap:.7rem;flex-wrap:wrap}
+.veldenRij .veld{flex:1;min-width:140px}
+
+.toevoegenBtn{background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:.9rem;font-weight:800;font-size:1.02rem;cursor:pointer;min-height:52px;width:100%}
+.toevoegenBtn:active{background:var(--terracotta-deep)}
+.formStatus{font-size:.86rem;color:#6b6a62;min-height:1.2em;margin-top:.6rem;text-align:center}
+.formStatus.ok{color:var(--green-ink);font-weight:700}
+.formStatus.fout{color:var(--rood)}
+
+.medewerkerRij{display:flex;align-items:center;gap:.7rem;padding:.7rem 0;border-bottom:1px solid var(--paper-line);flex-wrap:wrap}
+.medewerkerRij:last-child{border-bottom:none}
+.medewerkerRij .info{flex:1;min-width:160px}
+.medewerkerRij .naam{font-weight:700}
+.medewerkerRij .nummer{font-size:.82rem;color:#6b6a62}
+.badge{display:inline-block;font-size:.74rem;font-weight:800;padding:.2rem .5rem;border-radius:99px;margin-top:.2rem}
+.badge.actief{background:#E4EDE0;color:var(--green-ink)}
+.badge.inactief{background:#F1E4E0;color:var(--rood)}
+.medewerkerRij .acties{display:flex;gap:.5rem;flex-wrap:wrap}
+.medewerkerRij button{background:none;border:1.5px solid var(--paper-line);color:var(--green-ink);border-radius:8px;padding:.45rem .7rem;font-weight:700;font-size:.82rem;cursor:pointer}
+.medewerkerRij button.deactiverenBtn{border-color:var(--rood);color:var(--rood)}
+
+@media (max-width: 480px){
+body{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+<h1>Personeel — beheer</h1>
+<p>Alleen voor personeel — voer het wachtwoord in.</p>
+<input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
+<button type="button" id="ontgrendelBtn">Ontgrendelen</button>
+<div id="lockFout"></div>
+</div>
+
+<div id="scherm" style="display:none">
+<header>
+<h1>Personeel</h1>
+<a href="/kassa">&larr; Kassa</a>
+</header>
+<main>
+
+<div class="kaart">
+<h2>Nieuwe medewerker</h2>
+<p class="uitleg">Personeelsnummer en pincode gebruikt de medewerker straks om in te loggen in de bezorger-app.</p>
+<div class="veldenRij">
+<div class="veld"><label for="nieuwNummer">Personeelsnummer</label><input type="text" id="nieuwNummer" placeholder="Bijv. 12"></div>
+<div class="veld"><label for="nieuwNaam">Naam</label><input type="text" id="nieuwNaam" placeholder="Bijv. Kevin"></div>
+</div>
+<div class="veld"><label for="nieuwPincode">Pincode (4-6 cijfers)</label><input type="text" inputmode="numeric" id="nieuwPincode" placeholder="Bijv. 1234"></div>
+<button type="button" class="toevoegenBtn" id="toevoegenBtn">Medewerker toevoegen</button>
+<div class="formStatus" id="toevoegenStatus"></div>
+</div>
+
+<div class="kaart">
+<h2>Medewerkers</h2>
+<div id="medewerkersHost"></div>
+</div>
+
+</main>
+</div>
+
+<script>
+(function(){
+var wachtwoordInput = document.getElementById('wachtwoordInput');
+var ontgrendelBtn = document.getElementById('ontgrendelBtn');
+var lockFout = document.getElementById('lockFout');
+var huidigWachtwoord = null;
+
+// Zelfde wachtwoord-check + sessionStorage-sleutel als de rest van
+// /kassa-* (kassa.html, kassa-keuken.html, kassa-ritten.html, enz.).
+function controleerWachtwoord(wachtwoord){
+lockFout.textContent = 'Controleren...';
+fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(wachtwoord) + '&code=___check___')
+.then(function(res){
+if (res.status === 401) { lockFout.textContent = 'Onjuist wachtwoord.'; return; }
+if (res.status === 500) {
+return res.json().then(function(d){ lockFout.textContent = (d && d.error) || 'Kon niet inloggen.'; });
+}
+huidigWachtwoord = wachtwoord;
+try { sessionStorage.setItem('bd_loyalty_pw', wachtwoord); } catch(e){}
+document.getElementById('lockScreen').style.display = 'none';
+document.getElementById('scherm').style.display = 'block';
+laden();
+})
+.catch(function(){ lockFout.textContent = 'Kon geen verbinding maken.'; });
+}
+ontgrendelBtn.addEventListener('click', function(){ controleerWachtwoord(wachtwoordInput.value); });
+wachtwoordInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') controleerWachtwoord(wachtwoordInput.value); });
+var opgeslagen = null;
+try { opgeslagen = sessionStorage.getItem('bd_loyalty_pw'); } catch(e){}
+if (opgeslagen) controleerWachtwoord(opgeslagen);
+
+function tekenMedewerkers(medewerkers){
+var host = document.getElementById('medewerkersHost');
+host.innerHTML = '';
+if (!medewerkers || medewerkers.length === 0) {
+host.innerHTML = '<div class="leeg">Nog geen medewerkers toegevoegd.</div>';
+return;
+}
+medewerkers.forEach(function(m){
+var rij = document.createElement('div');
+rij.className = 'medewerkerRij';
+rij.innerHTML =
+'<div class="info">' +
+'<div class="naam">' + m.naam + '</div>' +
+'<div class="nummer">Nr. ' + m.personeelsnummer + '</div>' +
+'<span class="badge ' + (m.actief ? 'actief' : 'inactief') + '">' + (m.actief ? 'Actief' : 'Inactief') + '</span>' +
+'</div>' +
+'<div class="acties">' +
+'<button type="button" class="resetBtn">Pincode resetten</button>' +
+'<button type="button" class="' + (m.actief ? 'deactiverenBtn' : '') + '">' + (m.actief ? 'Deactiveren' : 'Activeren') + '</button>' +
+'</div>';
+rij.querySelector('.resetBtn').addEventListener('click', function(){
+var nieuwePincode = prompt('Nieuwe pincode voor ' + m.naam + ' (4-6 cijfers):');
+if (nieuwePincode === null) return;
+fetch('/api/admin/medewerkers?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie: 'reset_pincode', personeelsnummer: m.personeelsnummer, nieuwePincode: nieuwePincode }),
+})
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { alert((r.data && r.data.error) || 'Resetten mislukt.'); return; }
+alert('Pincode bijgewerkt.');
+});
+});
+rij.querySelectorAll('.acties button')[1].addEventListener('click', function(){
+var actie = m.actief ? 'deactiveren' : 'activeren';
+fetch('/api/admin/medewerkers?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie: actie, personeelsnummer: m.personeelsnummer }),
+})
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { alert((r.data && r.data.error) || 'Bijwerken mislukt.'); return; }
+laden();
+});
+});
+host.appendChild(rij);
+});
+}
+
+function laden(){
+fetch('/api/admin/medewerkers?wachtwoord=' + encodeURIComponent(huidigWachtwoord))
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { document.getElementById('medewerkersHost').innerHTML = '<div class="leeg">' + ((r.data && r.data.error) || 'Kon niet laden.') + '</div>'; return; }
+tekenMedewerkers(r.data.medewerkers || []);
+})
+.catch(function(){ document.getElementById('medewerkersHost').innerHTML = '<div class="leeg">Kon geen verbinding maken.</div>'; });
+}
+
+document.getElementById('toevoegenBtn').addEventListener('click', function(){
+var statusEl = document.getElementById('toevoegenStatus');
+var nummer = document.getElementById('nieuwNummer').value.trim();
+var naam = document.getElementById('nieuwNaam').value.trim();
+var pincode = document.getElementById('nieuwPincode').value.trim();
+if (!nummer || !naam) { statusEl.textContent = 'Vul personeelsnummer en naam in.'; statusEl.className = 'formStatus fout'; return; }
+if (!/^[0-9]{4,6}$/.test(pincode)) { statusEl.textContent = 'Pincode moet 4 tot 6 cijfers zijn.'; statusEl.className = 'formStatus fout'; return; }
+statusEl.textContent = 'Toevoegen...'; statusEl.className = 'formStatus';
+fetch('/api/admin/medewerkers?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie: 'toevoegen', personeelsnummer: nummer, naam: naam, pincode: pincode }),
+})
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { statusEl.textContent = (r.data && r.data.error) || 'Toevoegen mislukt.'; statusEl.className = 'formStatus fout'; return; }
+statusEl.textContent = 'Toegevoegd ✓'; statusEl.className = 'formStatus ok';
+document.getElementById('nieuwNummer').value = '';
+document.getElementById('nieuwNaam').value = '';
+document.getElementById('nieuwPincode').value = '';
+laden();
+})
+.catch(function(){ statusEl.textContent = 'Kon geen verbinding maken.'; statusEl.className = 'formStatus fout'; });
+});
+})();
+</script>
+</body>
+</html>

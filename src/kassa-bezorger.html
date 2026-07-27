@@ -80,11 +80,13 @@ body{font-size:16px}
 
 <div id="lockScreen">
 <h1>Bezorger</h1>
-<p>Alleen voor bezorgers — voer het wachtwoord en je naam in.</p>
+<p>Alleen voor bezorgers — voer het wachtwoord, je personeelsnummer en je pincode in.</p>
 <label for="wachtwoordInput">Wachtwoord</label>
 <input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
-<label for="naamInput">Jouw naam</label>
-<input type="text" id="naamInput" placeholder="Bijv. Kevin" autocomplete="off">
+<label for="personeelsnummerInput">Personeelsnummer</label>
+<input type="text" id="personeelsnummerInput" placeholder="Bijv. 12" autocomplete="off" inputmode="numeric">
+<label for="pincodeInput">Pincode</label>
+<input type="password" id="pincodeInput" placeholder="Pincode" autocomplete="off" inputmode="numeric">
 <button type="button" id="ontgrendelBtn">Ontgrendelen</button>
 <div id="lockFout"></div>
 </div>
@@ -109,56 +111,64 @@ body{font-size:16px}
 
 <script>
 (function(){
-var LOCAL_KEY_NAAM = 'bd_bezorger_naam';
+var LOCAL_KEY_NUMMER = 'bd_bezorger_personeelsnummer';
 var wachtwoordInput = document.getElementById('wachtwoordInput');
-var naamInput = document.getElementById('naamInput');
+var personeelsnummerInput = document.getElementById('personeelsnummerInput');
+var pincodeInput = document.getElementById('pincodeInput');
 var ontgrendelBtn = document.getElementById('ontgrendelBtn');
 var lockFout = document.getElementById('lockFout');
 var huidigWachtwoord = null;
-var huidigeNaam = null;
+var huidigPersoneelsnummer = null;
 var huidigeRit = null; // { ritId, status, stops: [...] }
 var pollTimer = null;
 
 try {
-var opgeslagenNaam = localStorage.getItem(LOCAL_KEY_NAAM);
-if (opgeslagenNaam) naamInput.value = opgeslagenNaam;
+var opgeslagenNummer = localStorage.getItem(LOCAL_KEY_NUMMER);
+if (opgeslagenNummer) personeelsnummerInput.value = opgeslagenNummer;
 } catch(e){}
 
-// Zelfde wachtwoord-check + sessionStorage-sleutel als de rest van
-// /kassa-* (kassa.html, kassa-keuken.html, kassa-ritten.html, enz.): één
-// keer inloggen in de balie/bezorger-omgeving volstaat. De naam wordt
-// apart in localStorage bewaard (blijft dus ook na verversen/herstart
-// van de telefoon staan, i.t.t. sessionStorage) - dit project heeft geen
-// individueel bezorger-account-systeem, dus deze naam ís de driver_id.
-function controleerWachtwoord(wachtwoord, naam){
-if (!naam) { lockFout.textContent = 'Vul je naam in.'; return; }
+// Twee lagen: (1) het gedeelde personeelswachtwoord (STAFF_LOYALTY_PASSWORD,
+// zelfde check als de rest van /kassa-*) bepaalt of dit een personeels-
+// apparaat is, en (2) personeelsnummer + pincode (/api/personeel/login)
+// identificeert WIE er precies bezorgt - dat wordt de driver_id voor de
+// rit-koppeling. De pincode wordt bewust NOOIT bewaard (in tegenstelling
+// tot het personeelsnummer, dat wel in localStorage staat zodat je hem niet
+// steeds opnieuw hoeft te typen) - elke keer opnieuw ontgrendelen vraagt dus
+// altijd om de pincode, ook al is het wachtwoord nog in sessionStorage.
+function ontgrendelen(wachtwoord, personeelsnummer, pincode){
+if (!personeelsnummer) { lockFout.textContent = 'Vul je personeelsnummer in.'; return; }
+if (!pincode) { lockFout.textContent = 'Vul je pincode in.'; return; }
 lockFout.textContent = 'Controleren...';
 fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(wachtwoord) + '&code=___check___')
 .then(function(res){
-if (res.status === 401) { lockFout.textContent = 'Onjuist wachtwoord.'; return; }
+if (res.status === 401) { lockFout.textContent = 'Onjuist wachtwoord.'; return null; }
 if (res.status === 500) {
-return res.json().then(function(d){ lockFout.textContent = (d && d.error) || 'Kon niet inloggen.'; });
+return res.json().then(function(d){ lockFout.textContent = (d && d.error) || 'Kon niet inloggen.'; return null; });
 }
+try { sessionStorage.setItem('bd_loyalty_pw', wachtwoord); } catch(e){}
+return fetch('/api/personeel/login?wachtwoord=' + encodeURIComponent(wachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ personeelsnummer: personeelsnummer, pincode: pincode }),
+}).then(function(res2){ return res2.json().then(function(d2){ return { ok: res2.ok, data: d2 }; }); });
+})
+.then(function(r){
+if (!r) return; // wachtwoord-check zelf is al mislukt (foutmelding hierboven al gezet)
+if (!r.ok) { lockFout.textContent = (r.data && r.data.error) || 'Inloggen mislukt.'; return; }
 huidigWachtwoord = wachtwoord;
-huidigeNaam = naam;
-try {
-sessionStorage.setItem('bd_loyalty_pw', wachtwoord);
-localStorage.setItem(LOCAL_KEY_NAAM, naam);
-} catch(e){}
+huidigPersoneelsnummer = r.data.personeelsnummer;
+try { localStorage.setItem(LOCAL_KEY_NUMMER, r.data.personeelsnummer); } catch(e){}
 document.getElementById('lockScreen').style.display = 'none';
 document.getElementById('app').style.display = 'block';
-document.getElementById('chauffeurTag').textContent = naam;
+document.getElementById('chauffeurTag').textContent = r.data.naam;
 laden();
 })
 .catch(function(){ lockFout.textContent = 'Kon geen verbinding maken.'; });
 }
-ontgrendelBtn.addEventListener('click', function(){ controleerWachtwoord(wachtwoordInput.value, naamInput.value.trim()); });
-[wachtwoordInput, naamInput].forEach(function(inp){
-inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') controleerWachtwoord(wachtwoordInput.value, naamInput.value.trim()); });
+ontgrendelBtn.addEventListener('click', function(){ ontgrendelen(wachtwoordInput.value, personeelsnummerInput.value.trim(), pincodeInput.value.trim()); });
+[wachtwoordInput, personeelsnummerInput, pincodeInput].forEach(function(inp){
+inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') ontgrendelen(wachtwoordInput.value, personeelsnummerInput.value.trim(), pincodeInput.value.trim()); });
 });
-var opgeslagenPw = null;
-try { opgeslagenPw = sessionStorage.getItem('bd_loyalty_pw'); } catch(e){}
-if (opgeslagenPw && naamInput.value.trim()) controleerWachtwoord(opgeslagenPw, naamInput.value.trim());
 
 function toonFout(tekst){
 document.getElementById('foutMelding').textContent = tekst || '';
@@ -179,7 +189,7 @@ return rit.stops.find(function(s){ return s.bezorgStatus !== 'DELIVERED'; }) || 
 // huidige stop. Zo niet, toon de lijst met klaarstaande ritten.
 function laden(){
 toonFout('');
-fetch('/api/bezorger-ritten?wachtwoord=' + encodeURIComponent(huidigWachtwoord) + '&chauffeur=' + encodeURIComponent(huidigeNaam))
+fetch('/api/bezorger-ritten?wachtwoord=' + encodeURIComponent(huidigWachtwoord) + '&chauffeur=' + encodeURIComponent(huidigPersoneelsnummer))
 .then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
 .then(function(r){
 if (!r.ok) { toonFout((r.data && r.data.error) || 'Kon niet laden.'); return; }
@@ -235,7 +245,7 @@ btn.textContent = 'Starten...';
 fetch('/api/bezorger-ritten?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ actie: 'start', ritId: ritId, chauffeurNaam: huidigeNaam }),
+body: JSON.stringify({ actie: 'start', ritId: ritId, personeelsnummer: huidigPersoneelsnummer }),
 })
 .then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
 .then(function(r){
