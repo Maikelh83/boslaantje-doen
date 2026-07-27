@@ -55,6 +55,11 @@ eleventyConfig.addPassthroughCopy('src/kassa-bezorgzone.html');
 eleventyConfig.addPassthroughCopy('src/kassa-ritten.html');
 eleventyConfig.addPassthroughCopy('src/kassa-bezorger.html');
 
+// Personeelsnummer-fundament: medewerkers toevoegen/pincode resetten,
+// koppelt via /api/admin/medewerkers (staff-wachtwoord-gated). Wordt door
+// kassa-bezorger.html gebruikt via /api/personeel/login.
+eleventyConfig.addPassthroughCopy('src/kassa-personeel.html');
+
 // Klant-facing account-pagina's voor pijler 7 (zakelijke accounts): registreren
 // en inloggen. Koppelen via /api/auth/register en /api/auth/login.
 eleventyConfig.addPassthroughCopy('src/account-registreren.html');
