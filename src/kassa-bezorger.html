@@ -42,6 +42,34 @@ button{font-family:inherit;user-select:none}
 #lockScreen button:active{background:var(--terracotta-deep)}
 #lockFout{color:var(--rood);font-size:.9rem;min-height:1.2em;margin-top:.5rem;text-align:center}
 
+/* NFC-eerst identiteitsscherm + numpad-fallback (voor als de bezorger zijn
+   druppel niet bij zich heeft). Zie het losse identiteits-script onderaan
+   dit bestand - staat bewust apart van het ritten-script om regressie te
+   vermijden. */
+#identiteitSectie{margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--paper-line)}
+.nfcSectie{text-align:center}
+.nfcVisual{font-size:3rem;margin-bottom:.4rem;transition:transform .15s ease}
+.nfcVisual.nfcWachten{animation:nfcPuls 1.1s ease-in-out infinite}
+@keyframes nfcPuls{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.12);opacity:.7}}
+.nfcTekst{font-size:.9rem;color:#6b6a62;margin-bottom:.9rem}
+#nfcScanBtn{background:var(--green);margin-top:0}
+#nfcScanBtn:active{background:var(--green-ink)}
+#nfcScanBtn:disabled{background:#c7cbc2;cursor:default}
+.nfcStatus{font-size:.85rem;color:var(--green-ink);min-height:1.2em;margin-top:.6rem;text-align:center}
+.scheidingOf{text-align:center;font-size:.8rem;color:#a29d8f;font-weight:700;margin:1.1rem 0;text-transform:uppercase;letter-spacing:.04em}
+.numpadFallbackBtn{background:none !important;color:var(--green-ink) !important;border:2px solid var(--paper-line) !important;font-weight:700 !important}
+
+#numpadSectie{margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--paper-line)}
+.terugBtn{width:auto !important;display:inline-block;background:none !important;color:var(--green-ink) !important;padding:.4rem 0 !important;min-height:auto !important;font-weight:700 !important;font-size:.9rem !important;margin-top:0 !important}
+#numpadStapNummer{text-align:center;font-weight:800;color:var(--green-ink);font-size:.85rem;margin:.6rem 0}
+.numpadDisplay{text-align:center;font-size:1.6rem;font-weight:800;letter-spacing:.15em;background:var(--paper-2);border-radius:8px;padding:.9rem;margin-bottom:1rem;min-height:1.4em;color:var(--green-ink)}
+.numpadGrid{display:grid;grid-template-columns:repeat(3, 1fr);gap:.6rem}
+.numpadKnop{width:100%;background:var(--paper-2) !important;color:var(--ink) !important;border:1.5px solid var(--paper-line) !important;font-size:1.3rem !important;font-weight:800 !important;min-height:56px !important;margin-top:0 !important;border-radius:8px !important}
+.numpadKnop:active{background:var(--paper-line) !important}
+.numpadKnop.numpadOk{background:var(--terracotta) !important;color:#fff !important;border:none !important}
+.numpadKnop.numpadOk:active{background:var(--terracotta-deep) !important}
+.numpadKnop.numpadWis{color:var(--rood) !important}
+
 header{background:var(--green);padding:1rem 1.3rem;display:flex;align-items:center;justify-content:space-between}
 header h1{color:#fff;font-size:1.3rem}
 header .chauffeurTag{color:#fff;font-size:.85rem;opacity:.85}
@@ -101,14 +129,32 @@ body{font-size:16px}
 
 <div id="lockScreen">
 <h1>Bezorger</h1>
-<p>Alleen voor bezorgers — voer het wachtwoord, je personeelsnummer en je pincode in.</p>
+<p>Alleen voor bezorgers — voer eerst het wachtwoord in.</p>
 <label for="wachtwoordInput">Wachtwoord</label>
 <input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
-<label for="personeelsnummerInput">Personeelsnummer</label>
-<input type="text" id="personeelsnummerInput" placeholder="Bijv. 12" autocomplete="off" inputmode="numeric">
-<label for="pincodeInput">Pincode</label>
-<input type="password" id="pincodeInput" placeholder="Pincode" autocomplete="off" inputmode="numeric">
-<button type="button" id="ontgrendelBtn">Ontgrendelen</button>
+
+<!-- NFC-eerst: dit is de hoofdroute om aan te melden. -->
+<div id="identiteitSectie">
+<div class="nfcSectie">
+<div class="nfcVisual" id="nfcVisual">📡</div>
+<p class="nfcTekst">Houd je NFC-druppel tegen de achterkant van je telefoon.</p>
+<button type="button" id="nfcScanBtn">Start NFC-scan</button>
+<div class="nfcStatus" id="nfcStatus"></div>
+</div>
+<div class="scheidingOf">of</div>
+<button type="button" class="numpadFallbackBtn" id="numpadFallbackBtn">🔢 Inloggen met Werknemernummer &amp; PIN</button>
+</div>
+
+<!-- Handmatige fallback (numpad) voor als de bezorger zijn druppel niet bij
+     zich heeft - eigen on-screen cijferpaneel, zodat het native
+     telefoontoetsenbord niet over het scherm klapt. -->
+<div id="numpadSectie" style="display:none">
+<button type="button" class="terugBtn" id="numpadTerugBtn">&larr; Terug naar NFC</button>
+<div id="numpadStapNummer"></div>
+<div class="numpadDisplay" id="numpadDisplay"></div>
+<div class="numpadGrid" id="numpadGrid"></div>
+</div>
+
 <div id="lockFout"></div>
 </div>
 
@@ -151,31 +197,23 @@ body{font-size:16px}
 (function(){
 var LOCAL_KEY_NUMMER = 'bd_bezorger_personeelsnummer';
 var wachtwoordInput = document.getElementById('wachtwoordInput');
-var personeelsnummerInput = document.getElementById('personeelsnummerInput');
-var pincodeInput = document.getElementById('pincodeInput');
-var ontgrendelBtn = document.getElementById('ontgrendelBtn');
 var lockFout = document.getElementById('lockFout');
 var huidigWachtwoord = null;
 var huidigPersoneelsnummer = null;
 var huidigeRit = null; // { ritId, status, stops: [...] }
 var pollTimer = null;
 
-try {
-var opgeslagenNummer = localStorage.getItem(LOCAL_KEY_NUMMER);
-if (opgeslagenNummer) personeelsnummerInput.value = opgeslagenNummer;
-} catch(e){}
-
 // Twee lagen: (1) het gedeelde personeelswachtwoord (STAFF_LOYALTY_PASSWORD,
 // zelfde check als de rest van /kassa-*) bepaalt of dit een personeels-
-// apparaat is, en (2) personeelsnummer + pincode (/api/personeel/login)
-// identificeert WIE er precies bezorgt - dat wordt de driver_id voor de
-// rit-koppeling. De pincode wordt bewust NOOIT bewaard (in tegenstelling
-// tot het personeelsnummer, dat wel in localStorage staat zodat je hem niet
-// steeds opnieuw hoeft te typen) - elke keer opnieuw ontgrendelen vraagt dus
-// altijd om de pincode, ook al is het wachtwoord nog in sessionStorage.
-function ontgrendelen(wachtwoord, personeelsnummer, pincode){
-if (!personeelsnummer) { lockFout.textContent = 'Vul je personeelsnummer in.'; return; }
-if (!pincode) { lockFout.textContent = 'Vul je pincode in.'; return; }
+// apparaat is, en (2) de identiteit van de chauffeur (/api/personeel/login)
+// - dat wordt de driver_id voor de rit-koppeling. Twee manieren om die
+// identiteit door te geven: NFC-druppel (hoofdroute, geen typewerk) of
+// personeelsnummer+pincode via het on-screen numpad (fallback voor als de
+// druppel er niet is). Pincode wordt bewust NOOIT bewaard - elke keer
+// opnieuw ontgrendelen vraagt 'm dus opnieuw, ook al staat het wachtwoord
+// nog in sessionStorage.
+function verifieerWachtwoordEnLogPersoneelIn(wachtwoord, personeelBody){
+if (!wachtwoord) { lockFout.textContent = 'Vul eerst het wachtwoord in.'; wachtwoordInput.focus(); return; }
 lockFout.textContent = 'Controleren...';
 fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(wachtwoord) + '&code=___check___')
 .then(function(res){
@@ -187,7 +225,7 @@ try { sessionStorage.setItem('bd_loyalty_pw', wachtwoord); } catch(e){}
 return fetch('/api/personeel/login?wachtwoord=' + encodeURIComponent(wachtwoord), {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ personeelsnummer: personeelsnummer, pincode: pincode }),
+body: JSON.stringify(personeelBody),
 }).then(function(res2){ return res2.json().then(function(d2){ return { ok: res2.ok, data: d2 }; }); });
 })
 .then(function(r){
@@ -203,9 +241,129 @@ laden();
 })
 .catch(function(){ lockFout.textContent = 'Kon geen verbinding maken.'; });
 }
-ontgrendelBtn.addEventListener('click', function(){ ontgrendelen(wachtwoordInput.value, personeelsnummerInput.value.trim(), pincodeInput.value.trim()); });
-[wachtwoordInput, personeelsnummerInput, pincodeInput].forEach(function(inp){
-inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') ontgrendelen(wachtwoordInput.value, personeelsnummerInput.value.trim(), pincodeInput.value.trim()); });
+function ontgrendelen(wachtwoord, personeelsnummer, pincode){
+if (!personeelsnummer) { lockFout.textContent = 'Vul je werknemernummer in.'; return; }
+if (!pincode) { lockFout.textContent = 'Vul je pincode in.'; return; }
+verifieerWachtwoordEnLogPersoneelIn(wachtwoord, { personeelsnummer: personeelsnummer, pincode: pincode });
+}
+function ontgrendelenMetNfc(wachtwoord, nfcTagId){
+verifieerWachtwoordEnLogPersoneelIn(wachtwoord, { nfcTagId: nfcTagId });
+}
+
+// --- NFC-eerst ---------------------------------------------------------
+var nfcVisual = document.getElementById('nfcVisual');
+var nfcScanBtn = document.getElementById('nfcScanBtn');
+var nfcStatus = document.getElementById('nfcStatus');
+
+if (!('NDEFReader' in window)) {
+nfcStatus.textContent = 'NFC wordt niet ondersteund op dit toestel/deze browser — gebruik de PIN-optie hieronder.';
+nfcScanBtn.disabled = true;
+}
+
+nfcScanBtn.addEventListener('click', function(){
+if (!wachtwoordInput.value) { lockFout.textContent = 'Vul eerst het wachtwoord in.'; wachtwoordInput.focus(); return; }
+lockFout.textContent = '';
+nfcStatus.textContent = 'Wachten op scan...';
+nfcVisual.classList.add('nfcWachten');
+try {
+var reader = new NDEFReader();
+reader.scan().then(function(){
+reader.onreading = function(event){
+var tagId = event.serialNumber || '';
+if (!tagId) { nfcStatus.textContent = 'Kon geen tag-ID uitlezen van deze druppel.'; return; }
+nfcStatus.textContent = 'Druppel gevonden, inloggen...';
+ontgrendelenMetNfc(wachtwoordInput.value, tagId);
+};
+reader.onreadingerror = function(){
+nfcStatus.textContent = 'Kon de druppel niet lezen, probeer opnieuw.';
+};
+}).catch(function(err){
+nfcStatus.textContent = 'Kon NFC-scan niet starten (' + err + ').';
+nfcVisual.classList.remove('nfcWachten');
+});
+} catch (err) {
+nfcStatus.textContent = 'NFC wordt niet ondersteund op dit toestel.';
+}
+});
+
+// --- Numpad-fallback (werknemernummer + pincode) -----------------------
+var identiteitSectie = document.getElementById('identiteitSectie');
+var numpadSectie = document.getElementById('numpadSectie');
+var numpadFallbackBtn = document.getElementById('numpadFallbackBtn');
+var numpadTerugBtn = document.getElementById('numpadTerugBtn');
+var numpadStapNummerEl = document.getElementById('numpadStapNummer');
+var numpadDisplay = document.getElementById('numpadDisplay');
+var numpadGrid = document.getElementById('numpadGrid');
+var NUMPAD_MAX = { werknemernummer: 6, pincode: 6 };
+var numpadStap = 'werknemernummer';
+var numpadWaarden = { werknemernummer: '', pincode: '' };
+
+// Werknemernummer onthouden (zelfde als voorheen) zodat je 'm niet elke
+// keer opnieuw hoeft in te tikken - de pincode blijft bewust ongeheugd.
+try {
+var opgeslagenNummer = localStorage.getItem(LOCAL_KEY_NUMMER);
+if (opgeslagenNummer) numpadWaarden.werknemernummer = opgeslagenNummer;
+} catch(e){}
+
+function numpadTekenDisplay(){
+var waarde = numpadWaarden[numpadStap];
+if (numpadStap === 'pincode') {
+numpadDisplay.textContent = waarde ? waarde.split('').map(function(){ return '●'; }).join(' ') : 'Voer pincode in';
+} else {
+numpadDisplay.textContent = waarde || 'Voer werknemernummer in';
+}
+}
+
+function numpadWisselStap(stap){
+numpadStap = stap;
+if (stap === 'pincode') numpadWaarden.pincode = '';
+numpadStapNummerEl.textContent = stap === 'werknemernummer' ? 'Stap 1 van 2 — Werknemernummer' : 'Stap 2 van 2 — Pincode';
+numpadTekenDisplay();
+}
+
+function numpadKnopIngedrukt(label){
+lockFout.textContent = '';
+if (label === '⌫') {
+numpadWaarden[numpadStap] = numpadWaarden[numpadStap].slice(0, -1);
+numpadTekenDisplay();
+return;
+}
+if (label === 'OK') {
+if (numpadStap === 'werknemernummer') {
+if (!numpadWaarden.werknemernummer) { lockFout.textContent = 'Vul je werknemernummer in.'; return; }
+numpadWisselStap('pincode');
+return;
+}
+if (!numpadWaarden.pincode) { lockFout.textContent = 'Vul je pincode in.'; return; }
+ontgrendelen(wachtwoordInput.value, numpadWaarden.werknemernummer, numpadWaarden.pincode);
+return;
+}
+var max = NUMPAD_MAX[numpadStap];
+if (numpadWaarden[numpadStap].length >= max) return;
+numpadWaarden[numpadStap] += label;
+numpadTekenDisplay();
+}
+
+['1','2','3','4','5','6','7','8','9','⌫','0','OK'].forEach(function(label){
+var knop = document.createElement('button');
+knop.type = 'button';
+knop.textContent = label;
+knop.className = 'numpadKnop' + (label === 'OK' ? ' numpadOk' : '') + (label === '⌫' ? ' numpadWis' : '');
+knop.addEventListener('click', function(){ numpadKnopIngedrukt(label); });
+numpadGrid.appendChild(knop);
+});
+
+numpadFallbackBtn.addEventListener('click', function(){
+if (!wachtwoordInput.value) { lockFout.textContent = 'Vul eerst het wachtwoord in.'; wachtwoordInput.focus(); return; }
+lockFout.textContent = '';
+identiteitSectie.style.display = 'none';
+numpadSectie.style.display = 'block';
+numpadWisselStap('werknemernummer');
+});
+numpadTerugBtn.addEventListener('click', function(){
+numpadSectie.style.display = 'none';
+identiteitSectie.style.display = 'block';
+lockFout.textContent = '';
 });
 
 function toonFout(tekst){

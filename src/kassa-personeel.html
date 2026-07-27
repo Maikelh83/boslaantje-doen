@@ -57,9 +57,11 @@ main{padding:1.3rem;max-width:640px;margin:0 auto}
 .medewerkerRij .info{flex:1;min-width:160px}
 .medewerkerRij .naam{font-weight:700}
 .medewerkerRij .nummer{font-size:.82rem;color:#6b6a62}
-.badge{display:inline-block;font-size:.74rem;font-weight:800;padding:.2rem .5rem;border-radius:99px;margin-top:.2rem}
+.badge{display:inline-block;font-size:.74rem;font-weight:800;padding:.2rem .5rem;border-radius:99px;margin-top:.2rem;margin-right:.3rem}
 .badge.actief{background:#E4EDE0;color:var(--green-ink)}
 .badge.inactief{background:#F1E4E0;color:var(--rood)}
+.badge.nfc-ja{background:#E4EDE0;color:var(--green-ink)}
+.badge.nfc-nee{background:var(--paper-2);color:#6b6a62}
 .medewerkerRij .acties{display:flex;gap:.5rem;flex-wrap:wrap}
 .medewerkerRij button{background:none;border:1.5px solid var(--paper-line);color:var(--green-ink);border-radius:8px;padding:.45rem .7rem;font-weight:700;font-size:.82rem;cursor:pointer}
 .medewerkerRij button.deactiverenBtn{border-color:var(--rood);color:var(--rood)}
@@ -152,9 +154,12 @@ rij.innerHTML =
 '<div class="naam">' + m.naam + '</div>' +
 '<div class="nummer">Nr. ' + m.personeelsnummer + '</div>' +
 '<span class="badge ' + (m.actief ? 'actief' : 'inactief') + '">' + (m.actief ? 'Actief' : 'Inactief') + '</span>' +
+'<span class="badge ' + (m.nfcGekoppeld ? 'nfc-ja' : 'nfc-nee') + '">' + (m.nfcGekoppeld ? '📡 NFC gekoppeld' : '📡 Geen NFC') + '</span>' +
 '</div>' +
 '<div class="acties">' +
 '<button type="button" class="resetBtn">Pincode resetten</button>' +
+'<button type="button" class="nfcKoppelBtn">' + (m.nfcGekoppeld ? 'Druppel vervangen' : 'Druppel koppelen') + '</button>' +
+(m.nfcGekoppeld ? '<button type="button" class="nfcOntkoppelBtn">Druppel loskoppelen</button>' : '') +
 '<button type="button" class="' + (m.actief ? 'deactiverenBtn' : '') + '">' + (m.actief ? 'Deactiveren' : 'Activeren') + '</button>' +
 '</div>';
 rij.querySelector('.resetBtn').addEventListener('click', function(){
@@ -171,7 +176,7 @@ if (!r.ok) { alert((r.data && r.data.error) || 'Resetten mislukt.'); return; }
 alert('Pincode bijgewerkt.');
 });
 });
-rij.querySelectorAll('.acties button')[1].addEventListener('click', function(){
+rij.querySelector('.acties button:last-child').addEventListener('click', function(){
 var actie = m.actief ? 'deactiveren' : 'activeren';
 fetch('/api/admin/medewerkers?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
 method: 'POST',
@@ -184,6 +189,62 @@ if (!r.ok) { alert((r.data && r.data.error) || 'Bijwerken mislukt.'); return; }
 laden();
 });
 });
+
+// NFC-druppel koppelen: leest de tag met de NDEFReader-API op het eigen
+// toestel van de beheerder (zelfde Web NFC-API als kassa-bezorger.html
+// straks gebruikt om in te loggen) en slaat het serienummer van de tag op
+// bij deze medewerker. Alleen beschikbaar op Chrome voor Android (HTTPS) -
+// op andere toestellen/browsers tonen we een duidelijke melding.
+rij.querySelector('.nfcKoppelBtn').addEventListener('click', function(){
+if (!('NDEFReader' in window)) {
+alert('NFC scannen wordt niet ondersteund op dit toestel/deze browser. Gebruik Chrome op een Android-telefoon met NFC.');
+return;
+}
+var statusTekst = 'Houd de NFC-druppel van ' + m.naam + ' tegen de achterkant van dit toestel...';
+alert(statusTekst);
+try {
+var reader = new NDEFReader();
+reader.scan().then(function(){
+reader.onreading = function(event){
+var tagId = event.serialNumber || (event.message && event.message.records && event.message.records[0] && event.message.records[0].id) || '';
+if (!tagId) { alert('Kon geen tag-ID uitlezen van deze druppel.'); return; }
+fetch('/api/admin/medewerkers?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie: 'koppel_nfc', personeelsnummer: m.personeelsnummer, nfcTagId: tagId }),
+})
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { alert((r.data && r.data.error) || 'Koppelen mislukt.'); return; }
+alert('Druppel gekoppeld aan ' + m.naam + '.');
+laden();
+});
+};
+}).catch(function(err){
+alert('Kon NFC-scan niet starten: ' + err);
+});
+} catch (err) {
+alert('Kon NFC-scan niet starten: ' + err);
+}
+});
+
+var ontkoppelBtn = rij.querySelector('.nfcOntkoppelBtn');
+if (ontkoppelBtn) {
+ontkoppelBtn.addEventListener('click', function(){
+if (!confirm('Weet je zeker dat je de gekoppelde druppel van ' + m.naam + ' wilt loskoppelen?')) return;
+fetch('/api/admin/medewerkers?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie: 'ontkoppel_nfc', personeelsnummer: m.personeelsnummer }),
+})
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { alert((r.data && r.data.error) || 'Loskoppelen mislukt.'); return; }
+laden();
+});
+});
+}
+
 host.appendChild(rij);
 });
 }
