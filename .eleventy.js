@@ -47,6 +47,14 @@ eleventyConfig.addPassthroughCopy('src/kassa-zakelijke-klanten.html');
 // Koppelt via /api/admin/bezorgzone-instellingen (staff-wachtwoord-gated).
 eleventyConfig.addPassthroughCopy('src/kassa-bezorgzone.html');
 
+// PWA Bezorger-app: personeelspagina om open bezorgorders tot 'ritten' te
+// bundelen (kassa-ritten.html, koppelt via /api/admin/ritten), en de
+// bezorger-app zelf waarmee de chauffeur een rit start en stop voor stop
+// aflevert (kassa-bezorger.html, koppelt via /api/bezorger-ritten). Beide
+// staff-wachtwoord-gated, zelfde patroon als kassa-bezorgzone.html hierboven.
+eleventyConfig.addPassthroughCopy('src/kassa-ritten.html');
+eleventyConfig.addPassthroughCopy('src/kassa-bezorger.html');
+
 // Klant-facing account-pagina's voor pijler 7 (zakelijke accounts): registreren
 // en inloggen. Koppelen via /api/auth/register en /api/auth/login.
 eleventyConfig.addPassthroughCopy('src/account-registreren.html');
