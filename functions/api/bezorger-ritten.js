@@ -1,25 +1,29 @@
 // functions/api/bezorger-ritten.js
 // Cloudflare Pages Function — GET/POST /api/bezorger-ritten?wachtwoord=...
 //
-// Backend voor de PWA Bezorger-app (src/kassa-bezorger.html). Er bestaat in
-// dit project geen individueel account-systeem per bezorger (zie
-// STAFF_LOYALTY_PASSWORD in de rest van /api/admin/* en /kassa-*) - de
-// chauffeur wordt geïdentificeerd met een vrij ingevulde naam
-// (chauffeurNaam), niet met een account_id/driver_id. Ritten worden klaargezet
-// door personeel via /api/admin/ritten.js (src/kassa-ritten.html).
+// Backend voor de PWA Bezorger-app (src/kassa-bezorger.html). De chauffeur
+// wordt geïdentificeerd met een personeelsnummer (zie het personeelsnummer-
+// fundament in auth/_lib.js: medewerkers-tabel + /api/personeel/login.js) —
+// dat inloggen gebeurt vóórdat deze endpoints worden aangeroepen; hier wordt
+// het personeelsnummer alleen nog gecontroleerd tegen de medewerkers-tabel
+// (moet bestaan én actief zijn) zodat we nooit een naam van de client zelf
+// vertrouwen. Ritten worden klaargezet door personeel via
+// /api/admin/ritten.js (src/kassa-ritten.html).
 //
 // GET ?wachtwoord=...&ritId=...
 //   Geeft de volledige details (incl. stops) van één specifieke rit terug -
 //   gebruikt om een net gestarte of eerder gestarte rit (opnieuw) te tonen.
-// GET ?wachtwoord=...&chauffeur=...
+// GET ?wachtwoord=...&chauffeur=<personeelsnummer>
 //   Geeft { beschikbareRitten: [...], actieveRit: {...} | null } terug:
 //   beschikbareRitten is elke rit met status PENDING (klaar om te starten),
-//   actieveRit is - als de chauffeursnaam meegegeven is - de rit die deze
+//   actieveRit is - als het personeelsnummer meegegeven is - de rit die deze
 //   chauffeur al IN_TRANSIT heeft staan (voor het geval de app ververst is).
 //
-// POST ?wachtwoord=... body { actie: 'start', ritId, chauffeurNaam }
-//   Koppelt de rit aan de chauffeur, zet de rit + alle orders erin op
-//   IN_TRANSIT, en geeft de volledige rit-details terug (1-druk-op-de-knop).
+// POST ?wachtwoord=... body { actie: 'start', ritId, personeelsnummer }
+//   Koppelt de rit aan de chauffeur (naam wordt hier server-side opgezocht
+//   in de medewerkers-tabel, nooit van de client aangenomen), zet de rit +
+//   alle orders erin op IN_TRANSIT, en geeft de volledige rit-details terug
+//   (1-druk-op-de-knop).
 // POST ?wachtwoord=... body { actie: 'afgeleverd', orderId }
 //   Zet deze ene stop op DELIVERED. Als dit de laatste openstaande stop in
 //   de rit was, wordt de hele rit automatisch op COMPLETED gezet.
@@ -28,7 +32,7 @@
 // STAFF_LOYALTY_PASSWORD — zelfde personeelswachtwoord als de rest van /kassa-*
 // DB — D1-database binding
 
-import { zorgVoorAccountTabellen, zorgVoorRittenTabellen, zorgVoorKlantgegevensKolommen, json } from "./auth/_lib.js";
+import { zorgVoorAccountTabellen, zorgVoorRittenTabellen, zorgVoorKlantgegevensKolommen, zorgVoorPersoneelTabel, json } from "./auth/_lib.js";
 
 function controleerToegang(request, env) {
   const url = new URL(request.url);
@@ -56,6 +60,7 @@ async function haalRitDetail(db, ritId) {
     ritId: rit.id,
     status: rit.status,
     chauffeurNaam: rit.chauffeur_naam || null,
+    chauffeurPersoneelsnummer: rit.chauffeur_personeelsnummer || null,
     aangemaaktOp: rit.aangemaakt_op,
     gestartOp: rit.gestart_op || null,
     afgerondOp: rit.afgerond_op || null,
@@ -82,6 +87,7 @@ export async function onRequestGet(context) {
     await zorgVoorAccountTabellen(env.DB);
     await zorgVoorRittenTabellen(env.DB);
     await zorgVoorKlantgegevensKolommen(env.DB);
+    await zorgVoorPersoneelTabel(env.DB);
 
     const url = new URL(request.url);
     const ritId = url.searchParams.get("ritId");
@@ -114,7 +120,7 @@ export async function onRequestGet(context) {
     let actieveRit = null;
     if (chauffeur) {
       const rit = await env.DB.prepare(
-        `SELECT id FROM ritten WHERE status = 'IN_TRANSIT' AND chauffeur_naam = ? ORDER BY gestart_op DESC LIMIT 1`
+        `SELECT id FROM ritten WHERE status = 'IN_TRANSIT' AND chauffeur_personeelsnummer = ? ORDER BY gestart_op DESC LIMIT 1`
       ).bind(chauffeur).first();
       if (rit) actieveRit = await haalRitDetail(env.DB, rit.id);
     }
@@ -134,16 +140,28 @@ export async function onRequestPost(context) {
     await zorgVoorAccountTabellen(env.DB);
     await zorgVoorRittenTabellen(env.DB);
     await zorgVoorKlantgegevensKolommen(env.DB);
+    await zorgVoorPersoneelTabel(env.DB);
 
     const body = await request.json();
 
     // '1-Druk-op-de-knop' acceptatie: koppelt de hele batch aan de
     // chauffeur en zet in één keer de rit + alle orders erin op IN_TRANSIT.
+    // Het personeelsnummer is al geverifieerd bij het inloggen op het
+    // vergrendelscherm (/api/personeel/login) - hier wordt het nog eens
+    // tegen de medewerkers-tabel gecontroleerd (moet bestaan én actief zijn)
+    // en de naam wordt hier zelf opgezocht, nooit van de client aangenomen.
     if (body && body.actie === "start") {
       const ritId = body.ritId;
-      const chauffeurNaam = (body.chauffeurNaam || "").trim();
+      const personeelsnummer = (body.personeelsnummer || "").trim();
       if (!ritId) return json({ error: "ritId is verplicht." }, 400);
-      if (!chauffeurNaam) return json({ error: "Vul je naam in voordat je een rit start." }, 400);
+      if (!personeelsnummer) return json({ error: "Log opnieuw in voordat je een rit start." }, 400);
+
+      const medewerker = await env.DB.prepare(
+        `SELECT naam, actief FROM medewerkers WHERE personeelsnummer = ?`
+      ).bind(personeelsnummer).first();
+      if (!medewerker || !medewerker.actief) {
+        return json({ error: "Onbekend of niet-actief personeelsnummer. Log opnieuw in." }, 401);
+      }
 
       const rit = await env.DB.prepare(`SELECT * FROM ritten WHERE id = ?`).bind(ritId).first();
       if (!rit) return json({ error: "Rit niet gevonden." }, 404);
@@ -153,8 +171,8 @@ export async function onRequestPost(context) {
 
       const nu = new Date().toISOString();
       await env.DB.prepare(
-        `UPDATE ritten SET status = 'IN_TRANSIT', chauffeur_naam = ?, gestart_op = ? WHERE id = ?`
-      ).bind(chauffeurNaam, nu, ritId).run();
+        `UPDATE ritten SET status = 'IN_TRANSIT', chauffeur_naam = ?, chauffeur_personeelsnummer = ?, gestart_op = ? WHERE id = ?`
+      ).bind(medewerker.naam, personeelsnummer, nu, ritId).run();
       await env.DB.prepare(
         `UPDATE orders SET bezorg_status = 'IN_TRANSIT' WHERE rit_id = ?`
       ).bind(ritId).run();
