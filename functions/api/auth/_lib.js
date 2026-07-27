@@ -247,7 +247,7 @@ export function berekenBezorgkosten(afstandKm, staffels) {
   return gesorteerd.length > 0 ? gesorteerd[gesorteerd.length - 1].bedrag : 0;
 }
 
-async function geocodeAdres(env, adres, postcode, plaats) {
+export async function geocodeAdres(env, adres, postcode, plaats) {
   if (!env.MAPBOX_ACCESS_TOKEN) {
     return {
       ok: false,
