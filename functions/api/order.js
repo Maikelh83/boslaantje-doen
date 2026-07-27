@@ -12,7 +12,7 @@
 //   MAKE_WEBHOOK_URL — optioneel; Make.com-webhook voor WeFact-facturatie bij 'op factuur'-orders (zelfde webhook als mollie-webhook.js)
 //   MAPBOX_ACCESS_TOKEN — access token uit het Mapbox-dashboard, nodig voor de bezorgzone-afstandscontrole hieronder
 
-import { zorgVoorAccountTabellen, haalIngelogdeGebruikerOp, haalMinimumFactuurbedrag, berekenFactuurGeschiktheid, controleerBezorgzone } from "./auth/_lib.js";
+import { zorgVoorAccountTabellen, haalIngelogdeGebruikerOp, haalMinimumFactuurbedrag, berekenFactuurGeschiktheid, controleerBezorgzone, zorgVoorKlantgegevensKolommen } from "./auth/_lib.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -388,10 +388,11 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
         try {
           await zorgVoorGewenstTijdstipKolom(env.DB);
           await zorgVoorBezorgzoneKolommen(env.DB);
+          await zorgVoorKlantgegevensKolommen(env.DB);
           await env.DB
             .prepare(
-              `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, betaald_op, gewenst_tijdstip, bezorg_afstand_km, bezorgkosten)
-               VALUES (?, 'paid', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+              `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, betaald_op, gewenst_tijdstip, bezorg_afstand_km, bezorgkosten, klant_naam, adres, postcode, plaats)
+               VALUES (?, 'paid', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
             )
             .bind(
               factuurOrderId,
@@ -409,7 +410,11 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
               factuurMoment,
               gewenstTijdstip,
               bezorgAfstandKm,
-              bezorgkosten
+              bezorgkosten,
+              customer.naam || null,
+              customer.adres || null,
+              customer.postcode || null,
+              customer.plaats || null
             )
             .run();
         } catch (dbErr) {
@@ -486,9 +491,10 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
       try {
         await zorgVoorGewenstTijdstipKolom(env.DB);
         await zorgVoorBezorgzoneKolommen(env.DB);
+        await zorgVoorKlantgegevensKolommen(env.DB);
         await env.DB.prepare(
-          `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, gewenst_tijdstip, bezorg_afstand_km, bezorgkosten)
-           VALUES (?, 'open', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+          `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, gewenst_tijdstip, bezorg_afstand_km, bezorgkosten, klant_naam, adres, postcode, plaats)
+           VALUES (?, 'open', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         )
           .bind(
             orderId,
@@ -505,7 +511,11 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
             loyaliteitsKorting,
             gewenstTijdstip,
             bezorgAfstandKm,
-            bezorgkosten
+            bezorgkosten,
+            customer.naam || null,
+            customer.adres || null,
+            customer.postcode || null,
+            customer.plaats || null
           )
           .run();
       } catch (dbErr) {
