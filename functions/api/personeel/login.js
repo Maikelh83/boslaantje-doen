@@ -1,45 +1,45 @@
 // functions/api/personeel/login.js
-// Cloudflare Pages Function — POST /api/personeel/login?wachtwoord=...
+// Cloudflare Pages Function — POST /api/personeel/login
 //
-// Personeelsnummer-fundament: identificeert WIE er precies achter een
-// personeelsapparaat zit (te beginnen bij de PWA Bezorger-app, waar dat
-// nodig is voor de chauffeur-koppeling), los van het bestaande gedeelde
-// STAFF_LOYALTY_PASSWORD (dat blijft de "is dit een personeelsapparaat"-
-// poort, zelfde als op alle andere /kassa-*-schermen).
+// Personeelsnummer-fundament: identificeert WIE er achter een
+// personeelsapparaat zit (bezorger-app: NFC-druppel of werknemernummer+
+// pincode - kassa-bezorger.html kiest zelf welke). Dit is nu de ENIGE
+// toegangspoort tot de bezorger-app - het aparte gedeelde
+// STAFF_LOYALTY_PASSWORD is hier bewust losgelaten. Voorheen moest de
+// chauffeur dat wachtwoord óók nog intypen, boven op NFC/pincode - dat gaf
+// onnodige wrijving voor een app die toch al een eigen identiteitscheck
+// heeft (zie Maikel's verzoek: alleen nog NFC of werknemernummer/pin).
 //
-// Twee manieren om in te loggen (kassa-bezorger.html kiest zelf welke):
+// Bij succes geven we een kortlevende sessie-token terug (bezorger_sessies-
+// tabel, zie zorgVoorBezorgerSessieTabel/maakBezorgerSessie in auth/_lib.js)
+// die de bezorger-app vervolgens meestuurt als ?sessie=... naar
+// bezorger-ritten.js/bezorger-kaart.js/bezorger-sumup-config.js, in plaats
+// van het oude gedeelde wachtwoord.
+//
 // Body (JSON): { personeelsnummer, pincode }  — handmatig, via numpad-fallback
 //          of: { nfcTagId }                    — NFC-druppel tegen de telefoon
-// Bij succes (beide): { ok: true, personeelsnummer, naam }
+// Bij succes (beide): { ok: true, sessieToken, personeelsnummer, naam }
 //
 // Benodigde environment variables:
-// STAFF_LOYALTY_PASSWORD — zelfde personeelswachtwoord als de rest van /kassa-*
 // DB — D1-database binding
 
-import { zorgVoorPersoneelTabel, wachtwoordKlopt, json } from "../auth/_lib.js";
-
-function controleerToegang(request, env) {
-  const url = new URL(request.url);
-  const wachtwoord = url.searchParams.get("wachtwoord") || "";
-  if (!env.STAFF_LOYALTY_PASSWORD) {
-    return json({ error: "Personeelspagina is nog niet ingesteld (STAFF_LOYALTY_PASSWORD ontbreekt)." }, 500);
-  }
-  if (wachtwoord !== env.STAFF_LOYALTY_PASSWORD) {
-    return json({ error: "Onjuist wachtwoord." }, 401);
-  }
-  if (!env.DB) {
-    return json({ error: "Database is niet gekoppeld (D1-binding 'DB' ontbreekt)." }, 500);
-  }
-  return null;
-}
+import {
+  zorgVoorPersoneelTabel,
+  zorgVoorBezorgerSessieTabel,
+  maakBezorgerSessie,
+  wachtwoordKlopt,
+  json,
+} from "../auth/_lib.js";
 
 export async function onRequestPost(context) {
   const { request, env } = context;
   try {
-    const controleFout = controleerToegang(request, env);
-    if (controleFout) return controleFout;
+    if (!env.DB) {
+      return json({ error: "Database is niet gekoppeld (D1-binding 'DB' ontbreekt)." }, 500);
+    }
 
     await zorgVoorPersoneelTabel(env.DB);
+    await zorgVoorBezorgerSessieTabel(env.DB);
 
     const body = await request.json();
     const nfcTagId = String((body && body.nfcTagId) || "").trim();
@@ -58,7 +58,13 @@ export async function onRequestPost(context) {
         return json({ error: "Onbekende of niet-actieve NFC-druppel." }, 401);
       }
 
-      return json({ ok: true, personeelsnummer: medewerkerViaNfc.personeelsnummer, naam: medewerkerViaNfc.naam });
+      const sessieToken = await maakBezorgerSessie(env.DB, medewerkerViaNfc.personeelsnummer);
+      return json({
+        ok: true,
+        sessieToken,
+        personeelsnummer: medewerkerViaNfc.personeelsnummer,
+        naam: medewerkerViaNfc.naam,
+      });
     }
 
     const personeelsnummer = String((body && body.personeelsnummer) || "").trim();
@@ -81,7 +87,8 @@ export async function onRequestPost(context) {
       return json({ error: "Onjuiste pincode." }, 401);
     }
 
-    return json({ ok: true, personeelsnummer: medewerker.personeelsnummer, naam: medewerker.naam });
+    const sessieToken = await maakBezorgerSessie(env.DB, medewerker.personeelsnummer);
+    return json({ ok: true, sessieToken, personeelsnummer: medewerker.personeelsnummer, naam: medewerker.naam });
   } catch (err) {
     return json({ error: "Onverwachte fout.", detail: String(err) }, 500);
   }
