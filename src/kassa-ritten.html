@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ritten · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+--green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
+--paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
+--rood:#8A2B1E;--goud:#8A6D1E;
+--font-body:'Roboto',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.4;font-size:17px}
+h1,h2,h3{font-weight:700;color:var(--green-ink)}
+button{font-family:inherit;user-select:none}
+
+#lockScreen{max-width:400px;margin:4rem auto;background:#fff;border:1px solid var(--paper-line);border-radius:10px;padding:2rem}
+#lockScreen h1{text-align:center;font-size:1.3rem;margin-bottom:.4rem}
+#lockScreen p{text-align:center;font-size:.9rem;color:#6b6a62}
+#lockScreen input{width:100%;padding:1rem .9rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1.1rem;margin:1rem 0}
+#lockScreen button{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:1rem;font-weight:800;font-size:1.05rem;cursor:pointer;min-height:56px}
+#lockScreen button:active{background:var(--terracotta-deep)}
+#lockFout{color:var(--rood);font-size:.9rem;min-height:1.2em;margin-top:.5rem;text-align:center}
+
+header{background:var(--green);padding:.9rem 1.3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+header h1{color:#fff;font-size:1.4rem}
+header a{color:#fff;text-decoration:none;font-weight:700;font-size:.95rem}
+
+main{padding:1.3rem;max-width:720px;margin:0 auto}
+.kaart{background:#fff;border-radius:14px;border:2px solid var(--paper-line);padding:1.2rem;margin-bottom:1.1rem}
+.kaart h2{font-size:1.1rem;margin-bottom:.3rem}
+.kaart .uitleg{font-size:.86rem;color:#6b6a62;margin-bottom:1rem}
+.leeg{font-size:.9rem;color:#6b6a62;padding:.5rem 0}
+
+.orderRij{display:flex;align-items:flex-start;gap:.7rem;padding:.7rem 0;border-bottom:1px solid var(--paper-line)}
+.orderRij:last-child{border-bottom:none}
+.orderRij input[type=checkbox]{width:22px;height:22px;margin-top:.15rem;flex-shrink:0}
+.orderRij .info{flex:1}
+.orderRij .ticket{font-weight:800;color:var(--terracotta-deep);font-size:.85rem}
+.orderRij .naam{font-weight:700}
+.orderRij .adres{font-size:.9rem;color:#4a4338}
+.orderRij .meta{font-size:.78rem;color:#6b6a62;margin-top:.15rem}
+
+.volgordeLijst{list-style:none;margin:.8rem 0}
+.volgordeLijst li{display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;background:var(--paper-2);border-radius:8px;margin-bottom:.5rem}
+.volgordeLijst .nr{font-weight:800;color:var(--green-ink);min-width:1.4rem}
+.volgordeLijst .tekst{flex:1;font-size:.9rem}
+.volgordeLijst button{background:none;border:none;font-size:1.1rem;cursor:pointer;padding:.2rem .4rem;color:var(--green-ink)}
+.volgordeLijst button:disabled{opacity:.25;cursor:default}
+
+.maakRitBtn{background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:.9rem;font-weight:800;font-size:1.02rem;cursor:pointer;min-height:52px;width:100%}
+.maakRitBtn:active{background:var(--terracotta-deep)}
+.maakRitBtn:disabled{background:#c9c2b6;cursor:default}
+.ritStatus{font-size:.86rem;color:#6b6a62;min-height:1.2em;margin-top:.6rem;text-align:center}
+.ritStatus.ok{color:var(--green-ink);font-weight:700}
+.ritStatus.fout{color:var(--rood)}
+
+.ritKaart{border:2px solid var(--paper-line);border-radius:10px;padding:.9rem;margin-bottom:.8rem}
+.ritKaart .kop{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;gap:.4rem}
+.badge{display:inline-block;font-size:.76rem;font-weight:800;padding:.25rem .55rem;border-radius:99px}
+.badge.pending{background:#EFE7D8;color:var(--goud)}
+.badge.transit{background:#E4EDE0;color:var(--green-ink)}
+.stopRij{display:flex;align-items:center;gap:.6rem;padding:.4rem 0;font-size:.88rem;border-top:1px dashed var(--paper-line)}
+.stopRij:first-of-type{border-top:none}
+.stopRij .stopNr{font-weight:800;min-width:1.3rem;color:var(--green-ink)}
+.stopRij .stopIcon{width:1.2rem;text-align:center}
+.stopRij .stopInfo{flex:1}
+.ontbindBtn{background:none;border:1px solid var(--rood);color:var(--rood);border-radius:8px;padding:.45rem .8rem;font-weight:700;font-size:.85rem;cursor:pointer;margin-top:.6rem}
+
+@media (max-width: 480px){
+body{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+<h1>Ritten — personeel</h1>
+<p>Alleen voor personeel — voer het wachtwoord in.</p>
+<input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
+<button type="button" id="ontgrendelBtn">Ontgrendelen</button>
+<div id="lockFout"></div>
+</div>
+
+<div id="scherm" style="display:none">
+<header>
+<h1>Ritten</h1>
+<a href="/kassa">&larr; Kassa</a>
+</header>
+<main>
+
+<div class="kaart">
+<h2>Nog in te delen bezorgorders</h2>
+<p class="uitleg">Vink de bestellingen aan die samen op pad gaan. De volgorde waarin je aanvinkt bepaalt de stopvolgorde — die kun je hieronder nog aanpassen.</p>
+<div id="openstaandeHost"></div>
+<div id="volgordeHost"></div>
+<button type="button" class="maakRitBtn" id="maakRitBtn" disabled>Rit aanmaken</button>
+<div class="ritStatus" id="maakRitStatus"></div>
+</div>
+
+<div class="kaart">
+<h2>Ritten</h2>
+<p class="uitleg">Ritten die klaarstaan of onderweg zijn. Een rit die nog niet gestart is kun je weer ontbinden.</p>
+<div id="rittenHost"></div>
+</div>
+
+</main>
+</div>
+
+<script>
+(function(){
+var wachtwoordInput = document.getElementById('wachtwoordInput');
+var ontgrendelBtn = document.getElementById('ontgrendelBtn');
+var lockFout = document.getElementById('lockFout');
+var huidigWachtwoord = null;
+
+// Zelfde wachtwoord-check + sessionStorage-sleutel als kassa.html,
+// kassa-keuken.html, kassa-loyaliteit.html, kassa-zakelijke-klanten.html en
+// kassa-bezorgzone.html: één keer inloggen in de balie-omgeving volstaat.
+function controleerWachtwoord(wachtwoord){
+lockFout.textContent = 'Controleren...';
+fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(wachtwoord) + '&code=___check___')
+.then(function(res){
+if (res.status === 401) { lockFout.textContent = 'Onjuist wachtwoord.'; return; }
+if (res.status === 500) {
+return res.json().then(function(d){ lockFout.textContent = (d && d.error) || 'Kon niet inloggen.'; });
+}
+huidigWachtwoord = wachtwoord;
+try { sessionStorage.setItem('bd_loyalty_pw', wachtwoord); } catch(e){}
+document.getElementById('lockScreen').style.display = 'none';
+document.getElementById('scherm').style.display = 'block';
+laden();
+})
+.catch(function(){ lockFout.textContent = 'Kon geen verbinding maken.'; });
+}
+ontgrendelBtn.addEventListener('click', function(){ controleerWachtwoord(wachtwoordInput.value); });
+wachtwoordInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') controleerWachtwoord(wachtwoordInput.value); });
+var opgeslagen = null;
+try { opgeslagen = sessionStorage.getItem('bd_loyalty_pw'); } catch(e){}
+if (opgeslagen) controleerWachtwoord(opgeslagen);
+
+function euro(n){ return '€' + (n||0).toFixed(2).replace('.', ','); }
+function adresTekst(o){
+var stuk = (o.adres || '') + (o.postcode ? (', ' + o.postcode) : '') + (o.plaats ? (' ' + o.plaats) : '');
+return stuk.trim() || 'Geen adres bekend';
+}
+
+var openstaandeOrders = [];
+var geselecteerd = []; // array van order_id, in volgorde van aanvinken/verplaatsen
+
+function tekenOpenstaand(){
+var host = document.getElementById('openstaandeHost');
+host.innerHTML = '';
+if (openstaandeOrders.length === 0) {
+host.innerHTML = '<div class="leeg">Geen openstaande bezorgorders.</div>';
+return;
+}
+openstaandeOrders.forEach(function(o){
+var rij = document.createElement('div');
+rij.className = 'orderRij';
+var aangevinkt = geselecteerd.indexOf(o.orderId) !== -1;
+rij.innerHTML =
+'<input type="checkbox" ' + (aangevinkt ? 'checked' : '') + '>' +
+'<div class="info">' +
+'<div class="ticket">' + o.orderId.slice(-5).toUpperCase() + '</div>' +
+'<div class="naam">' + (o.klantNaam || 'Onbekende klant') + '</div>' +
+'<div class="adres">' + adresTekst(o) + '</div>' +
+'<div class="meta">' + euro(o.totaal) + (o.opmerkingen ? ' · ' + o.opmerkingen : '') + '</div>' +
+'</div>';
+rij.querySelector('input').addEventListener('change', function(e){
+if (e.target.checked) {
+if (geselecteerd.indexOf(o.orderId) === -1) geselecteerd.push(o.orderId);
+} else {
+geselecteerd = geselecteerd.filter(function(id){ return id !== o.orderId; });
+}
+tekenVolgorde();
+werkMaakRitBtnBij();
+});
+host.appendChild(rij);
+});
+}
+
+function vindOrder(orderId){
+return openstaandeOrders.find(function(o){ return o.orderId === orderId; });
+}
+
+function tekenVolgorde(){
+var host = document.getElementById('volgordeHost');
+host.innerHTML = '';
+if (geselecteerd.length === 0) return;
+var lijst = document.createElement('ol');
+lijst.className = 'volgordeLijst';
+geselecteerd.forEach(function(orderId, idx){
+var order = vindOrder(orderId);
+var li = document.createElement('li');
+li.innerHTML =
+'<span class="nr">' + (idx + 1) + '</span>' +
+'<span class="tekst">' + (order ? adresTekst(order) : orderId) + '</span>' +
+'<button type="button" class="omhoogBtn" ' + (idx === 0 ? 'disabled' : '') + ' title="Omhoog">&uarr;</button>' +
+'<button type="button" class="omlaagBtn" ' + (idx === geselecteerd.length - 1 ? 'disabled' : '') + ' title="Omlaag">&darr;</button>';
+li.querySelector('.omhoogBtn').addEventListener('click', function(){
+if (idx === 0) return;
+var tmp = geselecteerd[idx - 1]; geselecteerd[idx - 1] = geselecteerd[idx]; geselecteerd[idx] = tmp;
+tekenVolgorde();
+});
+li.querySelector('.omlaagBtn').addEventListener('click', function(){
+if (idx === geselecteerd.length - 1) return;
+var tmp = geselecteerd[idx + 1]; geselecteerd[idx + 1] = geselecteerd[idx]; geselecteerd[idx] = tmp;
+tekenVolgorde();
+});
+lijst.appendChild(li);
+});
+host.appendChild(lijst);
+}
+
+function werkMaakRitBtnBij(){
+document.getElementById('maakRitBtn').disabled = geselecteerd.length === 0;
+}
+
+document.getElementById('maakRitBtn').addEventListener('click', function(){
+var statusEl = document.getElementById('maakRitStatus');
+statusEl.textContent = 'Rit aanmaken...'; statusEl.className = 'ritStatus';
+fetch('/api/admin/ritten?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ orderIds: geselecteerd }),
+})
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { statusEl.textContent = (r.data && r.data.error) || 'Aanmaken mislukt.'; statusEl.className = 'ritStatus fout'; return; }
+statusEl.textContent = 'Rit aangemaakt ✓'; statusEl.className = 'ritStatus ok';
+geselecteerd = [];
+laden();
+})
+.catch(function(){ statusEl.textContent = 'Kon geen verbinding maken.'; statusEl.className = 'ritStatus fout'; });
+});
+
+function stopIcoon(status){
+if (status === 'DELIVERED') return '✓';
+if (status === 'IN_TRANSIT') return '→';
+return '•';
+}
+
+function tekenRitten(ritten){
+var host = document.getElementById('rittenHost');
+host.innerHTML = '';
+if (!ritten || ritten.length === 0) {
+host.innerHTML = '<div class="leeg">Geen ritten klaarstaand of onderweg.</div>';
+return;
+}
+ritten.forEach(function(rit){
+var kaart = document.createElement('div');
+kaart.className = 'ritKaart';
+var badgeClass = rit.status === 'IN_TRANSIT' ? 'transit' : 'pending';
+var badgeTekst = rit.status === 'IN_TRANSIT' ? 'Onderweg — ' + (rit.chauffeurNaam || '') : 'Wacht op bezorger';
+var stopsHtml = rit.stops.map(function(s){
+return '<div class="stopRij"><span class="stopNr">' + s.stopVolgorde + '</span><span class="stopIcon">' + stopIcoon(s.bezorgStatus) + '</span><span class="stopInfo">' + (s.klantNaam || 'Onbekend') + ' — ' + adresTekst(s) + '</span></div>';
+}).join('');
+kaart.innerHTML =
+'<div class="kop"><span class="badge ' + badgeClass + '">' + badgeTekst + '</span><span style="font-size:.8rem;color:#6b6a62">' + rit.stops.length + ' stop' + (rit.stops.length === 1 ? '' : 's') + '</span></div>' +
+stopsHtml;
+if (rit.status === 'PENDING') {
+var ontbindBtn = document.createElement('button');
+ontbindBtn.type = 'button';
+ontbindBtn.className = 'ontbindBtn';
+ontbindBtn.textContent = 'Rit ontbinden';
+ontbindBtn.addEventListener('click', function(){
+if (!confirm('Deze rit ontbinden? De bestellingen komen terug bij "nog in te delen".')) return;
+fetch('/api/admin/ritten?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie: 'ontkoppel', ritId: rit.ritId }),
+})
+.then(function(res){ return res.json(); })
+.then(function(){ laden(); });
+});
+kaart.appendChild(ontbindBtn);
+}
+host.appendChild(kaart);
+});
+}
+
+function laden(){
+fetch('/api/admin/ritten?wachtwoord=' + encodeURIComponent(huidigWachtwoord))
+.then(function(res){ return res.json().then(function(d){ return { ok: res.ok, data: d }; }); })
+.then(function(r){
+if (!r.ok) { document.getElementById('maakRitStatus').textContent = (r.data && r.data.error) || 'Kon niet laden.'; return; }
+openstaandeOrders = r.data.openstaandeOrders || [];
+geselecteerd = geselecteerd.filter(function(id){ return openstaandeOrders.some(function(o){ return o.orderId === id; }); });
+tekenOpenstaand();
+tekenVolgorde();
+werkMaakRitBtnBij();
+tekenRitten(r.data.ritten || []);
+})
+.catch(function(){ document.getElementById('maakRitStatus').textContent = 'Kon geen verbinding maken.'; });
+}
+})();
+</script>
+</body>
+</html>
