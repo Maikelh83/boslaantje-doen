@@ -259,7 +259,7 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
         factuurGeschiktheid = berekenFactuurGeschiktheid(zakelijkeGebruiker.business, minimumFactuurbedrag, totaal);
       }
     }
-    
+
     // Onthoud het laatst gebruikte bezorgadres op het account (particulier +
     // zakelijk), zodat bestellen.html dit de volgende keer kan voorinvullen.
     // Puur gemaks-functie - heeft geen invloed op prijsberekening, korting of
@@ -436,86 +436,28 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
       });
     }
 
-    // 'Aan de deur betalen' — alleen bij bezorgen. De klant betaalt nog niet
-    // (contant of pin via de chauffeur's telefoon met SumUp Tap to Pay), maar
-    // de bestelling moet net als bij 'factuur' hierboven meteen door kunnen
-    // naar de keuken en in een rit ingepland worden. status wordt daarom ook
-    // hier meteen 'paid' gezet (= "bevestigd/klaar om te verwerken", NIET
-    // "geld ontvangen" — zie zorgVoorBetaalmethodeKolommen in auth/_lib.js
-    // voor de uitleg van dat onderscheid), zodat ritten.js/keuken-orders.js
-    // ongewijzigd kunnen blijven werken. betaalstatus blijft 'onbetaald' tot
-    // de chauffeur de betaling bevestigt in kassa-bezorger.html (SumUp-
-    // terugkeer of "contant ontvangen"), via de 'markeer_betaald'-actie in
-    // bezorger-ritten.js. dashboard-data.js telt betaalstatus='onbetaald'-
-    // orders bewust niet mee als omzet totdat die bevestiging binnen is.
-    //
-    // Anders dan bij 'factuur' (waar WeFact via het Make-webhook de bron van
-    // waarheid is) bestaat er voor deze order helemaal geen ander systeem dat
-    // 'm kent — als de D1-insert hier faalt, is de bestelling volledig kwijt
-    // (nooit een rit, nooit in de keuken). Daarom hier, anders dan bij
-    // 'factuur', wél een harde fout teruggeven aan de klant als het opslaan
-    // mislukt, in plaats van de fout stil te loggen.
+    // 'Aan de deur betalen' is per direct alleen nog beschikbaar via de kassa
+    // (functions/api/kassa-order.js, achter STAFF_LOYALTY_PASSWORD), NIET meer
+    // via deze openbare bestelsite-endpoint. Reden (juli 2026, op verzoek van
+    // Maikel): een 'aan_de_deur'-order werd altijd meteen als status='paid'
+    // aangemaakt (= "klaar voor keuken/rit") zonder enige betaalcontrole
+    // vooraf - alleen een belofte om aan de deur te betalen. Dat betekende dat
+    // om het even wie, buiten bestellen.html om, dit endpoint rechtstreeks kon
+    // aanroepen met betaalmethode: "aan_de_deur" en zo onbeperkt onbetaalde
+    // 'spookbestellingen' kon aanmaken - dit is exact hoe testorder
+    // BD-MS3F1JVG deze sessie is aangemaakt, ter demonstratie van het lek.
+    // Verwijderen van de radio-knop in bestellen.html alleen was niet genoeg
+    // (dat stopt alleen de UI, niet een rechtstreekse aanroep van dit
+    // endpoint) - deze branch weigert daarom nu altijd, ongeacht wat er in de
+    // request staat.
     if (betaalmethode === "aan_de_deur") {
-      if (levering !== "bezorgen") {
-        return json({ error: "'Aan de deur betalen' is alleen mogelijk bij bezorgen." }, 400);
-      }
-      if (!env.DB) {
-        return json({ error: "'Aan de deur betalen' is momenteel niet beschikbaar (database niet gekoppeld)." }, 400);
-      }
-
-      const aanDeDeurOrderId = "BD-" + Date.now().toString(36).toUpperCase();
-      const aanDeDeurMoment = new Date().toISOString();
-      toegepasteActies.push("Betaalmethode: aan de deur");
-
-      try {
-        await zorgVoorGewenstTijdstipKolom(env.DB);
-        await zorgVoorBezorgzoneKolommen(env.DB);
-        await zorgVoorKlantgegevensKolommen(env.DB);
-        await zorgVoorBetaalmethodeKolommen(env.DB);
-        await env.DB
-          .prepare(
-            `INSERT INTO orders (order_id, status, totaal, korting, coupon_code, klant_email, klant_telefoon, levering, items_json, acties_json, aangemaakt_op, loyalty_code, loyalty_korting_gebruikt, gewenst_tijdstip, bezorg_afstand_km, bezorgkosten, klant_naam, adres, postcode, plaats, betaalmethode, betaalstatus)
-             VALUES (?, 'paid', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'aan_de_deur', 'onbetaald')`
-          )
-          .bind(
-            aanDeDeurOrderId,
-            totaal,
-            korting,
-            toegepasteCode,
-            customer.email || null,
-            customer.telefoon || null,
-            levering,
-            JSON.stringify(orderRegels),
-            JSON.stringify(toegepasteActies),
-            aanDeDeurMoment,
-            loyaliteitsCodeGeldig,
-            loyaliteitsKorting,
-            gewenstTijdstip,
-            bezorgAfstandKm,
-            bezorgkosten,
-            customer.naam || null,
-            customer.adres || null,
-            customer.postcode || null,
-            customer.plaats || null
-          )
-          .run();
-      } catch (dbErr) {
-        console.error("order.js: kon aan-de-deur-order niet loggen in D1", dbErr);
-        return json({ error: "Kon de bestelling niet verwerken. Probeer het opnieuw." }, 500);
-      }
-
-      return json({
-        checkoutUrl: new URL(`/bestellen-bedankt.html?order=${aanDeDeurOrderId}`, request.url).toString(),
-        orderId: aanDeDeurOrderId,
-        totaal,
-        korting,
-        loyaliteitsKorting,
-        zakelijkeKorting: zakelijkeKortingBedrag,
-        zakelijkeKortingPercentage,
-        aanDeDeur: true,
-        bezorgkosten,
-        bezorgAfstandKm,
-      });
+      return json(
+        {
+          error:
+            "'Aan de deur betalen' is niet meer beschikbaar via de website. Kies iDEAL, of bel ons voor een telefonische bestelling.",
+        },
+        400
+      );
     }
 
     if (!env.MOLLIE_API_KEY) {
@@ -546,12 +488,12 @@ if (typeof tijdslot === "string" && isEigenTijdslotFormaat(tijdslot)) {
           korting,
               zakelijkeKorting: zakelijkeKortingBedrag,
               zakelijkeKortingPercentage,
-          couponCode: toegepasteCode,
-          loyaltyCode: loyaliteitsCodeGeldig,
-          loyaltyKorting: loyaliteitsKorting,
-        },
-      }),
-    });
+        couponCode: toegepasteCode,
+        loyaltyCode: loyaliteitsCodeGeldig,
+        loyaltyKorting: loyaliteitsKorting,
+      },
+    }),
+  });
 
     if (!mollieRes.ok) {
       const detail = await mollieRes.text();
