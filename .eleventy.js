@@ -76,6 +76,13 @@ eleventyConfig.addPassthroughCopy('admin');
   eleventyConfig.addPassthroughCopy('src/manifest.json');
   eleventyConfig.addPassthroughCopy('src/sw.js');
   eleventyConfig.addPassthroughCopy('src/pwa-install.js');
+  // Los installeerbare PWA voor de bezorger-app (kassa-bezorger.html):
+  // eigen manifest met scope '/kassa-bezorger', zodat de chauffeur een
+  // apart app-icoon op zijn homescreen krijgt in plaats van de hele
+  // personeelspagina. Hergebruikt src/sw.js (dezelfde, cache-loze service
+  // worker), maar registreert 'm met een engere scope - zie het losse
+  // install-script onderaan kassa-bezorger.html zelf.
+  eleventyConfig.addPassthroughCopy('src/manifest-bezorger.json');
 
 // Collectie 'vacatures': open functies voor solliciteren.html.
 eleventyConfig.addCollection('vacatures', (api) =>
