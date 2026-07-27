@@ -342,6 +342,51 @@ export async function controleerBezorgzone(env, customer) {
   return { ok: true, binnenBereik: true, afstandKm, maxBezorgafstandKm, bezorgkosten };
 }
 
+// Bezorger-app ("PWA Bezorger", src/kassa-bezorger.html + kassa-ritten.html):
+// klantgegevens (naam + bezorgadres) werden tot nu toe NERGENS in de
+// orders-tabel opgeslagen (alleen e-mail/telefoon) - dat is nodig zodra
+// een bezorger per stop een adres en klantnaam moet kunnen tonen. Additieve
+// migratie, zelfde idempotente stijl als de rest van dit bestand.
+export async function zorgVoorKlantgegevensKolommen(db) {
+  for (const kolom of ["klant_naam", "adres", "postcode", "plaats"]) {
+    try {
+      await db.prepare(`ALTER TABLE orders ADD COLUMN ${kolom} TEXT`).run();
+    } catch (migratieErr) {
+      // kolom bestaat waarschijnlijk al - genegeerd
+    }
+  }
+}
+
+// Ritten (batches van bezorgorders voor de PWA Bezorger-app): een rit
+// koppelt 1 of meer bezorgorders aan een chauffeur, in vaste volgorde. Er
+// bestaat in dit project geen individueel account-systeem per bezorger
+// (zie STAFF_LOYALTY_PASSWORD hierboven) - de chauffeur wordt geïdentificeerd
+// met een vrij ingevulde naam (chauffeur_naam), niet met een account_id.
+// Gedeeld tussen /api/admin/ritten.js (personeel maakt ritten aan) en
+// /api/bezorger-ritten.js (de bezorger doorloopt ze).
+export async function zorgVoorRittenTabellen(db) {
+  await db.prepare(`CREATE TABLE IF NOT EXISTS ritten (
+    id TEXT PRIMARY KEY,
+    chauffeur_naam TEXT,
+    status TEXT NOT NULL DEFAULT 'PENDING',
+    aangemaakt_op TEXT NOT NULL,
+    gestart_op TEXT,
+    afgerond_op TEXT
+  )`).run();
+
+  for (const statement of [
+    `ALTER TABLE orders ADD COLUMN rit_id TEXT`,
+    `ALTER TABLE orders ADD COLUMN stop_volgorde INTEGER`,
+    `ALTER TABLE orders ADD COLUMN bezorg_status TEXT`,
+  ]) {
+    try {
+      await db.prepare(statement).run();
+    } catch (migratieErr) {
+      // kolom bestaat waarschijnlijk al - genegeerd
+    }
+  }
+}
+
 export function json(data, status = 200, extraHeaders) {
   const headers = { "Content-Type": "application/json" };
   if (extraHeaders) Object.assign(headers, extraHeaders);
