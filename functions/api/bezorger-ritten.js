@@ -27,12 +27,18 @@
 // POST ?wachtwoord=... body { actie: 'afgeleverd', orderId }
 //   Zet deze ene stop op DELIVERED. Als dit de laatste openstaande stop in
 //   de rit was, wordt de hele rit automatisch op COMPLETED gezet.
+// POST ?wachtwoord=... body { actie: 'markeer_betaald', orderId, sumupTxCode? }
+//   Bevestigt de betaling van een 'aan de deur'-order (betaalmethode
+//   'aan_de_deur' in order.js): zet betaalstatus op 'betaald' (en bewaart
+//   SumUp's tx-code als die is meegegeven). Alleen dán verdwijnt de
+//   PIN-betalingsknop in kassa-bezorger.html en telt de order mee in de
+//   omzetcijfers van dashboard-data.js.
 //
 // Benodigde environment variables:
 // STAFF_LOYALTY_PASSWORD — zelfde personeelswachtwoord als de rest van /kassa-*
 // DB — D1-database binding
 
-import { zorgVoorAccountTabellen, zorgVoorRittenTabellen, zorgVoorKlantgegevensKolommen, zorgVoorPersoneelTabel, json } from "./auth/_lib.js";
+import { zorgVoorAccountTabellen, zorgVoorRittenTabellen, zorgVoorKlantgegevensKolommen, zorgVoorPersoneelTabel, zorgVoorBetaalmethodeKolommen, json } from "./auth/_lib.js";
 
 function controleerToegang(request, env) {
   const url = new URL(request.url);
@@ -53,7 +59,7 @@ async function haalRitDetail(db, ritId) {
   const rit = await db.prepare(`SELECT * FROM ritten WHERE id = ?`).bind(ritId).first();
   if (!rit) return null;
   const { results: stops } = await db.prepare(
-    `SELECT order_id, klant_naam, klant_telefoon, adres, postcode, plaats, opmerkingen, stop_volgorde, bezorg_status
+    `SELECT order_id, klant_naam, klant_telefoon, adres, postcode, plaats, opmerkingen, stop_volgorde, bezorg_status, totaal, betaalmethode, betaalstatus
      FROM orders WHERE rit_id = ? ORDER BY stop_volgorde ASC`
   ).bind(ritId).all();
   return {
@@ -74,6 +80,13 @@ async function haalRitDetail(db, ritId) {
       opmerkingen: s.opmerkingen || null,
       stopVolgorde: s.stop_volgorde,
       bezorgStatus: s.bezorg_status || "PENDING",
+      // 'Aan de deur betalen' (SumUp Tap to Pay / contant): de bezorger-app
+      // toont de PIN-betalingsknop alleen als betaalmethode 'aan_de_deur' is
+      // én betaalstatus nog 'onbetaald' - zodra bevestigd (zie de
+      // 'markeer_betaald'-actie hieronder) verdwijnt de knop vanzelf.
+      totaal: typeof s.totaal === "number" ? s.totaal : null,
+      betaalmethode: s.betaalmethode || null,
+      betaalstatus: s.betaalstatus || null,
     })),
   };
 }
@@ -88,6 +101,7 @@ export async function onRequestGet(context) {
     await zorgVoorRittenTabellen(env.DB);
     await zorgVoorKlantgegevensKolommen(env.DB);
     await zorgVoorPersoneelTabel(env.DB);
+    await zorgVoorBetaalmethodeKolommen(env.DB);
 
     const url = new URL(request.url);
     const ritId = url.searchParams.get("ritId");
@@ -141,6 +155,7 @@ export async function onRequestPost(context) {
     await zorgVoorRittenTabellen(env.DB);
     await zorgVoorKlantgegevensKolommen(env.DB);
     await zorgVoorPersoneelTabel(env.DB);
+    await zorgVoorBetaalmethodeKolommen(env.DB);
 
     const body = await request.json();
 
@@ -212,6 +227,37 @@ export async function onRequestPost(context) {
 
       const detail = await haalRitDetail(env.DB, order.rit_id);
       return json({ ritVoltooid, rit: detail });
+    }
+
+    // 'Aan de deur betalen' bevestigen: wordt aangeroepen zodra SumUp de
+    // bezorger terugstuurt met status=success (via de callback-pagina,
+    // kassa-bezorger-betaling.html) óf zodra de chauffeur zelf op "Contant
+    // ontvangen" tikt in kassa-bezorger.html (dan zonder sumupTxCode). We
+    // controleren hier dat het echt om een 'aan_de_deur'-order gaat, zodat
+    // deze actie nooit per ongeluk (of moedwillig vanaf de client) een
+    // normale Mollie/factuur-order als betaald kan markeren.
+    if (body && body.actie === "markeer_betaald") {
+      const orderId = body.orderId;
+      if (!orderId) return json({ error: "orderId is verplicht." }, 400);
+      const sumupTxCode = body.sumupTxCode ? String(body.sumupTxCode).trim() : null;
+
+      const order = await env.DB.prepare(
+        `SELECT order_id, rit_id, betaalmethode FROM orders WHERE order_id = ?`
+      ).bind(orderId).first();
+      if (!order) return json({ error: "Bestelling niet gevonden." }, 404);
+      if (order.betaalmethode !== "aan_de_deur") {
+        return json({ error: "Deze bestelling is geen 'aan de deur'-bestelling." }, 400);
+      }
+
+      await env.DB.prepare(
+        `UPDATE orders SET betaalstatus = 'betaald', sumup_tx_code = ? WHERE order_id = ?`
+      ).bind(sumupTxCode, orderId).run();
+
+      // Rit-detail meesturen (zelfde patroon als 'afgeleverd' hierboven) zodat
+      // kassa-bezorger.html het scherm meteen kan verversen - de AFGELEVERD-
+      // knop verschijnt dan vanzelf, nu betaalstatus niet meer 'onbetaald' is.
+      const detail = order.rit_id ? await haalRitDetail(env.DB, order.rit_id) : null;
+      return json({ ok: true, rit: detail });
     }
 
     return json({ error: "Onbekende actie." }, 400);

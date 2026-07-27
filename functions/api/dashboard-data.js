@@ -15,6 +15,8 @@
 // eerlijk berekenen. We laten dat veld daarom bewust weg in plaats van
 // een verzonnen getal te tonen.
 
+import { zorgVoorBetaalmethodeKolommen } from "./auth/_lib.js";
+
 export async function onRequestGet(context) {
   const { request, env } = context;
 
@@ -32,9 +34,21 @@ export async function onRequestGet(context) {
       return json({ error: "Database is nog niet gekoppeld (D1-binding 'DB' ontbreekt)." }, 500);
     }
 
+    // Additieve migratie (idempotent, zelfde patroon als overal in dit
+    // project): zorgt dat betaalstatus-kolom bestaat, ook als er nog nooit
+    // een 'aan de deur'-order is geplaatst.
+    await zorgVoorBetaalmethodeKolommen(env.DB);
+
+    // LET OP — 'aan de deur betalen' (contant/pin via SumUp, zie order.js en
+    // bezorger-ritten.js): die orders krijgen status='paid' zodra ze zijn
+    // geplaatst (zodat ze meteen naar keuken/rit kunnen), maar het geld is dan
+    // nog niet per se binnen. betaalstatus='onbetaald' markeert dat verschil.
+    // We sluiten zulke orders hier bewust uit van de omzetcijfers totdat de
+    // chauffeur de betaling heeft bevestigd (betaalstatus wordt dan 'betaald')
+    // — anders zou dit dashboard omzet tonen die feitelijk nog niet ontvangen is.
     const { results } = await env.DB.prepare(
       `SELECT order_id, status, totaal, korting, coupon_code, klant_email, levering, items_json, acties_json, aangemaakt_op, betaald_op
-       FROM orders WHERE status = 'paid' ORDER BY aangemaakt_op DESC`
+       FROM orders WHERE status = 'paid' AND (betaalstatus IS NULL OR betaalstatus != 'onbetaald') ORDER BY aangemaakt_op DESC`
     ).all();
 
     const orders = results || [];
