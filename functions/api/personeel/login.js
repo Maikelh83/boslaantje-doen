@@ -7,8 +7,10 @@
 // STAFF_LOYALTY_PASSWORD (dat blijft de "is dit een personeelsapparaat"-
 // poort, zelfde als op alle andere /kassa-*-schermen).
 //
-// Body (JSON): { personeelsnummer, pincode }
-// Bij succes: { ok: true, personeelsnummer, naam }
+// Twee manieren om in te loggen (kassa-bezorger.html kiest zelf welke):
+// Body (JSON): { personeelsnummer, pincode }  — handmatig, via numpad-fallback
+//          of: { nfcTagId }                    — NFC-druppel tegen de telefoon
+// Bij succes (beide): { ok: true, personeelsnummer, naam }
 //
 // Benodigde environment variables:
 // STAFF_LOYALTY_PASSWORD — zelfde personeelswachtwoord als de rest van /kassa-*
@@ -40,6 +42,25 @@ export async function onRequestPost(context) {
     await zorgVoorPersoneelTabel(env.DB);
 
     const body = await request.json();
+    const nfcTagId = String((body && body.nfcTagId) || "").trim();
+
+    // NFC-druppel: als nfcTagId is meegestuurd, loggen we daarmee in (geen
+    // personeelsnummer/pincode nodig) - dit is de "NFC-eerst"-hoofdroute in
+    // kassa-bezorger.html. Anders vallen we terug op de bestaande
+    // personeelsnummer+pincode-controle (numpad-fallback, voor als de
+    // chauffeur zijn druppel niet bij zich heeft).
+    if (nfcTagId) {
+      const medewerkerViaNfc = await env.DB.prepare(
+        `SELECT * FROM medewerkers WHERE nfc_tag_id = ?`
+      ).bind(nfcTagId).first();
+
+      if (!medewerkerViaNfc || !medewerkerViaNfc.actief) {
+        return json({ error: "Onbekende of niet-actieve NFC-druppel." }, 401);
+      }
+
+      return json({ ok: true, personeelsnummer: medewerkerViaNfc.personeelsnummer, naam: medewerkerViaNfc.naam });
+    }
+
     const personeelsnummer = String((body && body.personeelsnummer) || "").trim();
     const pincode = String((body && body.pincode) || "").trim();
 
