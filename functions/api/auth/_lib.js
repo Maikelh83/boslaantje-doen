@@ -362,6 +362,38 @@ export async function zorgVoorKlantgegevensKolommen(db) {
   }
 }
 
+// 'Aan de deur betalen' (contant of pin via SumUp Tap to Pay, in de PWA
+// Bezorger-app): extra kolommen op de bestaande orders-tabel, net als
+// zorgVoorKlantgegevensKolommen hierboven - geen nieuwe tabel, zodat
+// bestaande code die alleen naar 'status' kijkt (ritten.js, keuken-orders.js)
+// ongewijzigd blijft werken. Bewust twee aparte velden:
+//   betaalmethode — hoe deze order (gaat) betaald worden: NULL/'factuur' zoals
+//                   voorheen, of het nieuwe 'aan_de_deur'.
+//   betaalstatus  — of het geld al écht binnen is. Voor 'aan_de_deur'-orders
+//                   is dit 'onbetaald' totdat de chauffeur de betaling
+//                   bevestigt (SumUp-terugkeer of "contant ontvangen"-knop in
+//                   kassa-bezorger.html, via de 'markeer_betaald'-actie in
+//                   bezorger-ritten.js) - pas dan wordt het 'betaald'.
+// LET OP: status='paid' betekent voor een 'aan_de_deur'-order dus alleen
+// "bevestigd, mag door naar keuken/rit" - NIET "geld ontvangen". Zie
+// dashboard-data.js, die betaalstatus='onbetaald'-orders bewust uitsluit van
+// de omzetcijfers totdat de betaling is bevestigd.
+// sumup_tx_code bewaart SumUp's eigen transactiecode (smp-tx-code) als
+// referentie, voor als een betaling later nog eens opgezocht moet worden.
+export async function zorgVoorBetaalmethodeKolommen(db) {
+  for (const statement of [
+    `ALTER TABLE orders ADD COLUMN betaalmethode TEXT`,
+    `ALTER TABLE orders ADD COLUMN betaalstatus TEXT`,
+    `ALTER TABLE orders ADD COLUMN sumup_tx_code TEXT`,
+  ]) {
+    try {
+      await db.prepare(statement).run();
+    } catch (migratieErr) {
+      // kolom bestaat waarschijnlijk al - genegeerd
+    }
+  }
+}
+
 // Ritten (batches van bezorgorders voor de PWA Bezorger-app): een rit
 // koppelt 1 of meer bezorgorders aan een chauffeur, in vaste volgorde. De
 // chauffeur wordt geïdentificeerd met een personeelsnummer (zie de
