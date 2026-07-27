@@ -6,11 +6,14 @@
 // Zelfde personeelswachtwoord-gate als de andere admin-endpoints
 // (zakelijke-klanten, bezorgzone-instellingen, ritten).
 //
-// GET  : lijst medewerkers (personeelsnummer, naam, actief, aangemaakt_op) —
-//        pincode-hash/-salt worden nooit teruggegeven.
+// GET  : lijst medewerkers (personeelsnummer, naam, actief, aangemaakt_op,
+//        nfcGekoppeld) — pincode-hash/-salt en de ruwe nfc_tag_id worden
+//        nooit teruggegeven, alleen of er wel/niet een tag gekoppeld is.
 // POST : { actie: 'toevoegen', personeelsnummer, naam, pincode }
 //        { actie: 'reset_pincode', personeelsnummer, nieuwePincode }
 //        { actie: 'activeren' | 'deactiveren', personeelsnummer }
+//        { actie: 'koppel_nfc', personeelsnummer, nfcTagId }   — NFC-druppel
+//        { actie: 'ontkoppel_nfc', personeelsnummer }          — koppelen ongedaan maken
 //
 // Benodigde environment variables:
 // STAFF_LOYALTY_PASSWORD — zelfde personeelswachtwoord als de rest van /kassa-*
@@ -46,7 +49,7 @@ export async function onRequestGet(context) {
     await zorgVoorPersoneelTabel(env.DB);
 
     const { results } = await env.DB.prepare(
-      `SELECT personeelsnummer, naam, actief, aangemaakt_op FROM medewerkers ORDER BY naam ASC`
+      `SELECT personeelsnummer, naam, actief, aangemaakt_op, nfc_tag_id FROM medewerkers ORDER BY naam ASC`
     ).all();
 
     return json({
@@ -55,6 +58,11 @@ export async function onRequestGet(context) {
         naam: m.naam,
         actief: !!m.actief,
         aangemaaktOp: m.aangemaakt_op,
+        // De ruwe nfc_tag_id geven we bewust niet mee - alleen of er wel/niet
+        // een druppel gekoppeld is. Er is niets geheims aan een tag-serienummer,
+        // maar de admin-pagina heeft 'm ook niet nodig (koppelen gebeurt door
+        // opnieuw te scannen, niet door 'm over te typen).
+        nfcGekoppeld: !!m.nfc_tag_id,
       })),
     });
   } catch (err) {
@@ -111,6 +119,42 @@ export async function onRequestPost(context) {
       await env.DB.prepare(
         `UPDATE medewerkers SET pincode_hash = ?, pincode_salt = ? WHERE personeelsnummer = ?`
       ).bind(hash, salt, personeelsnummer).run();
+
+      return json({ ok: true });
+    }
+
+    if (actie === "koppel_nfc") {
+      const nfcTagId = String((body && body.nfcTagId) || "").trim();
+      if (!nfcTagId) return json({ error: "Geen NFC-tag ontvangen om te koppelen." }, 400);
+
+      const medewerker = await env.DB.prepare(
+        `SELECT personeelsnummer FROM medewerkers WHERE personeelsnummer = ?`
+      ).bind(personeelsnummer).first();
+      if (!medewerker) return json({ error: "Medewerker niet gevonden." }, 404);
+
+      const inGebruikDoor = await env.DB.prepare(
+        `SELECT personeelsnummer, naam FROM medewerkers WHERE nfc_tag_id = ? AND personeelsnummer != ?`
+      ).bind(nfcTagId, personeelsnummer).first();
+      if (inGebruikDoor) {
+        return json({ error: `Deze druppel is al gekoppeld aan ${inGebruikDoor.naam} (nr. ${inGebruikDoor.personeelsnummer}).` }, 400);
+      }
+
+      await env.DB.prepare(
+        `UPDATE medewerkers SET nfc_tag_id = ? WHERE personeelsnummer = ?`
+      ).bind(nfcTagId, personeelsnummer).run();
+
+      return json({ ok: true });
+    }
+
+    if (actie === "ontkoppel_nfc") {
+      const medewerker = await env.DB.prepare(
+        `SELECT personeelsnummer FROM medewerkers WHERE personeelsnummer = ?`
+      ).bind(personeelsnummer).first();
+      if (!medewerker) return json({ error: "Medewerker niet gevonden." }, 404);
+
+      await env.DB.prepare(
+        `UPDATE medewerkers SET nfc_tag_id = NULL WHERE personeelsnummer = ?`
+      ).bind(personeelsnummer).run();
 
       return json({ ok: true });
     }
