@@ -358,10 +358,13 @@ export async function zorgVoorKlantgegevensKolommen(db) {
 }
 
 // Ritten (batches van bezorgorders voor de PWA Bezorger-app): een rit
-// koppelt 1 of meer bezorgorders aan een chauffeur, in vaste volgorde. Er
-// bestaat in dit project geen individueel account-systeem per bezorger
-// (zie STAFF_LOYALTY_PASSWORD hierboven) - de chauffeur wordt geïdentificeerd
-// met een vrij ingevulde naam (chauffeur_naam), niet met een account_id.
+// koppelt 1 of meer bezorgorders aan een chauffeur, in vaste volgorde. De
+// chauffeur wordt geïdentificeerd met een personeelsnummer (zie de
+// medewerkers-tabel/zorgVoorPersoneelTabel hieronder) - chauffeur_naam blijft
+// staan als leesbare kopie (server-side gevuld vanuit medewerkers.naam op het
+// moment dat de rit gestart wordt), maar chauffeur_personeelsnummer is de
+// echte identiteit waarop gematcht wordt (bijv. bij het hervinden van een
+// al gestarte rit na het verversen van de bezorger-app).
 // Gedeeld tussen /api/admin/ritten.js (personeel maakt ritten aan) en
 // /api/bezorger-ritten.js (de bezorger doorloopt ze).
 export async function zorgVoorRittenTabellen(db) {
@@ -378,6 +381,7 @@ export async function zorgVoorRittenTabellen(db) {
     `ALTER TABLE orders ADD COLUMN rit_id TEXT`,
     `ALTER TABLE orders ADD COLUMN stop_volgorde INTEGER`,
     `ALTER TABLE orders ADD COLUMN bezorg_status TEXT`,
+    `ALTER TABLE ritten ADD COLUMN chauffeur_personeelsnummer TEXT`,
   ]) {
     try {
       await db.prepare(statement).run();
@@ -385,6 +389,24 @@ export async function zorgVoorRittenTabellen(db) {
       // kolom bestaat waarschijnlijk al - genegeerd
     }
   }
+}
+
+// Medewerkers (personeelsnummer-fundament): losstaand van het bestaande,
+// gedeelde STAFF_LOYALTY_PASSWORD (dat blijft de "is dit een personeels-
+// apparaat"-poort op alle /kassa-*-schermen) - deze tabel identificeert WIE
+// er precies achter dat apparaat zit, te beginnen bij de PWA Bezorger-app
+// (waar dat er al toe deed voor de chauffeur-koppeling). Pincode wordt net
+// als accountwachtwoorden nooit in platte tekst opgeslagen (zelfde PBKDF2-
+// hashWachtwoord/wachtwoordKlopt-functies hierboven, hergebruikt voor pincodes).
+export async function zorgVoorPersoneelTabel(db) {
+  await db.prepare(`CREATE TABLE IF NOT EXISTS medewerkers (
+    personeelsnummer TEXT PRIMARY KEY,
+    naam TEXT NOT NULL,
+    pincode_hash TEXT NOT NULL,
+    pincode_salt TEXT NOT NULL,
+    actief INTEGER NOT NULL DEFAULT 1,
+    aangemaakt_op TEXT NOT NULL
+  )`).run();
 }
 
 export function json(data, status = 200, extraHeaders) {
