@@ -467,6 +467,55 @@ export async function zorgVoorPersoneelTabel(db) {
   }
 }
 
+// Bezorger-sessies: na een geslaagde NFC- of pincode-login (zie
+// /api/personeel/login.js) krijgt de bezorger-app een kortlevende,
+// ondoorzichtige sessie-token terug - dit vervangt vanaf nu het gedeelde
+// STAFF_LOYALTY_PASSWORD in de PWA Bezorger-app (kassa-bezorger.html), zodat
+// de chauffeur alleen nog zijn NFC-druppel of werknemernummer+pincode nodig
+// heeft en niet ook nog een los wachtwoord hoeft te typen. bezorger-ritten.js,
+// bezorger-kaart.js en bezorger-sumup-config.js controleren voortaan deze
+// sessie-token (?sessie=...) in plaats van ?wachtwoord=.... Losstaand van de
+// bestaande 'sessions'-tabel hierboven (die is voor klantaccounts) - eigen
+// tabel, eigen levensduur.
+export async function zorgVoorBezorgerSessieTabel(db) {
+  await db.prepare(`CREATE TABLE IF NOT EXISTS bezorger_sessies (
+    sessie_token TEXT PRIMARY KEY,
+    personeelsnummer TEXT NOT NULL,
+    aangemaakt_op TEXT NOT NULL,
+    verloopt_op TEXT NOT NULL
+  )`).run();
+}
+
+const BEZORGER_SESSIE_GELDIGHEID_UUR = 14; // ruim een volledige dienst
+
+export async function maakBezorgerSessie(db, personeelsnummer) {
+  const sessieToken = crypto.randomUUID();
+  const nu = new Date();
+  const verloopt = new Date(nu.getTime() + BEZORGER_SESSIE_GELDIGHEID_UUR * 60 * 60 * 1000);
+  await db
+    .prepare(`INSERT INTO bezorger_sessies (sessie_token, personeelsnummer, aangemaakt_op, verloopt_op) VALUES (?, ?, ?, ?)`)
+    .bind(sessieToken, personeelsnummer, nu.toISOString(), verloopt.toISOString())
+    .run();
+  return sessieToken;
+}
+
+// Geeft { geldig: true, personeelsnummer, naam } terug bij een niet-verlopen
+// sessie van een nog steeds actieve medewerker, anders { geldig: false }.
+export async function controleerBezorgerSessie(db, sessieToken) {
+  if (!sessieToken) return { geldig: false };
+  const sessie = await db.prepare(`SELECT * FROM bezorger_sessies WHERE sessie_token = ?`).bind(sessieToken).first();
+  if (!sessie) return { geldig: false };
+  if (new Date(sessie.verloopt_op).getTime() < Date.now()) return { geldig: false };
+
+  const medewerker = await db
+    .prepare(`SELECT naam, actief FROM medewerkers WHERE personeelsnummer = ?`)
+    .bind(sessie.personeelsnummer)
+    .first();
+  if (!medewerker || !medewerker.actief) return { geldig: false };
+
+  return { geldig: true, personeelsnummer: sessie.personeelsnummer, naam: medewerker.naam };
+}
+
 export function json(data, status = 200, extraHeaders) {
   const headers = { "Content-Type": "application/json" };
   if (extraHeaders) Object.assign(headers, extraHeaders);
