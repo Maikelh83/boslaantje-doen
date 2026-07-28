@@ -22,6 +22,12 @@
 //   Orders zijn de nog niet ingedeelde bezorgorders (rit_id NULL) zodat de
 //   bezorger ze evt. zelf tot een rit kan bundelen (zie 'start_eigen_rit'
 //   hieronder) zonder de personeelspagina kassa-ritten.html nodig te hebben.
+//   Elke rit in beschikbareRitten en elke order in openstaandeOrders krijgt
+//   er ook een gekoeldeBonnen/gekoeldeItems-veld bij ("Vergeten Producten
+//   Waarschuwing"): welke items uit een gekoelde categorie (milkshake, ijs,
+//   drinken, salade) op die bon staan, zodat kassa-bezorger.html vóór het
+//   starten van de rit een bevestigingsmodal kan tonen (zie
+//   bepaalGekoeldeItems hieronder).
 //
 // POST ?sessie=... body { actie: 'start', ritId }
 //   Koppelt de rit aan de chauffeur van déze sessie, zet de rit + alle
@@ -70,6 +76,57 @@ async function controleerToegang(request, env) {
     return { fout: json({ error: "Sessie verlopen of ongeldig. Log opnieuw in." }, 401) };
   }
   return { fout: null, sessie };
+}
+
+// "Vergeten Producten Waarschuwing": categorieën die uit de koeling/
+// ijsvitrine komen en dus niet bij de warme maaltijden op het
+// uitgiftestation liggen - bezorgers vergeten deze regelmatig. Categorie-
+// id's komen 1-op-1 uit src/producten.json (categorieen[].id).
+const GEKOELDE_CATEGORIE_IDS = ["milkshakes", "ijs", "dranken", "salade"];
+
+// Haalt eenmalig producten.json op (zelfde live bestand als bestellen.html
+// en order.js gebruiken) en bouwt een productId -> categorieId kaart, zodat
+// we per orderregel (die alleen het productId bewaart, zie items_json in
+// order.js) kunnen bepalen uit welke categorie een item komt. Faalt stil
+// (lege kaart) als producten.json om wat voor reden dan ook niet op te
+// halen is - dan wordt er simpelweg geen waarschuwing getoond, in plaats
+// van dat de hele rittenlijst crasht.
+async function haalCategorieMap(request) {
+  try {
+    const productenUrl = new URL("/producten.json", request.url);
+    const res = await fetch(productenUrl.toString());
+    if (!res.ok) return new Map();
+    const catalogus = await res.json();
+    const map = new Map();
+    for (const categorie of catalogus.categorieen || []) {
+      for (const product of categorie.producten || []) {
+        map.set(product.id, categorie.id);
+      }
+    }
+    return map;
+  } catch (err) {
+    return new Map();
+  }
+}
+
+// Geeft de gekoelde items (naam + aantal) van één order terug, op basis van
+// de bewaarde items_json-kolom (zie order.js) en de categorie-kaart
+// hierboven. Items zonder herkende categorie (bijv. een verwijderd
+// product) worden gewoon genegeerd, niet als fout behandeld.
+function bepaalGekoeldeItems(itemsJson, categorieMap) {
+  let items;
+  try {
+    items = JSON.parse(itemsJson || "[]");
+  } catch (parseErr) {
+    return [];
+  }
+  if (!Array.isArray(items)) return [];
+  return items
+    .filter((item) => {
+      const categorieId = categorieMap.get(item.id);
+      return categorieId && GEKOELDE_CATEGORIE_IDS.includes(categorieId);
+    })
+    .map((item) => ({ naam: item.naam, aantal: item.aantal }));
 }
 
 async function haalRitDetail(db, ritId) {
@@ -129,6 +186,10 @@ export async function onRequestGet(context) {
       return json({ rit: detail });
     }
 
+    // Eenmalig opgehaald, hergebruikt voor zowel beschikbareRitten als
+    // openstaandeOrders hieronder (zie "Vergeten Producten Waarschuwing").
+    const categorieMap = await haalCategorieMap(request);
+
     const { results: pending } = await env.DB.prepare(
       `SELECT id, aangemaakt_op FROM ritten WHERE status = 'PENDING' ORDER BY aangemaakt_op ASC`
     ).all();
@@ -136,14 +197,26 @@ export async function onRequestGet(context) {
     const beschikbareRitten = [];
     for (const rit of pending || []) {
       const { results: stops } = await env.DB.prepare(
-        `SELECT adres, postcode, plaats FROM orders WHERE rit_id = ? ORDER BY stop_volgorde ASC`
+        `SELECT order_id, adres, postcode, plaats, items_json FROM orders WHERE rit_id = ? ORDER BY stop_volgorde ASC`
       ).bind(rit.id).all();
       const eersteStop = (stops || [])[0] || null;
+
+      // Gekoelde items per bon in deze rit, voor de bevestigingsmodal die
+      // kassa-bezorger.html toont vóórdat de rit daadwerkelijk gestart wordt.
+      const gekoeldeBonnen = [];
+      for (const stop of stops || []) {
+        const gekoeldeItems = bepaalGekoeldeItems(stop.items_json, categorieMap);
+        if (gekoeldeItems.length > 0) {
+          gekoeldeBonnen.push({ orderId: stop.order_id, items: gekoeldeItems });
+        }
+      }
+
       beschikbareRitten.push({
         ritId: rit.id,
         aangemaaktOp: rit.aangemaakt_op,
         aantalStops: (stops || []).length,
         eersteAdres: eersteStop ? [eersteStop.adres, eersteStop.plaats].filter(Boolean).join(", ") : null,
+        gekoeldeBonnen,
       });
     }
 
@@ -159,7 +232,7 @@ export async function onRequestGet(context) {
     // tonen om er (via 'start_eigen_rit' hieronder) een eigen rit mee te
     // starten. Zelfde query als /api/admin/ritten.js.
     const { results: openstaand } = await env.DB.prepare(
-      `SELECT order_id, klant_naam, klant_telefoon, adres, postcode, plaats, opmerkingen, totaal, aangemaakt_op
+      `SELECT order_id, klant_naam, klant_telefoon, adres, postcode, plaats, opmerkingen, totaal, aangemaakt_op, items_json
        FROM orders
        WHERE levering = 'bezorgen' AND status = 'paid' AND rit_id IS NULL
        ORDER BY aangemaakt_op ASC`
@@ -174,6 +247,9 @@ export async function onRequestGet(context) {
       opmerkingen: o.opmerkingen || null,
       totaal: o.totaal,
       aangemaaktOp: o.aangemaakt_op,
+      // "Vergeten Producten Waarschuwing": zodat de bezorger-app dit kan
+      // aggregeren zodra de chauffeur zelf orders aanvinkt (start_eigen_rit).
+      gekoeldeItems: bepaalGekoeldeItems(o.items_json, categorieMap),
     }));
 
     return json({ beschikbareRitten, actieveRit, openstaandeOrders });
