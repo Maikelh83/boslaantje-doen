@@ -516,6 +516,87 @@ export async function controleerBezorgerSessie(db, sessieToken) {
   return { geldig: true, personeelsnummer: sessie.personeelsnummer, naam: medewerker.naam };
 }
 
+// Personeelsplanning voor Snackbar De Boslaan: weekrooster, beschikbaarheid,
+// verlof/ziekmeldingen en werkuren — vier losse, additief-gemigreerde
+// tabellen die allemaal teruggrijpen op de bestaande medewerkers-tabel
+// (personeelsnummer als sleutel, zie zorgVoorPersoneelTabel hierboven).
+// Gedeeld tussen /api/admin/planning.js (Chantal/Maikel stellen het rooster
+// samen, keuren verlof/uren goed) en /api/personeel/planning.js (de
+// medewerker zelf, ingelogd via hetzelfde personeelsnummer+pincode/NFC-
+// systeem als de bezorger-app — zie controleerBezorgerSessie hierboven,
+// die naam is inmiddels breder dan alleen bezorgers, maar wordt bewust niet
+// hernoemd om niet alle bestaande aanroepen te hoeven aanpassen).
+export async function zorgVoorPlanningTabellen(db) {
+  // Geplande diensten: één rij per medewerker per dienst. Meerdere diensten
+  // per medewerker per dag kan (bijv. ochtend + avond), vandaar geen
+  // UNIQUE-constraint op (personeelsnummer, datum).
+  await db.prepare(`CREATE TABLE IF NOT EXISTS shifts (
+    id TEXT PRIMARY KEY,
+    personeelsnummer TEXT NOT NULL,
+    datum TEXT NOT NULL,
+    start_tijd TEXT NOT NULL,
+    eind_tijd TEXT NOT NULL,
+    functie TEXT,
+    notitie TEXT,
+    aangemaakt_op TEXT NOT NULL,
+    aangemaakt_door TEXT
+  )`).run();
+
+  // Beschikbaarheid die de medewerker zelf doorgeeft, als hulpmiddel bij het
+  // samenstellen van het rooster hierboven — geen koppeling met shifts, puur
+  // informatief voor wie het rooster maakt. Eén rij per medewerker/datum/
+  // dagdeel: nieuwe opgave overschrijft (REPLACE INTO) de vorige voor
+  // dezelfde combinatie, zodat een medewerker zijn opgave gewoon opnieuw kan
+  // insturen als iets wijzigt.
+  await db.prepare(`CREATE TABLE IF NOT EXISTS beschikbaarheid (
+    personeelsnummer TEXT NOT NULL,
+    datum TEXT NOT NULL,
+    dagdeel TEXT NOT NULL DEFAULT 'hele_dag',
+    status TEXT NOT NULL,
+    opmerking TEXT,
+    aangemaakt_op TEXT NOT NULL,
+    PRIMARY KEY (personeelsnummer, datum, dagdeel)
+  )`).run();
+
+  // Verlof- en ziekmeldingen: altijd een periode (van/tot, ook voor één dag
+  // gewoon vanDatum = totDatum). 'ziek' wordt net als 'verlof' aangevraagd
+  // zodat Chantal/Maikel één plek hebben om alle afwezigheid te zien, maar
+  // in de praktijk zal een ziekmelding meestal ook meteen goedgekeurd worden
+  // (dat is aan de beheerpagina, niet aan dit schema).
+  await db.prepare(`CREATE TABLE IF NOT EXISTS verlof_aanvragen (
+    id TEXT PRIMARY KEY,
+    personeelsnummer TEXT NOT NULL,
+    van_datum TEXT NOT NULL,
+    tot_datum TEXT NOT NULL,
+    type TEXT NOT NULL DEFAULT 'verlof',
+    reden TEXT,
+    status TEXT NOT NULL DEFAULT 'aangevraagd',
+    aangemaakt_op TEXT NOT NULL,
+    afgehandeld_op TEXT,
+    afgehandeld_door TEXT
+  )`).run();
+
+  // Werkuren zoals de medewerker ze zelf indient (na afloop van een dienst,
+  // eventueel gekoppeld aan een geplande shift via shift_id — optioneel,
+  // want iemand kan ook uren indienen voor een dienst die niet vooraf
+  // gepland stond). Losstaand van shifts.start_tijd/eind_tijd: dat is de
+  // planning vooraf, dit is wat er echt gewerkt is, en die twee kunnen
+  // afwijken (eerder klaar, overgewerkt, etc.).
+  await db.prepare(`CREATE TABLE IF NOT EXISTS werkuren (
+    id TEXT PRIMARY KEY,
+    personeelsnummer TEXT NOT NULL,
+    datum TEXT NOT NULL,
+    start_tijd TEXT NOT NULL,
+    eind_tijd TEXT NOT NULL,
+    pauze_minuten INTEGER NOT NULL DEFAULT 0,
+    shift_id TEXT,
+    status TEXT NOT NULL DEFAULT 'ingediend',
+    aangemaakt_op TEXT NOT NULL,
+    afgehandeld_op TEXT,
+    afgehandeld_door TEXT
+  )`).run();
+}
+
 export function json(data, status = 200, extraHeaders) {
   const headers = { "Content-Type": "application/json" };
   if (extraHeaders) Object.assign(headers, extraHeaders);
