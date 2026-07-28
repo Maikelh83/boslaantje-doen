@@ -12,6 +12,7 @@
 //      -> { medewerkers, shifts (die week), beschikbaarheid (die week),
 //           verlofAanvragen (open + laatste 30 dagen), werkuren (open) }
 // POST : { actie: 'shift_toevoegen', personeelsnummer, datum, startTijd, eindTijd, functie, notitie }
+//        { actie: 'shift_bewerken', shiftId, startTijd, eindTijd, functie, notitie }
 //        { actie: 'shift_verwijderen', shiftId }
 //        { actie: 'verlof_beoordelen', verlofId, beslissing: 'goedkeuren' | 'afwijzen' }
 //        { actie: 'uren_beoordelen', urenId, beslissing: 'goedkeuren' | 'afwijzen' }
@@ -154,6 +155,27 @@ export async function onRequestPost(context) {
       ).bind(id, personeelsnummer, datum, startTijd, eindTijd, functie, notitie, new Date().toISOString(), "beheer").run();
 
       return json({ ok: true, shiftId: id });
+    }
+
+    if (actie === "shift_bewerken") {
+      const shiftId = String((body && body.shiftId) || "").trim();
+      const startTijd = String((body && body.startTijd) || "").trim();
+      const eindTijd = String((body && body.eindTijd) || "").trim();
+      const functie = String((body && body.functie) || "").trim() || null;
+      const notitie = String((body && body.notitie) || "").trim() || null;
+
+      if (!shiftId || !startTijd || !eindTijd) {
+        return json({ error: "shiftId, starttijd en eindtijd zijn verplicht." }, 400);
+      }
+
+      const bestaandeShift = await env.DB.prepare(`SELECT id FROM shifts WHERE id = ?`).bind(shiftId).first();
+      if (!bestaandeShift) return json({ error: "Dienst niet gevonden." }, 404);
+
+      await env.DB.prepare(
+        `UPDATE shifts SET start_tijd = ?, eind_tijd = ?, functie = ?, notitie = ? WHERE id = ?`
+      ).bind(startTijd, eindTijd, functie, notitie, shiftId).run();
+
+      return json({ ok: true });
     }
 
     if (actie === "shift_verwijderen") {
