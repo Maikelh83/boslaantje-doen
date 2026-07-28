@@ -33,33 +33,59 @@ button{font-family:inherit;user-select:none}
 header{background:var(--green);padding:.9rem 1.3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
 header h1{color:#fff;font-size:1.4rem}
 
-main{padding:1.3rem;max-width:900px;margin:0 auto}
+main{padding:1.3rem;max-width:1180px;margin:0 auto}
 .kaart{background:#fff;border-radius:14px;border:2px solid var(--paper-line);padding:1.2rem;margin-bottom:1.1rem}
-.kaart h2{font-size:1.1rem;margin-bottom:.3rem}
+.kaart h2{font-size:1.1rem;margin-bottom:.3rem;display:flex;align-items:center}
 .kaart .uitleg{font-size:.86rem;color:#6b6a62;margin-bottom:1rem}
 .leeg{font-size:.9rem;color:#6b6a62;padding:.5rem 0}
+
+.telBadge{background:var(--rood);color:#fff;font-size:.72rem;font-weight:800;padding:.15rem .5rem;border-radius:99px;margin-left:.5rem}
 
 .weekNav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.1rem}
 .weekNav button{background:#fff;border:2px solid var(--paper-line);border-radius:8px;padding:.6rem 1rem;font-weight:700;cursor:pointer;min-height:44px}
 .weekNav span{font-weight:800;color:var(--green-ink);font-size:1.02rem;min-width:12rem;text-align:center}
 
-.dagBlok{border-top:1px dashed var(--paper-line);padding:.7rem 0}
-.dagBlok:first-of-type{border-top:none}
-.dagBlok h3{font-size:.95rem;margin-bottom:.5rem;display:flex;justify-content:space-between;align-items:center}
-.dagBlok h3 .datumTxt{color:#6b6a62;font-weight:500;font-size:.82rem}
+/* Weekrooster-grid: medewerkers als rijen, dagen als kolommen (Tamigo-stijl) */
+.roosterGridWrap{overflow-x:auto;margin:0 -.2rem}
+table.roosterGrid{border-collapse:collapse;width:100%;min-width:820px;font-size:.85rem}
+table.roosterGrid th,table.roosterGrid td{border:1px solid var(--paper-line);padding:.4rem .45rem;text-align:left;vertical-align:top}
+table.roosterGrid thead th{background:var(--paper-2);color:var(--green-ink);font-size:.78rem;font-weight:800;text-align:center;white-space:nowrap}
+table.roosterGrid thead th .datumTxt{display:block;font-weight:500;color:#6b6a62;font-size:.72rem}
+table.roosterGrid td.naamCel,table.roosterGrid th.naamKop{position:sticky;left:0;background:#fff;font-weight:700;white-space:nowrap;z-index:1}
+table.roosterGrid thead th.naamKop{background:var(--paper-2);z-index:2}
+table.roosterGrid td.dagCel{min-width:6.6rem;position:relative}
+table.roosterGrid td.dagCel.markVerlof{background:#F4E1DC}
+table.roosterGrid td.dagCel.markZiek{background:#F4E1DC}
+table.roosterGrid td.dagCel.markVoorkeur{background:#FBF6EA}
+table.roosterGrid td.urenCel{text-align:right;font-weight:800;color:var(--green-ink);white-space:nowrap}
+table.roosterGrid tfoot td{background:var(--paper-2);font-weight:800;text-align:right;color:var(--green-ink)}
+table.roosterGrid tfoot td.naamCel{text-align:left;background:var(--paper-2)}
 
-.shiftRij{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-bottom:1px solid var(--paper-line);font-size:.9rem}
-.shiftRij:last-child{border-bottom:none}
-.shiftRij .naam{font-weight:700;flex:1}
-.shiftRij .tijd{color:var(--terracotta-deep);font-weight:700}
-.shiftRij .functie{color:#6b6a62;font-size:.8rem}
-.shiftRij .verwijderBtn{background:none;border:none;color:var(--rood);cursor:pointer;font-size:1.1rem;padding:.2rem .4rem}
+.afwezigLabel{display:inline-block;font-size:.68rem;font-weight:800;padding:.1rem .4rem;border-radius:99px;background:var(--rood);color:#fff;margin-bottom:.25rem}
+.beschikIcoon{position:absolute;top:.2rem;right:.3rem;font-size:.8rem}
 
-.toevoegForm{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.7rem}
-.toevoegForm select,.toevoegForm input{padding:.7rem .6rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:.92rem}
-.toevoegForm .span2{grid-column:1 / -1}
-.toevoegForm button{grid-column:1 / -1;background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:.85rem;font-weight:800;cursor:pointer;min-height:48px}
-.toevoegForm button:active{background:var(--terracotta-deep)}
+.shiftChip{display:block;background:var(--paper-2);border:1px solid var(--paper-line);border-radius:6px;padding:.2rem .35rem;margin-bottom:.25rem;cursor:pointer;font-size:.78rem;line-height:1.25}
+.shiftChip:active{background:#e9e5d9}
+.shiftChip .chipTijd{font-weight:800;color:var(--terracotta-deep)}
+.shiftChip .chipFunctie{color:#6b6a62;font-size:.72rem;display:block}
+
+.voegToeBtn{display:block;width:100%;background:none;border:1px dashed var(--paper-line);border-radius:6px;color:var(--terracotta-deep);font-weight:700;font-size:.76rem;padding:.25rem;cursor:pointer}
+.voegToeBtn:active{background:var(--paper-2)}
+
+/* Modal voor dienst toevoegen/bewerken */
+#shiftModalOverlay{position:fixed;inset:0;background:rgba(27,27,24,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:1rem}
+#shiftModalCard{background:#fff;border-radius:14px;padding:1.3rem;width:100%;max-width:360px}
+#shiftModalCard h3{font-size:1.05rem;margin-bottom:.9rem}
+.formVeld{margin-bottom:.7rem}
+.formVeld label{display:block;font-weight:700;font-size:.85rem;margin-bottom:.3rem}
+.formVeld input{width:100%;padding:.65rem .6rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:.92rem}
+#modalStatus{font-size:.85rem;color:var(--rood);min-height:1.2em;margin-bottom:.4rem}
+.modalKnoppen{display:flex;flex-direction:column;gap:.5rem}
+.modalKnoppen button{border-radius:8px;padding:.8rem;font-weight:800;font-size:.95rem;cursor:pointer;min-height:46px}
+#modalOpslaanBtn{background:var(--terracotta);color:#fff;border:none}
+#modalOpslaanBtn:active{background:var(--terracotta-deep)}
+#modalVerwijderBtn{background:none;border:1px solid var(--rood);color:var(--rood)}
+#modalAnnulerenBtn{background:none;border:1px solid var(--paper-line);color:var(--ink)}
 
 .beschikRij{display:flex;gap:.6rem;padding:.45rem 0;border-bottom:1px solid var(--paper-line);font-size:.88rem;align-items:baseline}
 .beschikRij:last-child{border-bottom:none}
@@ -90,7 +116,6 @@ main{padding:1.3rem;max-width:900px;margin:0 auto}
 
 @media (max-width: 480px){
 body{font-size:15px}
-.toevoegForm{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -119,25 +144,13 @@ body{font-size:15px}
 
 <div class="kaart">
 <h2>Weekrooster</h2>
-<p class="uitleg">Diensten toevoegen en verwijderen per dag. Gebruik de beschikbaarheid hieronder als hulpmiddel.</p>
-<div id="roosterDagen"></div>
-
-<div class="toevoegForm">
-<select id="nieuweShiftMedewerker"><option value="">Kies medewerker…</option></select>
-<select id="nieuweShiftDag">
-<option value="0">Maandag</option>
-<option value="1">Dinsdag</option>
-<option value="2">Woensdag</option>
-<option value="3">Donderdag</option>
-<option value="4">Vrijdag</option>
-<option value="5">Zaterdag</option>
-<option value="6">Zondag</option>
-</select>
-<input type="time" id="nieuweShiftStart" value="16:30">
-<input type="time" id="nieuweShiftEind" value="20:30">
-<input type="text" id="nieuweShiftFunctie" placeholder="Functie (optioneel, bijv. bar/keuken)" class="span2">
-<input type="text" id="nieuweShiftNotitie" placeholder="Notitie (optioneel)" class="span2">
-<button type="button" id="shiftToevoegenBtn">Dienst toevoegen</button>
+<p class="uitleg">Klik op een dienst om 'm te bewerken of verwijderen, of op "+ dienst" om een nieuwe dienst toe te voegen. ⛔ = niet beschikbaar die dag, ★ = voorkeur, rode celkleur = goedgekeurd verlof/ziek.</p>
+<div class="roosterGridWrap">
+<table class="roosterGrid">
+<thead><tr id="roosterKopRij"></tr></thead>
+<tbody id="roosterBody"></tbody>
+<tfoot><tr id="roosterTotaalRij"></tr></tfoot>
+</table>
 </div>
 <div id="roosterStatus" class="leeg"></div>
 </div>
@@ -149,18 +162,34 @@ body{font-size:15px}
 </div>
 
 <div class="kaart">
-<h2>Verlof &amp; ziekmeldingen</h2>
+<h2>Verlof &amp; ziekmeldingen<span id="verlofTeller" class="telBadge" style="display:none"></span></h2>
 <p class="uitleg">Openstaande aanvragen bovenaan, recent afgehandelde eronder.</p>
 <div id="verlofLijst"><div class="leeg">Geen aanvragen.</div></div>
 </div>
 
 <div class="kaart">
-<h2>Werkuren</h2>
+<h2>Werkuren<span id="urenTeller" class="telBadge" style="display:none"></span></h2>
 <p class="uitleg">Door medewerkers ingediende uren, ter goedkeuring.</p>
 <div id="urenLijst"><div class="leeg">Geen ingediende uren.</div></div>
 </div>
 
 </main>
+</div>
+
+<div id="shiftModalOverlay">
+<div id="shiftModalCard">
+<h3 id="shiftModalTitel">Dienst</h3>
+<div class="formVeld"><label>Starttijd</label><input type="time" id="modalStart"></div>
+<div class="formVeld"><label>Eindtijd</label><input type="time" id="modalEind"></div>
+<div class="formVeld"><label>Functie (optioneel)</label><input type="text" id="modalFunctie" placeholder="bijv. bar/keuken"></div>
+<div class="formVeld"><label>Notitie (optioneel)</label><input type="text" id="modalNotitie"></div>
+<div id="modalStatus"></div>
+<div class="modalKnoppen">
+<button type="button" id="modalOpslaanBtn">Opslaan</button>
+<button type="button" id="modalVerwijderBtn" style="display:none">Dienst verwijderen</button>
+<button type="button" id="modalAnnulerenBtn">Annuleren</button>
+</div>
+</div>
 </div>
 
 <script>
@@ -171,6 +200,7 @@ var ontgrendelBtn = document.getElementById('ontgrendelBtn');
 var lockFout = document.getElementById('lockFout');
 var huidigWachtwoord = '';
 var huidigeWeek = null; // YYYY-MM-DD (maandag), null = huidige week
+var laatsteData = null;
 
 // Zelfde wachtwoord-check + sessionStorage-sleutel als kassa.html/kassa-ritten.html.
 function controleerWachtwoord(wachtwoord){
@@ -198,6 +228,7 @@ if (opgeslagen) controleerWachtwoord(opgeslagen);
 })();
 
 var DAGNAMEN = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag'];
+var DAGNAMEN_KORT = ['Ma','Di','Wo','Do','Vr','Za','Zo'];
 var DAGDEEL_LABEL = { ochtend:'Ochtend', middag:'Middag', avond:'Avond', hele_dag:'Hele dag' };
 var STATUS_LABEL = { beschikbaar:'Beschikbaar', niet_beschikbaar:'Niet beschikbaar', voorkeur:'Voorkeur' };
 
@@ -212,6 +243,21 @@ var d = new Date(datumStr + 'T00:00:00');
 return d.toLocaleDateString('nl-NL', { day:'numeric', month:'short' });
 }
 
+// Aantal uren tussen twee "HH:MM"-tijden op dezelfde dag, als decimaal getal.
+function urenTussen(start, eind){
+var sDelen = start.split(':').map(Number);
+var eDelen = eind.split(':').map(Number);
+var sMin = sDelen[0] * 60 + sDelen[1];
+var eMin = eDelen[0] * 60 + eDelen[1];
+var verschil = eMin - sMin;
+if (verschil < 0) verschil = 0;
+return verschil / 60;
+}
+
+function formatUren(x){
+return x.toFixed(2).replace('.', ',');
+}
+
 function laadWeek(){
 var url = '/api/admin/planning?wachtwoord=' + encodeURIComponent(huidigWachtwoord);
 if (huidigeWeek) url += '&week=' + encodeURIComponent(huidigeWeek);
@@ -220,53 +266,125 @@ fetch(url)
 .then(function(data){
 if (data.error) { document.getElementById('roosterStatus').textContent = data.error; return; }
 huidigeWeek = data.week;
+laatsteData = data;
 teken(data);
 })
 .catch(function(){ document.getElementById('roosterStatus').textContent = 'Kon planning niet laden.'; });
+}
+
+// Geeft { type: 'verlof'|'ziek' } terug als de medewerker op deze datum goedgekeurd
+// verlof/ziek heeft, anders null. Alleen 'goedgekeurd' telt mee in het rooster zelf
+// (aangevraagd/afgewezen wijzigt niets aan hoe het rooster eruitziet).
+function haalAfwezigheid(verlofAanvragen, personeelsnummer, datum){
+for (var i = 0; i < (verlofAanvragen || []).length; i++){
+var v = verlofAanvragen[i];
+if (v.personeelsnummer === personeelsnummer && v.status === 'goedgekeurd' && datum >= v.van_datum && datum <= v.tot_datum){
+return { type: v.type };
+}
+}
+return null;
+}
+
+// Geeft de "zwaarste" beschikbaarheidsstatus terug voor deze medewerker/datum
+// (niet_beschikbaar weegt zwaarder dan voorkeur, die weegt zwaarder dan beschikbaar).
+function haalBeschikStatus(beschikbaarheid, personeelsnummer, datum){
+var status = null;
+(beschikbaarheid || []).forEach(function(b){
+if (b.personeelsnummer !== personeelsnummer || b.datum !== datum) return;
+if (b.status === 'niet_beschikbaar') status = 'niet_beschikbaar';
+else if (b.status === 'voorkeur' && status !== 'niet_beschikbaar') status = 'voorkeur';
+});
+return status;
 }
 
 function teken(data){
 var weekZondag = plusDagen(huidigeWeek, 6);
 document.getElementById('weekLabel').textContent = formatDatum(huidigeWeek) + ' — ' + formatDatum(weekZondag);
 
-// Medewerker-dropdown
-var select = document.getElementById('nieuweShiftMedewerker');
-var huidigeKeuze = select.value;
-select.innerHTML = '<option value="">Kies medewerker…</option>';
-(data.medewerkers || []).forEach(function(m){
-var opt = document.createElement('option');
-opt.value = m.personeelsnummer;
-opt.textContent = m.naam;
-select.appendChild(opt);
-});
-select.value = huidigeKeuze;
+var dagen = [];
+for (var i = 0; i < 7; i++) dagen.push(plusDagen(huidigeWeek, i));
 
-// Rooster per dag
-var roosterDagen = document.getElementById('roosterDagen');
-roosterDagen.innerHTML = '';
-for (var i = 0; i < 7; i++){
-var datum = plusDagen(huidigeWeek, i);
-var shiftsVanDag = (data.shifts || []).filter(function(s){ return s.datum === datum; });
-var blok = document.createElement('div');
-blok.className = 'dagBlok';
-var html = '<h3>' + DAGNAMEN[i] + ' <span class="datumTxt">' + formatDatum(datum) + '</span></h3>';
-if (shiftsVanDag.length === 0){
-html += '<div class="leeg">Geen diensten gepland.</div>';
-} else {
-shiftsVanDag.forEach(function(s){
-html += '<div class="shiftRij">' +
-'<span class="naam">' + (s.naam || s.personeelsnummer) + '</span>' +
-'<span class="tijd">' + s.start_tijd + '–' + s.eind_tijd + '</span>' +
-(s.functie ? '<span class="functie">' + s.functie + '</span>' : '') +
-'<button type="button" class="verwijderBtn" data-shift-id="' + s.id + '" title="Verwijderen">&#10005;</button>' +
-'</div>';
+// --- Kopregel ---
+var kopRij = document.getElementById('roosterKopRij');
+var kopHtml = '<th class="naamKop">Naam</th>';
+dagen.forEach(function(datum, i){
+kopHtml += '<th>' + DAGNAMEN_KORT[i] + '<span class="datumTxt">' + formatDatum(datum) + '</span></th>';
 });
+kopHtml += '<th>Uren</th>';
+kopRij.innerHTML = kopHtml;
+
+// --- Rijen per medewerker ---
+var body = document.getElementById('roosterBody');
+body.innerHTML = '';
+var dagTotalen = dagen.map(function(){ return 0; });
+var grandTotaal = 0;
+
+(data.medewerkers || []).forEach(function(m){
+var rij = document.createElement('tr');
+var rijHtml = '<td class="naamCel">' + m.naam + '</td>';
+var medewerkerTotaal = 0;
+
+dagen.forEach(function(datum){
+var shiftsVanCel = (data.shifts || []).filter(function(s){ return s.personeelsnummer === m.personeelsnummer && s.datum === datum; });
+var afwezig = haalAfwezigheid(data.verlofAanvragen, m.personeelsnummer, datum);
+var beschikStatus = haalBeschikStatus(data.beschikbaarheid, m.personeelsnummer, datum);
+
+var celKlasse = 'dagCel';
+if (afwezig) celKlasse += afwezig.type === 'ziek' ? ' markZiek' : ' markVerlof';
+else if (beschikStatus === 'voorkeur') celKlasse += ' markVoorkeur';
+
+var celHtml = '';
+if (afwezig) celHtml += '<span class="afwezigLabel">' + (afwezig.type === 'ziek' ? 'Ziek' : 'Verlof') + '</span><br>';
+if (beschikStatus === 'niet_beschikbaar') celHtml += '<span class="beschikIcoon" title="Niet beschikbaar">&#9940;</span>';
+else if (beschikStatus === 'voorkeur') celHtml += '<span class="beschikIcoon" title="Voorkeur">&#9733;</span>';
+
+shiftsVanCel.forEach(function(s){
+var uren = urenTussen(s.start_tijd, s.eind_tijd);
+medewerkerTotaal += uren;
+celHtml += '<span class="shiftChip" data-shift-id="' + s.id + '" data-personeelsnummer="' + m.personeelsnummer + '" data-naam="' + m.naam + '" data-datum="' + datum + '">' +
+'<span class="chipTijd">' + s.start_tijd + '–' + s.eind_tijd + '</span>' +
+(s.functie ? '<span class="chipFunctie">' + s.functie + '</span>' : '') +
+'</span>';
+});
+
+var dagIndex = dagen.indexOf(datum);
+dagTotalen[dagIndex] += shiftsVanCel.reduce(function(som, s){ return som + urenTussen(s.start_tijd, s.eind_tijd); }, 0);
+
+celHtml += '<button type="button" class="voegToeBtn" data-personeelsnummer="' + m.personeelsnummer + '" data-naam="' + m.naam + '" data-datum="' + datum + '">+ dienst</button>';
+
+rijHtml += '<td class="' + celKlasse + '">' + celHtml + '</td>';
+});
+
+grandTotaal += medewerkerTotaal;
+rijHtml += '<td class="urenCel">' + formatUren(medewerkerTotaal) + '</td>';
+rij.innerHTML = rijHtml;
+body.appendChild(rij);
+});
+
+if (!data.medewerkers || data.medewerkers.length === 0){
+body.innerHTML = '<tr><td colspan="9" class="leeg">Geen actieve medewerkers gevonden.</td></tr>';
 }
-blok.innerHTML = html;
-roosterDagen.appendChild(blok);
-}
-Array.prototype.forEach.call(roosterDagen.querySelectorAll('.verwijderBtn'), function(btn){
-btn.addEventListener('click', function(){ verwijderShift(btn.getAttribute('data-shift-id')); });
+
+// --- Totaalrij ---
+var totaalRij = document.getElementById('roosterTotaalRij');
+var totaalHtml = '<td class="naamCel">Totaal:</td>';
+dagTotalen.forEach(function(t){ totaalHtml += '<td>' + formatUren(t) + '</td>'; });
+totaalHtml += '<td>' + formatUren(grandTotaal) + '</td>';
+totaalRij.innerHTML = totaalHtml;
+
+// Klikhandlers voor bestaande diensten (bewerken) en "+ dienst"-knoppen (nieuw)
+Array.prototype.forEach.call(body.querySelectorAll('.shiftChip'), function(chip){
+chip.addEventListener('click', function(){
+var shiftId = chip.getAttribute('data-shift-id');
+var shift = (data.shifts || []).filter(function(s){ return s.id === shiftId; })[0];
+if (!shift) return;
+openBewerkShiftModal(shift, chip.getAttribute('data-naam'), chip.getAttribute('data-datum'));
+});
+});
+Array.prototype.forEach.call(body.querySelectorAll('.voegToeBtn'), function(btn){
+btn.addEventListener('click', function(){
+openNieuweShiftModal(btn.getAttribute('data-personeelsnummer'), btn.getAttribute('data-naam'), btn.getAttribute('data-datum'));
+});
 });
 
 // Beschikbaarheid
@@ -286,6 +404,11 @@ return '<div class="beschikRij">' +
 
 // Verlofaanvragen
 var verlofLijst = document.getElementById('verlofLijst');
+var verlofOpenAantal = (data.verlofAanvragen || []).filter(function(v){ return v.status === 'aangevraagd'; }).length;
+var verlofTeller = document.getElementById('verlofTeller');
+if (verlofOpenAantal > 0){ verlofTeller.textContent = verlofOpenAantal; verlofTeller.style.display = 'inline-block'; }
+else { verlofTeller.style.display = 'none'; }
+
 if (!data.verlofAanvragen || data.verlofAanvragen.length === 0){
 verlofLijst.innerHTML = '<div class="leeg">Geen aanvragen.</div>';
 } else {
@@ -316,6 +439,11 @@ beoordeelVerlof(btn.getAttribute('data-verlof-id'), btn.getAttribute('data-besli
 
 // Werkuren
 var urenLijst = document.getElementById('urenLijst');
+var urenOpenAantal = (data.werkuren || []).filter(function(w){ return w.status === 'ingediend'; }).length;
+var urenTeller = document.getElementById('urenTeller');
+if (urenOpenAantal > 0){ urenTeller.textContent = urenOpenAantal; urenTeller.style.display = 'inline-block'; }
+else { urenTeller.style.display = 'none'; }
+
 if (!data.werkuren || data.werkuren.length === 0){
 urenLijst.innerHTML = '<div class="leeg">Geen ingediende uren.</div>';
 } else {
@@ -344,50 +472,100 @@ beoordeelUren(btn.getAttribute('data-uren-id'), btn.getAttribute('data-beslissin
 }
 }
 
-document.getElementById('shiftToevoegenBtn').addEventListener('click', function(){
-var personeelsnummer = document.getElementById('nieuweShiftMedewerker').value;
-var dagIndex = parseInt(document.getElementById('nieuweShiftDag').value, 10);
-var startTijd = document.getElementById('nieuweShiftStart').value;
-var eindTijd = document.getElementById('nieuweShiftEind').value;
-var functie = document.getElementById('nieuweShiftFunctie').value;
-var notitie = document.getElementById('nieuweShiftNotitie').value;
-var statusEl = document.getElementById('roosterStatus');
+// --- Modal: dienst toevoegen/bewerken ---
+var shiftModalOverlay = document.getElementById('shiftModalOverlay');
+var shiftModalTitel = document.getElementById('shiftModalTitel');
+var modalStart = document.getElementById('modalStart');
+var modalEind = document.getElementById('modalEind');
+var modalFunctie = document.getElementById('modalFunctie');
+var modalNotitie = document.getElementById('modalNotitie');
+var modalStatus = document.getElementById('modalStatus');
+var modalVerwijderBtn = document.getElementById('modalVerwijderBtn');
 
-if (!personeelsnummer || !startTijd || !eindTijd){
-statusEl.textContent = 'Kies een medewerker en vul start-/eindtijd in.';
+var modalHuidigShiftId = null;
+var modalHuidigPersoneelsnummer = null;
+var modalHuidigDatum = null;
+
+function openNieuweShiftModal(personeelsnummer, naam, datum){
+modalHuidigShiftId = null;
+modalHuidigPersoneelsnummer = personeelsnummer;
+modalHuidigDatum = datum;
+shiftModalTitel.textContent = 'Nieuwe dienst — ' + naam + ', ' + formatDatum(datum);
+modalStart.value = '16:30';
+modalEind.value = '20:30';
+modalFunctie.value = '';
+modalNotitie.value = '';
+modalStatus.textContent = '';
+modalVerwijderBtn.style.display = 'none';
+shiftModalOverlay.style.display = 'flex';
+}
+
+function openBewerkShiftModal(shift, naam, datum){
+modalHuidigShiftId = shift.id;
+modalHuidigPersoneelsnummer = shift.personeelsnummer;
+modalHuidigDatum = datum;
+shiftModalTitel.textContent = 'Dienst bewerken — ' + naam + ', ' + formatDatum(datum);
+modalStart.value = shift.start_tijd;
+modalEind.value = shift.eind_tijd;
+modalFunctie.value = shift.functie || '';
+modalNotitie.value = shift.notitie || '';
+modalStatus.textContent = '';
+modalVerwijderBtn.style.display = 'block';
+shiftModalOverlay.style.display = 'flex';
+}
+
+function sluitShiftModal(){
+shiftModalOverlay.style.display = 'none';
+}
+
+document.getElementById('modalAnnulerenBtn').addEventListener('click', sluitShiftModal);
+shiftModalOverlay.addEventListener('click', function(e){
+if (e.target === shiftModalOverlay) sluitShiftModal();
+});
+
+document.getElementById('modalOpslaanBtn').addEventListener('click', function(){
+var startTijd = modalStart.value;
+var eindTijd = modalEind.value;
+var functie = modalFunctie.value;
+var notitie = modalNotitie.value;
+
+if (!startTijd || !eindTijd){
+modalStatus.textContent = 'Vul start- en eindtijd in.';
 return;
 }
 
-var datum = plusDagen(huidigeWeek, dagIndex);
-statusEl.textContent = 'Bezig met opslaan…';
+var actie = modalHuidigShiftId ? 'shift_bewerken' : 'shift_toevoegen';
+var body = { actie: actie, startTijd: startTijd, eindTijd: eindTijd, functie: functie, notitie: notitie };
+if (modalHuidigShiftId) body.shiftId = modalHuidigShiftId;
+else { body.personeelsnummer = modalHuidigPersoneelsnummer; body.datum = modalHuidigDatum; }
 
+modalStatus.textContent = 'Bezig met opslaan…';
 fetch('/api/admin/planning?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ actie:'shift_toevoegen', personeelsnummer:personeelsnummer, datum:datum, startTijd:startTijd, eindTijd:eindTijd, functie:functie, notitie:notitie })
+body: JSON.stringify(body)
 })
 .then(function(res){ return res.json(); })
 .then(function(data){
-if (data.error) { statusEl.textContent = data.error; return; }
-statusEl.textContent = '';
-document.getElementById('nieuweShiftFunctie').value = '';
-document.getElementById('nieuweShiftNotitie').value = '';
+if (data.error) { modalStatus.textContent = data.error; return; }
+sluitShiftModal();
 laadWeek();
 })
-.catch(function(){ statusEl.textContent = 'Kon dienst niet opslaan.'; });
+.catch(function(){ modalStatus.textContent = 'Kon dienst niet opslaan.'; });
 });
 
-function verwijderShift(shiftId){
+modalVerwijderBtn.addEventListener('click', function(){
+if (!modalHuidigShiftId) return;
 if (!confirm('Deze dienst verwijderen?')) return;
 fetch('/api/admin/planning?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ actie:'shift_verwijderen', shiftId:shiftId })
+body: JSON.stringify({ actie:'shift_verwijderen', shiftId: modalHuidigShiftId })
 })
 .then(function(res){ return res.json(); })
-.then(function(){ laadWeek(); })
-.catch(function(){ alert('Kon dienst niet verwijderen.'); });
-}
+.then(function(){ sluitShiftModal(); laadWeek(); })
+.catch(function(){ modalStatus.textContent = 'Kon dienst niet verwijderen.'; });
+});
 
 function beoordeelVerlof(verlofId, beslissing){
 fetch('/api/admin/planning?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
