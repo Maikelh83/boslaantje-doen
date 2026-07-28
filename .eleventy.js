@@ -68,6 +68,15 @@ eleventyConfig.addPassthroughCopy('src/kassa-bezorger-betaling.html');
 // kassa-bezorger.html gebruikt via /api/personeel/login.
 eleventyConfig.addPassthroughCopy('src/kassa-personeel.html');
 
+// Personeelsplanning voor Snackbar De Boslaan: weekrooster, beschikbaarheid,
+// verlof/ziekmeldingen en werkuren. Beheerpagina (kassa-planning.html,
+// staff-wachtwoord-gated, koppelt via /api/admin/planning) en de
+// medewerker-facing pagina (personeel-rooster.html, gekoppeld via het
+// bestaande personeelsnummer+pincode-inlogsysteem uit /api/personeel/login,
+// koppelt verder via /api/personeel/planning).
+eleventyConfig.addPassthroughCopy('src/kassa-planning.html');
+eleventyConfig.addPassthroughCopy('src/personeel-rooster.html');
+
 // Klant-facing account-pagina's voor pijler 7 (zakelijke accounts): registreren
 // en inloggen. Koppelen via /api/auth/register en /api/auth/login.
 eleventyConfig.addPassthroughCopy('src/account-registreren.html');
