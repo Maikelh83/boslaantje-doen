@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mijn rooster · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+--green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
+--paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
+--rood:#8A2B1E;--goud:#8A6D1E;
+--font-body:'Roboto',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.4;font-size:18px;min-height:100vh}
+h1,h2,h3{font-weight:700;color:var(--green-ink)}
+button{font-family:inherit;user-select:none}
+
+#lockScreen{max-width:420px;margin:3.5rem auto;background:#fff;border:1px solid var(--paper-line);border-radius:10px;padding:2rem}
+#lockScreen h1{text-align:center;font-size:1.4rem;margin-bottom:.4rem}
+#lockScreen p{text-align:center;font-size:.9rem;color:#6b6a62}
+#lockScreen label{display:block;font-weight:700;font-size:.85rem;margin:1rem 0 .2rem}
+#lockScreen input{width:100%;padding:1.1rem .9rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1.15rem}
+#lockScreen button{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:1.1rem;font-weight:800;font-size:1.1rem;cursor:pointer;min-height:60px;margin-top:1rem}
+#lockScreen button:active{background:var(--terracotta-deep)}
+#lockFout{color:var(--rood);font-size:.9rem;min-height:1.2em;margin-top:.5rem;text-align:center}
+
+header{background:var(--green);padding:.9rem 1.3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+header h1{color:#fff;font-size:1.3rem}
+header .naam{color:#fff;font-size:.85rem;opacity:.9}
+header button{background:none;border:1px solid rgba(255,255,255,.6);color:#fff;border-radius:8px;padding:.4rem .8rem;font-weight:700;font-size:.82rem;cursor:pointer}
+
+main{padding:1.3rem;max-width:640px;margin:0 auto}
+.kaart{background:#fff;border-radius:14px;border:2px solid var(--paper-line);padding:1.2rem;margin-bottom:1.1rem}
+.kaart h2{font-size:1.1rem;margin-bottom:.3rem}
+.kaart .uitleg{font-size:.86rem;color:#6b6a62;margin-bottom:1rem}
+.leeg{font-size:.9rem;color:#6b6a62;padding:.5rem 0}
+
+.weekNav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.1rem}
+.weekNav button{background:#fff;border:2px solid var(--paper-line);border-radius:8px;padding:.6rem 1rem;font-weight:700;cursor:pointer;min-height:44px}
+.weekNav span{font-weight:800;color:var(--green-ink);font-size:.95rem;min-width:10rem;text-align:center}
+
+.shiftRij{display:flex;align-items:center;gap:.6rem;padding:.55rem 0;border-bottom:1px solid var(--paper-line);font-size:.92rem}
+.shiftRij:last-child{border-bottom:none}
+.shiftRij .dag{font-weight:700;flex:1}
+.shiftRij .tijd{color:var(--terracotta-deep);font-weight:700}
+.shiftRij .functie{color:#6b6a62;font-size:.8rem}
+
+.beschikDag{border-top:1px dashed var(--paper-line);padding:.7rem 0}
+.beschikDag:first-of-type{border-top:none}
+.beschikDag .kop{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.beschikDag .kop .dagNaam{font-weight:700;font-size:.92rem}
+.beschikDag .kop .datumTxt{color:#6b6a62;font-size:.8rem}
+.beschikKnoppen{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.4rem}
+.beschikKnoppen button{flex:1;min-width:6rem;border-radius:8px;padding:.55rem;font-weight:700;font-size:.82rem;cursor:pointer;border:2px solid var(--paper-line);background:#fff}
+.beschikKnoppen button.actief.beschikbaar{background:var(--green);border-color:var(--green);color:#fff}
+.beschikKnoppen button.actief.niet_beschikbaar{background:var(--rood);border-color:var(--rood);color:#fff}
+.beschikKnoppen button.actief.voorkeur{background:var(--goud);border-color:var(--goud);color:#fff}
+.beschikDag select{width:100%;padding:.5rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:.85rem;margin-bottom:.4rem}
+.beschikDag input[type=text]{width:100%;padding:.5rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:.85rem}
+
+.formVeld{margin-bottom:.7rem}
+.formVeld label{display:block;font-weight:700;font-size:.85rem;margin-bottom:.3rem}
+.formVeld input,.formVeld select,.formVeld textarea{width:100%;padding:.7rem .6rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:.92rem}
+.formRij{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.indienBtn{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:.9rem;font-weight:800;cursor:pointer;min-height:50px;margin-top:.3rem}
+.indienBtn:active{background:var(--terracotta-deep)}
+.formStatus{font-size:.86rem;min-height:1.2em;margin-top:.5rem;text-align:center}
+.formStatus.fout{color:var(--rood)}
+.formStatus.ok{color:var(--green-ink);font-weight:700}
+
+.badge{display:inline-block;font-size:.76rem;font-weight:800;padding:.25rem .55rem;border-radius:99px}
+.badge.aangevraagd{background:#EFE7D8;color:var(--goud)}
+.badge.ingediend{background:#EFE7D8;color:var(--goud)}
+.badge.goedgekeurd{background:#E4EDE0;color:var(--green-ink)}
+.badge.afgewezen{background:#F4E1DC;color:var(--rood)}
+
+.histRij{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-bottom:1px solid var(--paper-line);font-size:.86rem;flex-wrap:wrap}
+.histRij:last-child{border-bottom:none}
+.histRij .info{flex:1;color:#4a4338}
+
+@media (max-width: 480px){
+body{font-size:16px}
+.formRij{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+<h1>Mijn rooster</h1>
+<p>Alleen voor personeel — log in met je werknemernummer en pincode.</p>
+<label for="nummerInput">Werknemernummer</label>
+<input type="text" inputmode="numeric" id="nummerInput" placeholder="Bijv. 12" autocomplete="off">
+<label for="pincodeInput">Pincode</label>
+<input type="password" inputmode="numeric" id="pincodeInput" placeholder="••••" autocomplete="off">
+<button type="button" id="inlogBtn">Inloggen</button>
+<div id="lockFout"></div>
+</div>
+
+<div id="app" style="display:none">
+<header>
+<h1>Mijn rooster</h1>
+<div style="display:flex;align-items:center;gap:.8rem">
+<span class="naam" id="naamLabel"></span>
+<button type="button" id="uitloggenBtn">Uitloggen</button>
+</div>
+</header>
+
+<main>
+
+<div class="weekNav">
+<button type="button" id="vorigeWeekBtn">&larr;</button>
+<span id="weekLabel">—</span>
+<button type="button" id="volgendeWeekBtn">&rarr;</button>
+</div>
+
+<div class="kaart">
+<h2>Mijn diensten deze week</h2>
+<div id="shiftLijst"><div class="leeg">Geen diensten gepland deze week.</div></div>
+</div>
+
+<div class="kaart">
+<h2>Beschikbaarheid doorgeven</h2>
+<p class="uitleg">Geef per dag door of je kunt werken — dit helpt bij het maken van het rooster.</p>
+<div id="beschikbaarheidDagen"></div>
+<div id="beschikStatus" class="formStatus"></div>
+</div>
+
+<div class="kaart">
+<h2>Verlof of ziek melden</h2>
+<div class="formVeld"><label>Type</label>
+<select id="verlofType"><option value="verlof">Verlof</option><option value="ziek">Ziek</option></select>
+</div>
+<div class="formRij">
+<div class="formVeld"><label>Van</label><input type="date" id="verlofVan"></div>
+<div class="formVeld"><label>Tot en met</label><input type="date" id="verlofTot"></div>
+</div>
+<div class="formVeld"><label>Reden (optioneel)</label><textarea id="verlofReden" rows="2"></textarea></div>
+<button type="button" class="indienBtn" id="verlofIndienenBtn">Aanvragen</button>
+<div id="verlofStatus" class="formStatus"></div>
+<div id="verlofHistorie" style="margin-top:1rem"></div>
+</div>
+
+<div class="kaart">
+<h2>Uren indienen</h2>
+<div class="formVeld"><label>Datum</label><input type="date" id="urenDatum"></div>
+<div class="formRij">
+<div class="formVeld"><label>Begintijd</label><input type="time" id="urenStart"></div>
+<div class="formVeld"><label>Eindtijd</label><input type="time" id="urenEind"></div>
+</div>
+<div class="formVeld"><label>Pauze (minuten)</label><input type="number" id="urenPauze" value="0" min="0"></div>
+<button type="button" class="indienBtn" id="urenIndienenBtn">Uren indienen</button>
+<div id="urenStatus" class="formStatus"></div>
+<div id="urenHistorie" style="margin-top:1rem"></div>
+</div>
+
+</main>
+</div>
+
+<script>
+var LOCAL_KEY_SESSIE = 'bd_personeel_rooster_sessie';
+var lockScreen = document.getElementById('lockScreen');
+var app = document.getElementById('app');
+var lockFout = document.getElementById('lockFout');
+var huidigeSessie = '';
+var huidigeWeek = null;
+var eigenShiftsDezeWeek = [];
+
+var DAGNAMEN = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag'];
+
+function plusDagen(datumStr, n){
+var d = new Date(datumStr + 'T00:00:00');
+d.setDate(d.getDate() + n);
+return d.toISOString().slice(0,10);
+}
+function formatDatum(datumStr){
+var d = new Date(datumStr + 'T00:00:00');
+return d.toLocaleDateString('nl-NL', { day:'numeric', month:'short' });
+}
+
+function inloggen(){
+var personeelsnummer = document.getElementById('nummerInput').value.trim();
+var pincode = document.getElementById('pincodeInput').value.trim();
+lockFout.textContent = '';
+if (!personeelsnummer || !pincode){ lockFout.textContent = 'Vul werknemernummer en pincode in.'; return; }
+
+fetch('/api/personeel/login', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ personeelsnummer: personeelsnummer, pincode: pincode })
+})
+.then(function(res){ return res.json().then(function(data){ return { status: res.status, data: data }; }); })
+.then(function(r){
+if (r.status !== 200 || !r.data.ok){ lockFout.textContent = (r.data && r.data.error) || 'Inloggen mislukt.'; return; }
+huidigeSessie = r.data.sessieToken;
+try { localStorage.setItem(LOCAL_KEY_SESSIE, huidigeSessie); } catch(e){}
+toonApp(r.data.naam);
+})
+.catch(function(){ lockFout.textContent = 'Kon niet verbinden — probeer opnieuw.'; });
+}
+
+document.getElementById('inlogBtn').addEventListener('click', inloggen);
+document.getElementById('pincodeInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') inloggen(); });
+
+document.getElementById('uitloggenBtn').addEventListener('click', function(){
+try { localStorage.removeItem(LOCAL_KEY_SESSIE); } catch(e){}
+huidigeSessie = '';
+app.style.display = 'none';
+lockScreen.style.display = 'block';
+document.getElementById('nummerInput').value = '';
+document.getElementById('pincodeInput').value = '';
+});
+
+function toonApp(naam){
+lockScreen.style.display = 'none';
+app.style.display = 'block';
+document.getElementById('naamLabel').textContent = naam || '';
+laadWeek();
+}
+
+function laadWeek(){
+var url = '/api/personeel/planning?sessie=' + encodeURIComponent(huidigeSessie);
+if (huidigeWeek) url += '&week=' + encodeURIComponent(huidigeWeek);
+fetch(url)
+.then(function(res){ return res.json().then(function(data){ return { status: res.status, data: data }; }); })
+.then(function(r){
+if (r.status === 401){
+try { localStorage.removeItem(LOCAL_KEY_SESSIE); } catch(e){}
+app.style.display = 'none';
+lockScreen.style.display = 'block';
+lockFout.textContent = 'Sessie verlopen — log opnieuw in.';
+return;
+}
+if (r.data.error){ return; }
+huidigeWeek = r.data.week;
+document.getElementById('naamLabel').textContent = r.data.naam || '';
+tekenWeek(r.data);
+})
+.catch(function(){});
+}
+
+function tekenWeek(data){
+var weekZondag = plusDagen(huidigeWeek, 6);
+document.getElementById('weekLabel').textContent = formatDatum(huidigeWeek) + ' — ' + formatDatum(weekZondag);
+eigenShiftsDezeWeek = data.shifts || [];
+
+// Mijn diensten
+var shiftLijst = document.getElementById('shiftLijst');
+if (eigenShiftsDezeWeek.length === 0){
+shiftLijst.innerHTML = '<div class="leeg">Geen diensten gepland deze week.</div>';
+} else {
+shiftLijst.innerHTML = eigenShiftsDezeWeek.map(function(s){
+return '<div class="shiftRij">' +
+'<span class="dag">' + formatDatum(s.datum) + '</span>' +
+'<span class="tijd">' + s.start_tijd + '–' + s.eind_tijd + '</span>' +
+(s.functie ? '<span class="functie">' + s.functie + '</span>' : '') +
+'</div>';
+}).join('');
+}
+
+// Beschikbaarheid: bestaande opgaven indexeren op datum+dagdeel
+var bestaand = {};
+(data.beschikbaarheid || []).forEach(function(b){
+bestaand[b.datum + '|' + b.dagdeel] = b;
+});
+
+var beschikDagen = document.getElementById('beschikbaarheidDagen');
+beschikDagen.innerHTML = '';
+for (var i = 0; i < 7; i++){
+var datum = plusDagen(huidigeWeek, i);
+var blok = document.createElement('div');
+blok.className = 'beschikDag';
+blok.innerHTML =
+'<div class="kop"><span class="dagNaam">' + DAGNAMEN[i] + '</span><span class="datumTxt">' + formatDatum(datum) + '</span></div>' +
+'<select class="dagdeelSelect" data-datum="' + datum + '">' +
+'<option value="hele_dag">Hele dag</option>' +
+'<option value="ochtend">Ochtend</option>' +
+'<option value="middag">Middag</option>' +
+'<option value="avond">Avond</option>' +
+'</select>' +
+'<div class="beschikKnoppen" data-datum="' + datum + '">' +
+'<button type="button" data-status="beschikbaar">Beschikbaar</button>' +
+'<button type="button" data-status="voorkeur">Voorkeur</button>' +
+'<button type="button" data-status="niet_beschikbaar">Niet beschikbaar</button>' +
+'</div>' +
+'<input type="text" class="opmerkingInput" data-datum="' + datum + '" placeholder="Opmerking (optioneel)">';
+beschikDagen.appendChild(blok);
+
+(function(datum, blok){
+var select = blok.querySelector('.dagdeelSelect');
+var opmerkingInput = blok.querySelector('.opmerkingInput');
+
+function werkKnoppenBij(){
+var dagdeel = select.value;
+var bestaandeOpgave = bestaand[datum + '|' + dagdeel];
+Array.prototype.forEach.call(blok.querySelectorAll('.beschikKnoppen button'), function(btn){
+btn.className = '';
+if (bestaandeOpgave && bestaandeOpgave.status === btn.getAttribute('data-status')){
+btn.className = 'actief ' + btn.getAttribute('data-status');
+}
+});
+opmerkingInput.value = bestaandeOpgave ? (bestaandeOpgave.opmerking || '') : '';
+}
+werkKnoppenBij();
+select.addEventListener('change', werkKnoppenBij);
+
+Array.prototype.forEach.call(blok.querySelectorAll('.beschikKnoppen button'), function(btn){
+btn.addEventListener('click', function(){
+geefBeschikbaarheidDoor(datum, select.value, btn.getAttribute('data-status'), opmerkingInput.value);
+});
+});
+})(datum, blok);
+}
+
+// Verlofhistorie
+var verlofHistorie = document.getElementById('verlofHistorie');
+if (!data.verlofAanvragen || data.verlofAanvragen.length === 0){
+verlofHistorie.innerHTML = '<div class="leeg">Nog geen aanvragen ingediend.</div>';
+} else {
+verlofHistorie.innerHTML = data.verlofAanvragen.map(function(v){
+var periode = formatDatum(v.van_datum) + (v.tot_datum !== v.van_datum ? ' t/m ' + formatDatum(v.tot_datum) : '');
+return '<div class="histRij"><span class="info">' + (v.type === 'ziek' ? 'Ziekmelding' : 'Verlof') + ' · ' + periode + '</span>' +
+'<span class="badge ' + v.status + '">' + v.status + '</span></div>';
+}).join('');
+}
+
+// Urenhistorie
+var urenHistorie = document.getElementById('urenHistorie');
+if (!data.werkuren || data.werkuren.length === 0){
+urenHistorie.innerHTML = '<div class="leeg">Nog geen uren ingediend.</div>';
+} else {
+urenHistorie.innerHTML = data.werkuren.map(function(w){
+return '<div class="histRij"><span class="info">' + formatDatum(w.datum) + ' · ' + w.start_tijd + '–' + w.eind_tijd +
+(w.pauze_minuten ? ' (' + w.pauze_minuten + ' min pauze)' : '') + '</span>' +
+'<span class="badge ' + w.status + '">' + w.status + '</span></div>';
+}).join('');
+}
+}
+
+function geefBeschikbaarheidDoor(datum, dagdeel, status, opmerking){
+var statusEl = document.getElementById('beschikStatus');
+statusEl.className = 'formStatus';
+statusEl.textContent = 'Bezig met opslaan…';
+fetch('/api/personeel/planning?sessie=' + encodeURIComponent(huidigeSessie), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie:'beschikbaarheid_doorgeven', datum:datum, dagdeel:dagdeel, status:status, opmerking:opmerking })
+})
+.then(function(res){ return res.json(); })
+.then(function(data){
+if (data.error){ statusEl.className = 'formStatus fout'; statusEl.textContent = data.error; return; }
+statusEl.className = 'formStatus ok'; statusEl.textContent = 'Opgeslagen.';
+laadWeek();
+})
+.catch(function(){ statusEl.className = 'formStatus fout'; statusEl.textContent = 'Kon niet opslaan.'; });
+}
+
+document.getElementById('verlofIndienenBtn').addEventListener('click', function(){
+var statusEl = document.getElementById('verlofStatus');
+var type = document.getElementById('verlofType').value;
+var vanDatum = document.getElementById('verlofVan').value;
+var totDatum = document.getElementById('verlofTot').value || vanDatum;
+var reden = document.getElementById('verlofReden').value;
+
+statusEl.className = 'formStatus';
+if (!vanDatum){ statusEl.className = 'formStatus fout'; statusEl.textContent = 'Kies een begindatum.'; return; }
+statusEl.textContent = 'Bezig met versturen…';
+
+fetch('/api/personeel/planning?sessie=' + encodeURIComponent(huidigeSessie), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie:'verlof_aanvragen', vanDatum:vanDatum, totDatum:totDatum, type:type, reden:reden })
+})
+.then(function(res){ return res.json(); })
+.then(function(data){
+if (data.error){ statusEl.className = 'formStatus fout'; statusEl.textContent = data.error; return; }
+statusEl.className = 'formStatus ok'; statusEl.textContent = 'Aanvraag verstuurd.';
+document.getElementById('verlofReden').value = '';
+laadWeek();
+})
+.catch(function(){ statusEl.className = 'formStatus fout'; statusEl.textContent = 'Kon aanvraag niet versturen.'; });
+});
+
+document.getElementById('urenIndienenBtn').addEventListener('click', function(){
+var statusEl = document.getElementById('urenStatus');
+var datum = document.getElementById('urenDatum').value;
+var startTijd = document.getElementById('urenStart').value;
+var eindTijd = document.getElementById('urenEind').value;
+var pauzeMinuten = parseInt(document.getElementById('urenPauze').value, 10) || 0;
+
+statusEl.className = 'formStatus';
+if (!datum || !startTijd || !eindTijd){ statusEl.className = 'formStatus fout'; statusEl.textContent = 'Vul datum, begin- en eindtijd in.'; return; }
+statusEl.textContent = 'Bezig met versturen…';
+
+fetch('/api/personeel/planning?sessie=' + encodeURIComponent(huidigeSessie), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie:'uren_indienen', datum:datum, startTijd:startTijd, eindTijd:eindTijd, pauzeMinuten:pauzeMinuten })
+})
+.then(function(res){ return res.json(); })
+.then(function(data){
+if (data.error){ statusEl.className = 'formStatus fout'; statusEl.textContent = data.error; return; }
+statusEl.className = 'formStatus ok'; statusEl.textContent = 'Uren ingediend.';
+laadWeek();
+})
+.catch(function(){ statusEl.className = 'formStatus fout'; statusEl.textContent = 'Kon uren niet indienen.'; });
+});
+
+document.getElementById('vorigeWeekBtn').addEventListener('click', function(){ huidigeWeek = plusDagen(huidigeWeek, -7); laadWeek(); });
+document.getElementById('volgendeWeekBtn').addEventListener('click', function(){ huidigeWeek = plusDagen(huidigeWeek, 7); laadWeek(); });
+
+(function(){
+try {
+var opgeslagenSessie = localStorage.getItem(LOCAL_KEY_SESSIE);
+if (opgeslagenSessie){ huidigeSessie = opgeslagenSessie; toonApp(''); }
+} catch(e){}
+})();
+</script>
+</body>
+</html>

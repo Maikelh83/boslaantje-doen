@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Planning · Boslaantje Doen</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+--green:#4A5D3D;--green-ink:#37472E;--terracotta:#9C6355;--terracotta-deep:#7F4F44;
+--paper:#fff;--paper-2:#F5F3EF;--paper-line:#E4E0D6;--ink:#1B1B18;
+--rood:#8A2B1E;--goud:#8A6D1E;
+--font-body:'Roboto',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{touch-action:manipulation}
+body{font-family:var(--font-body);background:var(--paper-2);color:var(--ink);line-height:1.4;font-size:17px}
+h1,h2,h3{font-weight:700;color:var(--green-ink)}
+button{font-family:inherit;user-select:none}
+
+#lockScreen{max-width:400px;margin:4rem auto;background:#fff;border:1px solid var(--paper-line);border-radius:10px;padding:2rem}
+#lockScreen h1{text-align:center;font-size:1.3rem;margin-bottom:.4rem}
+#lockScreen p{text-align:center;font-size:.9rem;color:#6b6a62}
+#lockScreen input{width:100%;padding:1rem .9rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:1.1rem;margin:1rem 0}
+#lockScreen button{width:100%;background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:1rem;font-weight:800;font-size:1.05rem;cursor:pointer;min-height:56px}
+#lockScreen button:active{background:var(--terracotta-deep)}
+#lockFout{color:var(--rood);font-size:.9rem;min-height:1.2em;margin-top:.5rem;text-align:center}
+
+header{background:var(--green);padding:.9rem 1.3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+header h1{color:#fff;font-size:1.4rem}
+
+main{padding:1.3rem;max-width:900px;margin:0 auto}
+.kaart{background:#fff;border-radius:14px;border:2px solid var(--paper-line);padding:1.2rem;margin-bottom:1.1rem}
+.kaart h2{font-size:1.1rem;margin-bottom:.3rem}
+.kaart .uitleg{font-size:.86rem;color:#6b6a62;margin-bottom:1rem}
+.leeg{font-size:.9rem;color:#6b6a62;padding:.5rem 0}
+
+.weekNav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1.1rem}
+.weekNav button{background:#fff;border:2px solid var(--paper-line);border-radius:8px;padding:.6rem 1rem;font-weight:700;cursor:pointer;min-height:44px}
+.weekNav span{font-weight:800;color:var(--green-ink);font-size:1.02rem;min-width:12rem;text-align:center}
+
+.dagBlok{border-top:1px dashed var(--paper-line);padding:.7rem 0}
+.dagBlok:first-of-type{border-top:none}
+.dagBlok h3{font-size:.95rem;margin-bottom:.5rem;display:flex;justify-content:space-between;align-items:center}
+.dagBlok h3 .datumTxt{color:#6b6a62;font-weight:500;font-size:.82rem}
+
+.shiftRij{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-bottom:1px solid var(--paper-line);font-size:.9rem}
+.shiftRij:last-child{border-bottom:none}
+.shiftRij .naam{font-weight:700;flex:1}
+.shiftRij .tijd{color:var(--terracotta-deep);font-weight:700}
+.shiftRij .functie{color:#6b6a62;font-size:.8rem}
+.shiftRij .verwijderBtn{background:none;border:none;color:var(--rood);cursor:pointer;font-size:1.1rem;padding:.2rem .4rem}
+
+.toevoegForm{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.7rem}
+.toevoegForm select,.toevoegForm input{padding:.7rem .6rem;border:1px solid var(--paper-line);border-radius:8px;font:inherit;font-size:.92rem}
+.toevoegForm .span2{grid-column:1 / -1}
+.toevoegForm button{grid-column:1 / -1;background:var(--terracotta);color:#fff;border:none;border-radius:8px;padding:.85rem;font-weight:800;cursor:pointer;min-height:48px}
+.toevoegForm button:active{background:var(--terracotta-deep)}
+
+.beschikRij{display:flex;gap:.6rem;padding:.45rem 0;border-bottom:1px solid var(--paper-line);font-size:.88rem;align-items:baseline}
+.beschikRij:last-child{border-bottom:none}
+.beschikRij .naam{font-weight:700;min-width:8rem}
+.beschikRij .datumTxt{color:#6b6a62;min-width:6rem}
+.badge{display:inline-block;font-size:.76rem;font-weight:800;padding:.25rem .55rem;border-radius:99px}
+.badge.beschikbaar{background:#E4EDE0;color:var(--green-ink)}
+.badge.niet_beschikbaar{background:#F4E1DC;color:var(--rood)}
+.badge.voorkeur{background:#EFE7D8;color:var(--goud)}
+.badge.aangevraagd{background:#EFE7D8;color:var(--goud)}
+.badge.goedgekeurd{background:#E4EDE0;color:var(--green-ink)}
+.badge.afgewezen{background:#F4E1DC;color:var(--rood)}
+.badge.ingediend{background:#EFE7D8;color:var(--goud)}
+
+.aanvraagKaart{border:2px solid var(--paper-line);border-radius:10px;padding:.85rem;margin-bottom:.7rem}
+.aanvraagKaart .kop{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;flex-wrap:wrap;gap:.4rem}
+.aanvraagKaart .info{font-size:.88rem;color:#4a4338;margin-bottom:.5rem}
+.aanvraagKnoppen{display:flex;gap:.5rem}
+.aanvraagKnoppen button{flex:1;border-radius:8px;padding:.6rem;font-weight:700;font-size:.86rem;cursor:pointer;min-height:42px}
+.goedBtn{background:var(--green);color:#fff;border:none}
+.goedBtn:active{background:var(--green-ink)}
+.afwijsBtn{background:none;border:1px solid var(--rood);color:var(--rood)}
+
+.urenRij{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-bottom:1px solid var(--paper-line);font-size:.88rem;flex-wrap:wrap}
+.urenRij:last-child{border-bottom:none}
+.urenRij .naam{font-weight:700}
+.urenRij .info{flex:1;color:#4a4338}
+
+@media (max-width: 480px){
+body{font-size:15px}
+.toevoegForm{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+<h1>Planning — personeel</h1>
+<p>Alleen voor personeel — voer het wachtwoord in.</p>
+<input type="password" id="wachtwoordInput" placeholder="Wachtwoord" autocomplete="off">
+<button type="button" id="ontgrendelBtn">Ontgrendelen</button>
+<div id="lockFout"></div>
+</div>
+
+<div id="app" style="display:none">
+<header>
+<h1>Planning</h1>
+</header>
+
+<main>
+
+<div class="weekNav">
+<button type="button" id="vorigeWeekBtn">&larr; Vorige week</button>
+<span id="weekLabel">—</span>
+<button type="button" id="volgendeWeekBtn">Volgende week &rarr;</button>
+</div>
+
+<div class="kaart">
+<h2>Weekrooster</h2>
+<p class="uitleg">Diensten toevoegen en verwijderen per dag. Gebruik de beschikbaarheid hieronder als hulpmiddel.</p>
+<div id="roosterDagen"></div>
+
+<div class="toevoegForm">
+<select id="nieuweShiftMedewerker"><option value="">Kies medewerker…</option></select>
+<select id="nieuweShiftDag">
+<option value="0">Maandag</option>
+<option value="1">Dinsdag</option>
+<option value="2">Woensdag</option>
+<option value="3">Donderdag</option>
+<option value="4">Vrijdag</option>
+<option value="5">Zaterdag</option>
+<option value="6">Zondag</option>
+</select>
+<input type="time" id="nieuweShiftStart" value="16:30">
+<input type="time" id="nieuweShiftEind" value="20:30">
+<input type="text" id="nieuweShiftFunctie" placeholder="Functie (optioneel, bijv. bar/keuken)" class="span2">
+<input type="text" id="nieuweShiftNotitie" placeholder="Notitie (optioneel)" class="span2">
+<button type="button" id="shiftToevoegenBtn">Dienst toevoegen</button>
+</div>
+<div id="roosterStatus" class="leeg"></div>
+</div>
+
+<div class="kaart">
+<h2>Beschikbaarheid deze week</h2>
+<p class="uitleg">Wat medewerkers zelf hebben doorgegeven — puur ter info, wijzigt niets automatisch aan het rooster.</p>
+<div id="beschikbaarheidLijst"><div class="leeg">Nog niemand heeft beschikbaarheid doorgegeven voor deze week.</div></div>
+</div>
+
+<div class="kaart">
+<h2>Verlof &amp; ziekmeldingen</h2>
+<p class="uitleg">Openstaande aanvragen bovenaan, recent afgehandelde eronder.</p>
+<div id="verlofLijst"><div class="leeg">Geen aanvragen.</div></div>
+</div>
+
+<div class="kaart">
+<h2>Werkuren</h2>
+<p class="uitleg">Door medewerkers ingediende uren, ter goedkeuring.</p>
+<div id="urenLijst"><div class="leeg">Geen ingediende uren.</div></div>
+</div>
+
+</main>
+</div>
+
+<script>
+var lockScreen = document.getElementById('lockScreen');
+var app = document.getElementById('app');
+var wachtwoordInput = document.getElementById('wachtwoordInput');
+var ontgrendelBtn = document.getElementById('ontgrendelBtn');
+var lockFout = document.getElementById('lockFout');
+var huidigWachtwoord = '';
+var huidigeWeek = null; // YYYY-MM-DD (maandag), null = huidige week
+
+// Zelfde wachtwoord-check + sessionStorage-sleutel als kassa.html/kassa-ritten.html.
+function controleerWachtwoord(wachtwoord){
+lockFout.textContent = '';
+fetch('/api/loyalty-opzoeken?wachtwoord=' + encodeURIComponent(wachtwoord) + '&code=___check___')
+.then(function(res){
+if (res.status === 401) { lockFout.textContent = 'Onjuist wachtwoord.'; return; }
+huidigWachtwoord = wachtwoord;
+try { sessionStorage.setItem('bd_loyalty_pw', wachtwoord); } catch(e){}
+lockScreen.style.display = 'none';
+app.style.display = 'block';
+laadWeek();
+})
+.catch(function(){ lockFout.textContent = 'Kon niet verbinden — probeer opnieuw.'; });
+}
+
+ontgrendelBtn.addEventListener('click', function(){ controleerWachtwoord(wachtwoordInput.value); });
+wachtwoordInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') controleerWachtwoord(wachtwoordInput.value); });
+
+(function(){
+try {
+var opgeslagen = sessionStorage.getItem('bd_loyalty_pw');
+if (opgeslagen) controleerWachtwoord(opgeslagen);
+} catch(e){}
+})();
+
+var DAGNAMEN = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag'];
+var DAGDEEL_LABEL = { ochtend:'Ochtend', middag:'Middag', avond:'Avond', hele_dag:'Hele dag' };
+var STATUS_LABEL = { beschikbaar:'Beschikbaar', niet_beschikbaar:'Niet beschikbaar', voorkeur:'Voorkeur' };
+
+function plusDagen(datumStr, n){
+var d = new Date(datumStr + 'T00:00:00');
+d.setDate(d.getDate() + n);
+return d.toISOString().slice(0,10);
+}
+
+function formatDatum(datumStr){
+var d = new Date(datumStr + 'T00:00:00');
+return d.toLocaleDateString('nl-NL', { day:'numeric', month:'short' });
+}
+
+function laadWeek(){
+var url = '/api/admin/planning?wachtwoord=' + encodeURIComponent(huidigWachtwoord);
+if (huidigeWeek) url += '&week=' + encodeURIComponent(huidigeWeek);
+fetch(url)
+.then(function(res){ return res.json(); })
+.then(function(data){
+if (data.error) { document.getElementById('roosterStatus').textContent = data.error; return; }
+huidigeWeek = data.week;
+teken(data);
+})
+.catch(function(){ document.getElementById('roosterStatus').textContent = 'Kon planning niet laden.'; });
+}
+
+function teken(data){
+var weekZondag = plusDagen(huidigeWeek, 6);
+document.getElementById('weekLabel').textContent = formatDatum(huidigeWeek) + ' — ' + formatDatum(weekZondag);
+
+// Medewerker-dropdown
+var select = document.getElementById('nieuweShiftMedewerker');
+var huidigeKeuze = select.value;
+select.innerHTML = '<option value="">Kies medewerker…</option>';
+(data.medewerkers || []).forEach(function(m){
+var opt = document.createElement('option');
+opt.value = m.personeelsnummer;
+opt.textContent = m.naam;
+select.appendChild(opt);
+});
+select.value = huidigeKeuze;
+
+// Rooster per dag
+var roosterDagen = document.getElementById('roosterDagen');
+roosterDagen.innerHTML = '';
+for (var i = 0; i < 7; i++){
+var datum = plusDagen(huidigeWeek, i);
+var shiftsVanDag = (data.shifts || []).filter(function(s){ return s.datum === datum; });
+var blok = document.createElement('div');
+blok.className = 'dagBlok';
+var html = '<h3>' + DAGNAMEN[i] + ' <span class="datumTxt">' + formatDatum(datum) + '</span></h3>';
+if (shiftsVanDag.length === 0){
+html += '<div class="leeg">Geen diensten gepland.</div>';
+} else {
+shiftsVanDag.forEach(function(s){
+html += '<div class="shiftRij">' +
+'<span class="naam">' + (s.naam || s.personeelsnummer) + '</span>' +
+'<span class="tijd">' + s.start_tijd + '–' + s.eind_tijd + '</span>' +
+(s.functie ? '<span class="functie">' + s.functie + '</span>' : '') +
+'<button type="button" class="verwijderBtn" data-shift-id="' + s.id + '" title="Verwijderen">&#10005;</button>' +
+'</div>';
+});
+}
+blok.innerHTML = html;
+roosterDagen.appendChild(blok);
+}
+Array.prototype.forEach.call(roosterDagen.querySelectorAll('.verwijderBtn'), function(btn){
+btn.addEventListener('click', function(){ verwijderShift(btn.getAttribute('data-shift-id')); });
+});
+
+// Beschikbaarheid
+var beschikbaarheidLijst = document.getElementById('beschikbaarheidLijst');
+if (!data.beschikbaarheid || data.beschikbaarheid.length === 0){
+beschikbaarheidLijst.innerHTML = '<div class="leeg">Nog niemand heeft beschikbaarheid doorgegeven voor deze week.</div>';
+} else {
+beschikbaarheidLijst.innerHTML = data.beschikbaarheid.map(function(b){
+return '<div class="beschikRij">' +
+'<span class="naam">' + (b.naam || b.personeelsnummer) + '</span>' +
+'<span class="datumTxt">' + formatDatum(b.datum) + ' · ' + (DAGDEEL_LABEL[b.dagdeel] || b.dagdeel) + '</span>' +
+'<span class="badge ' + b.status + '">' + (STATUS_LABEL[b.status] || b.status) + '</span>' +
+(b.opmerking ? '<span style="color:#6b6a62">' + b.opmerking + '</span>' : '') +
+'</div>';
+}).join('');
+}
+
+// Verlofaanvragen
+var verlofLijst = document.getElementById('verlofLijst');
+if (!data.verlofAanvragen || data.verlofAanvragen.length === 0){
+verlofLijst.innerHTML = '<div class="leeg">Geen aanvragen.</div>';
+} else {
+verlofLijst.innerHTML = '';
+data.verlofAanvragen.forEach(function(v){
+var kaart = document.createElement('div');
+kaart.className = 'aanvraagKaart';
+var periode = formatDatum(v.van_datum) + (v.tot_datum !== v.van_datum ? ' t/m ' + formatDatum(v.tot_datum) : '');
+var html = '<div class="kop"><span class="naam">' + (v.naam || v.personeelsnummer) + '</span>' +
+'<span class="badge ' + v.status + '">' + v.status + '</span></div>' +
+'<div class="info">' + (v.type === 'ziek' ? 'Ziekmelding' : 'Verlof') + ' · ' + periode +
+(v.reden ? ' · ' + v.reden : '') + '</div>';
+if (v.status === 'aangevraagd'){
+html += '<div class="aanvraagKnoppen">' +
+'<button type="button" class="goedBtn" data-verlof-id="' + v.id + '" data-beslissing="goedkeuren">Goedkeuren</button>' +
+'<button type="button" class="afwijsBtn" data-verlof-id="' + v.id + '" data-beslissing="afwijzen">Afwijzen</button>' +
+'</div>';
+}
+kaart.innerHTML = html;
+verlofLijst.appendChild(kaart);
+});
+Array.prototype.forEach.call(verlofLijst.querySelectorAll('[data-verlof-id]'), function(btn){
+btn.addEventListener('click', function(){
+beoordeelVerlof(btn.getAttribute('data-verlof-id'), btn.getAttribute('data-beslissing'));
+});
+});
+}
+
+// Werkuren
+var urenLijst = document.getElementById('urenLijst');
+if (!data.werkuren || data.werkuren.length === 0){
+urenLijst.innerHTML = '<div class="leeg">Geen ingediende uren.</div>';
+} else {
+urenLijst.innerHTML = '';
+data.werkuren.forEach(function(w){
+var rij = document.createElement('div');
+rij.className = 'urenRij';
+var html = '<span class="naam">' + (w.naam || w.personeelsnummer) + '</span>' +
+'<span class="info">' + formatDatum(w.datum) + ' · ' + w.start_tijd + '–' + w.eind_tijd +
+(w.pauze_minuten ? ' (' + w.pauze_minuten + ' min pauze)' : '') + '</span>' +
+'<span class="badge ' + w.status + '">' + w.status + '</span>';
+if (w.status === 'ingediend'){
+html += '<div class="aanvraagKnoppen" style="flex-basis:100%">' +
+'<button type="button" class="goedBtn" data-uren-id="' + w.id + '" data-beslissing="goedkeuren">Goedkeuren</button>' +
+'<button type="button" class="afwijsBtn" data-uren-id="' + w.id + '" data-beslissing="afwijzen">Afwijzen</button>' +
+'</div>';
+}
+rij.innerHTML = html;
+urenLijst.appendChild(rij);
+});
+Array.prototype.forEach.call(urenLijst.querySelectorAll('[data-uren-id]'), function(btn){
+btn.addEventListener('click', function(){
+beoordeelUren(btn.getAttribute('data-uren-id'), btn.getAttribute('data-beslissing'));
+});
+});
+}
+}
+
+document.getElementById('shiftToevoegenBtn').addEventListener('click', function(){
+var personeelsnummer = document.getElementById('nieuweShiftMedewerker').value;
+var dagIndex = parseInt(document.getElementById('nieuweShiftDag').value, 10);
+var startTijd = document.getElementById('nieuweShiftStart').value;
+var eindTijd = document.getElementById('nieuweShiftEind').value;
+var functie = document.getElementById('nieuweShiftFunctie').value;
+var notitie = document.getElementById('nieuweShiftNotitie').value;
+var statusEl = document.getElementById('roosterStatus');
+
+if (!personeelsnummer || !startTijd || !eindTijd){
+statusEl.textContent = 'Kies een medewerker en vul start-/eindtijd in.';
+return;
+}
+
+var datum = plusDagen(huidigeWeek, dagIndex);
+statusEl.textContent = 'Bezig met opslaan…';
+
+fetch('/api/admin/planning?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie:'shift_toevoegen', personeelsnummer:personeelsnummer, datum:datum, startTijd:startTijd, eindTijd:eindTijd, functie:functie, notitie:notitie })
+})
+.then(function(res){ return res.json(); })
+.then(function(data){
+if (data.error) { statusEl.textContent = data.error; return; }
+statusEl.textContent = '';
+document.getElementById('nieuweShiftFunctie').value = '';
+document.getElementById('nieuweShiftNotitie').value = '';
+laadWeek();
+})
+.catch(function(){ statusEl.textContent = 'Kon dienst niet opslaan.'; });
+});
+
+function verwijderShift(shiftId){
+if (!confirm('Deze dienst verwijderen?')) return;
+fetch('/api/admin/planning?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie:'shift_verwijderen', shiftId:shiftId })
+})
+.then(function(res){ return res.json(); })
+.then(function(){ laadWeek(); })
+.catch(function(){ alert('Kon dienst niet verwijderen.'); });
+}
+
+function beoordeelVerlof(verlofId, beslissing){
+fetch('/api/admin/planning?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie:'verlof_beoordelen', verlofId:verlofId, beslissing:beslissing })
+})
+.then(function(res){ return res.json(); })
+.then(function(){ laadWeek(); })
+.catch(function(){ alert('Kon aanvraag niet bijwerken.'); });
+}
+
+function beoordeelUren(urenId, beslissing){
+fetch('/api/admin/planning?wachtwoord=' + encodeURIComponent(huidigWachtwoord), {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ actie:'uren_beoordelen', urenId:urenId, beslissing:beslissing })
+})
+.then(function(res){ return res.json(); })
+.then(function(){ laadWeek(); })
+.catch(function(){ alert('Kon uren niet bijwerken.'); });
+}
+
+document.getElementById('vorigeWeekBtn').addEventListener('click', function(){
+huidigeWeek = plusDagen(huidigeWeek, -7);
+laadWeek();
+});
+document.getElementById('volgendeWeekBtn').addEventListener('click', function(){
+huidigeWeek = plusDagen(huidigeWeek, 7);
+laadWeek();
+});
+</script>
+</body>
+</html>
