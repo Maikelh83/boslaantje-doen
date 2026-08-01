@@ -170,19 +170,48 @@ var lockScreen = document.getElementById('lockScreen');
 var app = document.getElementById('app');
 var lockFout = document.getElementById('lockFout');
 var huidigeSessie = '';
-var huidigeWeek = null;
+var huidigeWeek = maandagVanDezeWeek(); // lokaal bepaald (functie is hoisted)
 var eigenShiftsDezeWeek = [];
 
 var DAGNAMEN = ['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag'];
 
+// Let op: bewust géén toISOString() hier. Een datum-string wordt als LOKALE
+// middernacht gelezen en toISOString() zet dat om naar UTC — in Nederland
+// (UTC+1/+2) levert dat de vórige dag op, waardoor de hele week een dag
+// verschoof. Daarom formatteren we met de lokale datumdelen.
+function naarDatumStr(d){
+var maand = String(d.getMonth() + 1);
+var dag = String(d.getDate());
+return d.getFullYear() + '-' + (maand.length < 2 ? '0' + maand : maand) + '-' + (dag.length < 2 ? '0' + dag : dag);
+}
 function plusDagen(datumStr, n){
 var d = new Date(datumStr + 'T00:00:00');
 d.setDate(d.getDate() + n);
-return d.toISOString().slice(0,10);
+return naarDatumStr(d);
+}
+// Maandag van de week waarin vandaag valt, in lokale tijd.
+function maandagVanDezeWeek(){
+var nu = new Date();
+var dag = nu.getDay(); // 0 = zondag
+nu.setDate(nu.getDate() + (dag === 0 ? -6 : 1 - dag));
+return naarDatumStr(nu);
+}
+// Functies en opmerkingen worden als HTML ingevoegd — altijd ontsmetten.
+function esc(waarde){
+return String(waarde == null ? '' : waarde).replace(/[&<>"']/g, function(teken){
+return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[teken];
+});
 }
 function formatDatum(datumStr){
 var d = new Date(datumStr + 'T00:00:00');
 return d.toLocaleDateString('nl-NL', { day:'numeric', month:'short' });
+}
+// "Maandag 3 aug" — in de eigen dienstenlijst is de dagnaam handiger dan
+// alleen de datum, want die lijst staat niet in een weekgrid.
+function dagLabel(datumStr){
+var d = new Date(datumStr + 'T00:00:00');
+var index = (d.getDay() + 6) % 7; // 0 = maandag
+return DAGNAMEN[index] + ' ' + formatDatum(datumStr);
 }
 
 function inloggen(){
@@ -238,12 +267,17 @@ lockScreen.style.display = 'block';
 lockFout.textContent = 'Sessie verlopen — log opnieuw in.';
 return;
 }
-if (r.data.error){ return; }
+if (r.data.error){
+document.getElementById('shiftLijst').innerHTML = '<div class="leeg">' + esc(r.data.error) + '</div>';
+return;
+}
 huidigeWeek = r.data.week;
 document.getElementById('naamLabel').textContent = r.data.naam || '';
 tekenWeek(r.data);
 })
-.catch(function(){});
+.catch(function(){
+document.getElementById('shiftLijst').innerHTML = '<div class="leeg">Kon je rooster niet laden — controleer je verbinding.</div>';
+});
 }
 
 function tekenWeek(data){
@@ -258,9 +292,9 @@ shiftLijst.innerHTML = '<div class="leeg">Geen diensten gepland deze week.</div>
 } else {
 shiftLijst.innerHTML = eigenShiftsDezeWeek.map(function(s){
 return '<div class="shiftRij">' +
-'<span class="dag">' + formatDatum(s.datum) + '</span>' +
-'<span class="tijd">' + s.start_tijd + '–' + s.eind_tijd + '</span>' +
-(s.functie ? '<span class="functie">' + s.functie + '</span>' : '') +
+'<span class="dag">' + esc(dagLabel(s.datum)) + '</span>' +
+'<span class="tijd">' + esc(s.start_tijd) + '–' + esc(s.eind_tijd) + '</span>' +
+(s.functie ? '<span class="functie">' + esc(s.functie) + '</span>' : '') +
 '</div>';
 }).join('');
 }
@@ -327,7 +361,7 @@ verlofHistorie.innerHTML = '<div class="leeg">Nog geen aanvragen ingediend.</div
 verlofHistorie.innerHTML = data.verlofAanvragen.map(function(v){
 var periode = formatDatum(v.van_datum) + (v.tot_datum !== v.van_datum ? ' t/m ' + formatDatum(v.tot_datum) : '');
 return '<div class="histRij"><span class="info">' + (v.type === 'ziek' ? 'Ziekmelding' : 'Verlof') + ' · ' + periode + '</span>' +
-'<span class="badge ' + v.status + '">' + v.status + '</span></div>';
+'<span class="badge ' + esc(v.status) + '">' + esc(v.status) + '</span></div>';
 }).join('');
 }
 
@@ -337,9 +371,9 @@ if (!data.werkuren || data.werkuren.length === 0){
 urenHistorie.innerHTML = '<div class="leeg">Nog geen uren ingediend.</div>';
 } else {
 urenHistorie.innerHTML = data.werkuren.map(function(w){
-return '<div class="histRij"><span class="info">' + formatDatum(w.datum) + ' · ' + w.start_tijd + '–' + w.eind_tijd +
-(w.pauze_minuten ? ' (' + w.pauze_minuten + ' min pauze)' : '') + '</span>' +
-'<span class="badge ' + w.status + '">' + w.status + '</span></div>';
+return '<div class="histRij"><span class="info">' + formatDatum(w.datum) + ' · ' + esc(w.start_tijd) + '–' + esc(w.eind_tijd) +
+(w.pauze_minuten ? ' (' + esc(w.pauze_minuten) + ' min pauze)' : '') + '</span>' +
+'<span class="badge ' + esc(w.status) + '">' + esc(w.status) + '</span></div>';
 }).join('');
 }
 }
@@ -408,6 +442,9 @@ body: JSON.stringify({ actie:'uren_indienen', datum:datum, startTijd:startTijd, 
 .then(function(data){
 if (data.error){ statusEl.className = 'formStatus fout'; statusEl.textContent = data.error; return; }
 statusEl.className = 'formStatus ok'; statusEl.textContent = 'Uren ingediend.';
+document.getElementById('urenStart').value = '';
+document.getElementById('urenEind').value = '';
+document.getElementById('urenPauze').value = '0';
 laadWeek();
 })
 .catch(function(){ statusEl.className = 'formStatus fout'; statusEl.textContent = 'Kon uren niet indienen.'; });

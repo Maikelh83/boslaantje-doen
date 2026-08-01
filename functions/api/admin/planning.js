@@ -90,13 +90,20 @@ export async function onRequestGet(context) {
     ).bind(weekMaandag, weekZondag).all();
 
     const dertigDagenGeleden = plusDagen(new Date().toISOString().slice(0, 10), -30);
+    // Naast openstaande en recent ingediende aanvragen ook álle aanvragen die
+    // over de getoonde week heen vallen: het weekrooster kleurt cellen op basis
+    // van goedgekeurd verlof/ziek, en vakantie die maanden vooruit is
+    // aangevraagd viel anders buiten deze lijst — dan bleef die week in het
+    // rooster gewoon leeg ogen terwijl de medewerker vrij was.
     const { results: verlofAanvragen } = await env.DB.prepare(
       `SELECT v.id, v.personeelsnummer, m.naam, v.van_datum, v.tot_datum, v.type, v.reden, v.status, v.aangemaakt_op
        FROM verlof_aanvragen v
        LEFT JOIN medewerkers m ON m.personeelsnummer = v.personeelsnummer
-       WHERE v.status = 'aangevraagd' OR v.aangemaakt_op >= ?
+       WHERE v.status = 'aangevraagd'
+          OR v.aangemaakt_op >= ?
+          OR (v.van_datum <= ? AND v.tot_datum >= ?)
        ORDER BY v.aangemaakt_op DESC`
-    ).bind(dertigDagenGeleden).all();
+    ).bind(dertigDagenGeleden, weekZondag, weekMaandag).all();
 
     const { results: werkuren } = await env.DB.prepare(
       `SELECT w.id, w.personeelsnummer, m.naam, w.datum, w.start_tijd, w.eind_tijd, w.pauze_minuten, w.status

@@ -199,7 +199,7 @@ var wachtwoordInput = document.getElementById('wachtwoordInput');
 var ontgrendelBtn = document.getElementById('ontgrendelBtn');
 var lockFout = document.getElementById('lockFout');
 var huidigWachtwoord = '';
-var huidigeWeek = null; // YYYY-MM-DD (maandag), null = huidige week
+var huidigeWeek = maandagVanDezeWeek(); // YYYY-MM-DD (maandag), lokaal bepaald (functie is hoisted)
 var laatsteData = null;
 
 // Zelfde wachtwoord-check + sessionStorage-sleutel als kassa.html/kassa-ritten.html.
@@ -232,10 +232,39 @@ var DAGNAMEN_KORT = ['Ma','Di','Wo','Do','Vr','Za','Zo'];
 var DAGDEEL_LABEL = { ochtend:'Ochtend', middag:'Middag', avond:'Avond', hele_dag:'Hele dag' };
 var STATUS_LABEL = { beschikbaar:'Beschikbaar', niet_beschikbaar:'Niet beschikbaar', voorkeur:'Voorkeur' };
 
+// Let op: bewust géén toISOString() hier. Een datum-string wordt door de
+// browser als LOKALE middernacht gelezen, en toISOString() zet dat om naar
+// UTC — in Nederland (UTC+1/+2) levert dat de vórige dag op, waardoor de
+// hele weekgrid een dag verschoof. Daarom formatteren we met de lokale
+// datumdelen.
+function naarDatumStr(d){
+var maand = String(d.getMonth() + 1);
+var dag = String(d.getDate());
+return d.getFullYear() + '-' + (maand.length < 2 ? '0' + maand : maand) + '-' + (dag.length < 2 ? '0' + dag : dag);
+}
+
 function plusDagen(datumStr, n){
 var d = new Date(datumStr + 'T00:00:00');
 d.setDate(d.getDate() + n);
-return d.toISOString().slice(0,10);
+return naarDatumStr(d);
+}
+
+// Maandag van de week waarin vandaag valt, in lokale tijd — zo bepaalt de
+// browser (niet de UTC-server) welke week er standaard getoond wordt.
+function maandagVanDezeWeek(){
+var nu = new Date();
+var dag = nu.getDay(); // 0 = zondag
+nu.setDate(nu.getDate() + (dag === 0 ? -6 : 1 - dag));
+return naarDatumStr(nu);
+}
+
+// Namen, functies en opmerkingen komen uit invoervelden en worden als HTML
+// ingevoegd — dus altijd eerst ontsmetten (een apostrof of & brak anders de
+// opmaak, en een medewerker kon via 'reden' markup meesturen).
+function esc(waarde){
+return String(waarde == null ? '' : waarde).replace(/[&<>"']/g, function(teken){
+return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[teken];
+});
 }
 
 function formatDatum(datumStr){
@@ -243,14 +272,17 @@ var d = new Date(datumStr + 'T00:00:00');
 return d.toLocaleDateString('nl-NL', { day:'numeric', month:'short' });
 }
 
-// Aantal uren tussen twee "HH:MM"-tijden op dezelfde dag, als decimaal getal.
+// Aantal uren tussen twee "HH:MM"-tijden, als decimaal getal. Een eindtijd
+// die vóór de starttijd ligt betekent een sluitdienst die over middernacht
+// heen loopt (bijv. 17:00–00:30) — die telde eerst als 0 uur.
 function urenTussen(start, eind){
-var sDelen = start.split(':').map(Number);
-var eDelen = eind.split(':').map(Number);
-var sMin = sDelen[0] * 60 + sDelen[1];
-var eMin = eDelen[0] * 60 + eDelen[1];
+var sDelen = String(start || '').split(':').map(Number);
+var eDelen = String(eind || '').split(':').map(Number);
+if (!isFinite(sDelen[0]) || !isFinite(eDelen[0])) return 0;
+var sMin = sDelen[0] * 60 + (sDelen[1] || 0);
+var eMin = eDelen[0] * 60 + (eDelen[1] || 0);
 var verschil = eMin - sMin;
-if (verschil < 0) verschil = 0;
+if (verschil < 0) verschil += 24 * 60;
 return verschil / 60;
 }
 
@@ -321,7 +353,7 @@ var grandTotaal = 0;
 
 (data.medewerkers || []).forEach(function(m){
 var rij = document.createElement('tr');
-var rijHtml = '<td class="naamCel">' + m.naam + '</td>';
+var rijHtml = '<td class="naamCel">' + esc(m.naam) + '</td>';
 var medewerkerTotaal = 0;
 
 dagen.forEach(function(datum){
@@ -341,16 +373,16 @@ else if (beschikStatus === 'voorkeur') celHtml += '<span class="beschikIcoon" ti
 shiftsVanCel.forEach(function(s){
 var uren = urenTussen(s.start_tijd, s.eind_tijd);
 medewerkerTotaal += uren;
-celHtml += '<span class="shiftChip" data-shift-id="' + s.id + '" data-personeelsnummer="' + m.personeelsnummer + '" data-naam="' + m.naam + '" data-datum="' + datum + '">' +
-'<span class="chipTijd">' + s.start_tijd + '–' + s.eind_tijd + '</span>' +
-(s.functie ? '<span class="chipFunctie">' + s.functie + '</span>' : '') +
+celHtml += '<span class="shiftChip" data-shift-id="' + esc(s.id) + '" data-personeelsnummer="' + esc(m.personeelsnummer) + '" data-naam="' + esc(m.naam) + '" data-datum="' + datum + '">' +
+'<span class="chipTijd">' + esc(s.start_tijd) + '–' + esc(s.eind_tijd) + '</span>' +
+(s.functie ? '<span class="chipFunctie">' + esc(s.functie) + '</span>' : '') +
 '</span>';
 });
 
 var dagIndex = dagen.indexOf(datum);
 dagTotalen[dagIndex] += shiftsVanCel.reduce(function(som, s){ return som + urenTussen(s.start_tijd, s.eind_tijd); }, 0);
 
-celHtml += '<button type="button" class="voegToeBtn" data-personeelsnummer="' + m.personeelsnummer + '" data-naam="' + m.naam + '" data-datum="' + datum + '">+ dienst</button>';
+celHtml += '<button type="button" class="voegToeBtn" data-personeelsnummer="' + esc(m.personeelsnummer) + '" data-naam="' + esc(m.naam) + '" data-datum="' + datum + '">+ dienst</button>';
 
 rijHtml += '<td class="' + celKlasse + '">' + celHtml + '</td>';
 });
@@ -394,10 +426,10 @@ beschikbaarheidLijst.innerHTML = '<div class="leeg">Nog niemand heeft beschikbaa
 } else {
 beschikbaarheidLijst.innerHTML = data.beschikbaarheid.map(function(b){
 return '<div class="beschikRij">' +
-'<span class="naam">' + (b.naam || b.personeelsnummer) + '</span>' +
-'<span class="datumTxt">' + formatDatum(b.datum) + ' · ' + (DAGDEEL_LABEL[b.dagdeel] || b.dagdeel) + '</span>' +
-'<span class="badge ' + b.status + '">' + (STATUS_LABEL[b.status] || b.status) + '</span>' +
-(b.opmerking ? '<span style="color:#6b6a62">' + b.opmerking + '</span>' : '') +
+'<span class="naam">' + esc(b.naam || b.personeelsnummer) + '</span>' +
+'<span class="datumTxt">' + formatDatum(b.datum) + ' · ' + esc(DAGDEEL_LABEL[b.dagdeel] || b.dagdeel) + '</span>' +
+'<span class="badge ' + esc(b.status) + '">' + esc(STATUS_LABEL[b.status] || b.status) + '</span>' +
+(b.opmerking ? '<span style="color:#6b6a62">' + esc(b.opmerking) + '</span>' : '') +
 '</div>';
 }).join('');
 }
@@ -417,14 +449,14 @@ data.verlofAanvragen.forEach(function(v){
 var kaart = document.createElement('div');
 kaart.className = 'aanvraagKaart';
 var periode = formatDatum(v.van_datum) + (v.tot_datum !== v.van_datum ? ' t/m ' + formatDatum(v.tot_datum) : '');
-var html = '<div class="kop"><span class="naam">' + (v.naam || v.personeelsnummer) + '</span>' +
-'<span class="badge ' + v.status + '">' + v.status + '</span></div>' +
+var html = '<div class="kop"><span class="naam">' + esc(v.naam || v.personeelsnummer) + '</span>' +
+'<span class="badge ' + esc(v.status) + '">' + esc(v.status) + '</span></div>' +
 '<div class="info">' + (v.type === 'ziek' ? 'Ziekmelding' : 'Verlof') + ' · ' + periode +
-(v.reden ? ' · ' + v.reden : '') + '</div>';
+(v.reden ? ' · ' + esc(v.reden) : '') + '</div>';
 if (v.status === 'aangevraagd'){
 html += '<div class="aanvraagKnoppen">' +
-'<button type="button" class="goedBtn" data-verlof-id="' + v.id + '" data-beslissing="goedkeuren">Goedkeuren</button>' +
-'<button type="button" class="afwijsBtn" data-verlof-id="' + v.id + '" data-beslissing="afwijzen">Afwijzen</button>' +
+'<button type="button" class="goedBtn" data-verlof-id="' + esc(v.id) + '" data-beslissing="goedkeuren">Goedkeuren</button>' +
+'<button type="button" class="afwijsBtn" data-verlof-id="' + esc(v.id) + '" data-beslissing="afwijzen">Afwijzen</button>' +
 '</div>';
 }
 kaart.innerHTML = html;
@@ -451,14 +483,14 @@ urenLijst.innerHTML = '';
 data.werkuren.forEach(function(w){
 var rij = document.createElement('div');
 rij.className = 'urenRij';
-var html = '<span class="naam">' + (w.naam || w.personeelsnummer) + '</span>' +
-'<span class="info">' + formatDatum(w.datum) + ' · ' + w.start_tijd + '–' + w.eind_tijd +
-(w.pauze_minuten ? ' (' + w.pauze_minuten + ' min pauze)' : '') + '</span>' +
-'<span class="badge ' + w.status + '">' + w.status + '</span>';
+var html = '<span class="naam">' + esc(w.naam || w.personeelsnummer) + '</span>' +
+'<span class="info">' + formatDatum(w.datum) + ' · ' + esc(w.start_tijd) + '–' + esc(w.eind_tijd) +
+(w.pauze_minuten ? ' (' + esc(w.pauze_minuten) + ' min pauze)' : '') + '</span>' +
+'<span class="badge ' + esc(w.status) + '">' + esc(w.status) + '</span>';
 if (w.status === 'ingediend'){
 html += '<div class="aanvraagKnoppen" style="flex-basis:100%">' +
-'<button type="button" class="goedBtn" data-uren-id="' + w.id + '" data-beslissing="goedkeuren">Goedkeuren</button>' +
-'<button type="button" class="afwijsBtn" data-uren-id="' + w.id + '" data-beslissing="afwijzen">Afwijzen</button>' +
+'<button type="button" class="goedBtn" data-uren-id="' + esc(w.id) + '" data-beslissing="goedkeuren">Goedkeuren</button>' +
+'<button type="button" class="afwijsBtn" data-uren-id="' + esc(w.id) + '" data-beslissing="afwijzen">Afwijzen</button>' +
 '</div>';
 }
 rij.innerHTML = html;
