@@ -1,0 +1,91 @@
+---
+permalink: catering.html
+---
+{% from "catering-pkg-card.njk" import card as pkgCard %}
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+<meta name="theme-color" content="#4A5D3D">
+
+<title>Catering Veenendaal &middot; Boslaantje Doen</title>
+<meta name="description" content="Catering van Boslaantje Doen in Veenendaal — BBQ, buffet en borrel. Vanaf 10 personen, bezorgd of volledig ontzorgd op locatie.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://www.boslaantjedoen.com/catering">
+
+<meta property="og:title" content="Catering Veenendaal · Boslaantje Doen">
+<meta property="og:description" content="Catering van Boslaantje Doen in Veenendaal — BBQ, buffet en borrel. Vanaf 10 personen, bezorgd of volledig ontzorgd op locatie.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:url" content="https://www.boslaantjedoen.com/catering">
+<meta property="og:site_name" content="Boslaantje Doen">
+<meta property="og:image" content="https://www.boslaantjedoen.com/images/hero-boslaantje-doen.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Catering Veenendaal · Boslaantje Doen">
+<meta name="twitter:description" content="Catering van Boslaantje Doen in Veenendaal — BBQ, buffet en borrel. Vanaf 10 personen, bezorgd of volledig ontzorgd op locatie.">
+<meta name="twitter:image" content="https://www.boslaantjedoen.com/images/hero-boslaantje-doen.jpg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+{% include "shared-style.njk" %}
+</head>
+<body>
+
+<a href="#main" class="skip-link">Direct naar de inhoud</a>
+
+{% include "shared-header.njk" %}
+
+<section class="hero">
+<div class="wrap">
+<span class="eyebrow" style="color:#fff">Catering · Veenendaal</span>
+<h1>Catering van Boslaantje Doen</h1>
+<p>De vertrouwde smaak van Boslaantje Doen, nu ook op jouw feest. Van verjaardag tot bedrijfsborrel — wij verzorgen het eten, jij geniet van je gasten. Vanaf 10 personen, thuisbezorgd in Veenendaal en omstreken of volledig ontzorgd op locatie.</p>
+<div class="steps">
+<span class="step"><b>1</b> Kies een pakket</span>
+<span class="step"><b>2</b> Vraag een offerte aan</span>
+<span class="step"><b>3</b> Wij verzorgen je feest</span>
+</div>
+</div>
+</section>
+
+{% include "shared-trust.njk" %}
+
+<main id="main">
+<div class="wrap">
+
+<section class="cat">
+<span class="eyebrow">Onze pakketten</span>
+<h2>Cateringpakketten</h2>
+<p class="sub">Drie pakketten om uit te kiezen, allemaal per persoon en op maat te maken vanaf 10 personen.</p>
+<div class="grid">
+{%- for p in collections.cateringPakketten %}
+{{ pkgCard(p.data) }}
+{%- endfor %}
+</div>
+</section>
+
+<section class="cat">
+<div class="note-box">Dieetwensen of allergieën? Laat het ons weten, we houden er rekening mee.</div>
+
+<div style="text-align:center;margin-top:1.6rem">
+<a href="index.html#contact" class="btn btn-green">Vraag een offerte aan</a>
+</div>
+<p class="sub" style="text-align:center;margin-top:1rem">
+Liever direct contact? Bel <a href="tel:+31318514916" style="color:var(--green-ink);font-weight:800;text-decoration:underline;text-underline-offset:2px">0318 – 514 916</a>
+of mail <a href="mailto:info@boslaantjedoen.nl" style="color:var(--green-ink);font-weight:800;text-decoration:underline;text-underline-offset:2px">info@boslaantjedoen.nl</a>.
+</p>
+</section>
+
+</div>
+</main>
+
+{% include "shared-footer.njk" %}
+
+</body>
+</html>
