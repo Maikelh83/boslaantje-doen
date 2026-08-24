@@ -1,0 +1,23 @@
+{#
+  Kaart voor één cateringpakket op catering.html. Zelfde visuele stijl als de
+  .pkg-kaarten (o.a. vacature-card.njk), nu met een 'vanaf'-prijs i.p.v. een
+  knop. De prijs is een los CMS-veld ('[prijs p.p.]' als placeholder) zodat
+  Chantal 'm later zelf kan invullen zonder de rest van de kaart te raken.
+#}
+{% macro card(p) %}
+<article class="pkg">
+  <div class="ph">
+    {%- if p.foto %}
+    <img src="{{ p.foto }}" alt="{{ p.naam }}" style="width:100%;height:100%;object-fit:cover;display:block">
+    {%- else %}
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15h16M6 15c0-2 2-4 6-4s6 2 6 4"></path><path d="M9 9h.01M13 8h.01M16 10h.01"></path></svg><span class="cap">Voeg je eigen foto toe</span><span class="hint">Foto · 3:2</span>
+    {%- endif %}
+  </div>
+  <div class="pkg-body">
+    <h3>{{ p.naam }}</h3>
+    <p>{{ p.omschrijving }}</p>
+    <div class="price"><span class="amt">vanaf {{ p.prijs }}</span></div>
+    <p style="font-size:.82rem;color:#8a8a80;margin-top:-.6rem">Vanaf 10 personen &middot; inclusief opwarmschalen en servies &middot; bezorgd of volledig ontzorgd</p>
+  </div>
+</article>
+{% endmacro %}
