@@ -104,6 +104,12 @@ eleventyConfig.addPassthroughCopy('admin');
 // Collectie 'vacatures': open functies voor solliciteren.html.
 eleventyConfig.addCollection('vacatures', (api) =>
 api.getFilteredByGlob('src/vacatures/*.md')
+
+                             // Collectie 'catering-pakketten': de drie pakketten op catering.html
+                             // (naam/prijs/omschrijving CMS-bewerkbaar, zelfde patroon als vacatures).
+                             eleventyConfig.addCollection('cateringPakketten', (api) =>
+  api.getFilteredByGlob('src/catering-pakketten/*.md')
+                                                          );
 );
 
 return {
