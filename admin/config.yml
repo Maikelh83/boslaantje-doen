@@ -25,6 +25,20 @@ collections:
       - { label: "Omschrijving", name: "omschrijving", widget: "text" }
       - { label: "Actief", name: "actief", widget: "boolean", default: true, hint: "Uitzetten om een vacature tijdelijk te verbergen zonder 'm te verwijderen." }
       - { label: "Foto", name: "foto", widget: "image", required: false, hint: "Optioneel. Zonder foto verschijnt een neutraal icoontje." }
+  - name: "catering-pakketten"
+    label: "Catering — pakketten"
+    label_singular: "Cateringpakket"
+    folder: "src/catering-pakketten"
+    create: false
+    delete: false
+    slug: "{{slug}}"
+    identifier_field: naam
+    summary: "{{naam}} — {{prijs}}"
+    fields:
+      - { label: "Naam", name: "naam", widget: "string" }
+      - { label: "Prijs (p.p.)", name: "prijs", widget: "string", hint: "Bijv. '€ 15,95 p.p.'. Staat nu nog op de placeholder '[prijs p.p.]' totdat de echte prijzen bekend zijn." }
+      - { label: "Omschrijving", name: "omschrijving", widget: "text" }
+      - { label: "Foto", name: "foto", widget: "image", required: false, hint: "Optioneel. Zonder foto verschijnt een neutraal icoontje." }
 
   - name: "actie-popup"
     label: "Actie-pop-up (homepage)"
