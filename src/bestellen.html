@@ -78,41 +78,6 @@
 
 
 <style>
-/* ============ /bestellen — branded keuzepagina (bezorgen/afhalen) ============ */
-.bestel-hero{
-  padding:clamp(3rem,7vw,5.5rem) 0 clamp(3.5rem,8vw,6rem);
-  background:linear-gradient(180deg,var(--green) 0%,var(--green-deep) 100%);
-  color:#fff;text-align:center;
-}
-.bestel-hero .eyebrow{color:#EDE7DC}
-.bestel-hero h1{color:#fff;margin:.4rem 0 .9rem}
-.bestel-hero > .wrap > p.bestel-intro{
-  max-width:640px;margin:0 auto 2.6rem;font-size:1.08rem;line-height:1.6;color:#EDE7DC;
-}
-.bestel-keuze-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;
-  max-width:900px;margin:0 auto;text-align:left;
-}
-@media (max-width:760px){ .bestel-keuze-grid{grid-template-columns:1fr} }
-.bestel-keuze-kaart{
-  background:var(--paper);color:var(--ink);border-radius:var(--r);
-  padding:2rem 1.8rem;box-shadow:var(--shadow);
-  display:flex;flex-direction:column;gap:.9rem;
-}
-.bestel-keuze-icoon{
-  width:56px;height:56px;border-radius:50%;
-  background:var(--paper-2);display:flex;align-items:center;justify-content:center;
-  font-size:1.6rem;
-}
-.bestel-keuze-kaart h2{font-size:1.4rem;margin:0;font-family:var(--font-body)}
-.bestel-keuze-kaart p{margin:0;color:#5b5b52;line-height:1.55;flex:1}
-.bestel-keuze-kaart .btn{align-self:flex-start;margin-top:.3rem}
-.bestel-note{
-  max-width:640px;margin:2.4rem auto 0;font-size:.9rem;color:#EDE7DC;opacity:.85;
-  display:flex;align-items:center;justify-content:center;gap:.5em;text-align:center;
-}
-.bestel-note svg{width:16px;height:16px;flex:none}
-</style><style>
   /* ===================================================================
      BOSLAANTJE DOEN â huisstijl
      Koppen willen het lettertype TrashHand. Zet je eigen TrashHand-bestand
@@ -899,34 +864,31 @@ checkVakantie();
   </nav>
 </header>
 <main id="bestel-main">
-  <section class="bestel-hero">
-    <div class="wrap">
-      <span class="eyebrow">Bezorgen &amp; afhalen · Veenendaal</span>
-      <h1>Wat eet jij vandaag?</h1>
-      <p class="bestel-intro">Kies hieronder hoe je wilt bestellen bij Boslaantje Doen. Je gaat naar ons beveiligde online bestelsysteem, waar je zelf je bezorg- of afhaalmoment kiest.</p>
-
-      <div class="bestel-keuze-grid">
-        <div class="bestel-keuze-kaart reveal">
-          <span class="bestel-keuze-icoon" aria-hidden="true">🛵</span>
-          <h2>Laten bezorgen</h2>
-          <p>Bestel gemakkelijk online en laat je favoriete friet, burgers en snacks thuisbezorgen in Veenendaal.</p>
-          <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" rel="noopener" class="btn btn-gold btn-order" title="Je gaat naar ons online bestelsysteem">Bezorgen</a>
+    <section id="bestel-intro">
+      <div class="wrap">
+        <div class="sec-head reveal" style="max-width:none;text-align:center">
+          <span class="eyebrow" style="justify-content:center">Bestellen</span>
+          <h2>Bestellen bij Boslaantje Doen</h2>
+          <p>Kies hieronder hoe je je bestelling wilt ontvangen.</p>
         </div>
-        <div class="bestel-keuze-kaart reveal">
-          <span class="bestel-keuze-icoon" aria-hidden="true">🥡</span>
-          <h2>Zelf ophalen</h2>
-          <p>Bestel vooraf online en haal je bestelling op bij de snackbar wanneer het jou uitkomt.</p>
-          <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" rel="noopener" class="btn btn-gold btn-order" title="Je gaat naar ons online bestelsysteem">Afhalen</a>
+        <div class="reveal" style="text-align:center">
+          <div class="contact-cta" style="justify-content:center">
+            <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" rel="noopener" class="btn btn-gold">Afhalen</a>
+            <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" rel="noopener" class="btn btn-gold">Bezorgen</a>
+          </div>
+        </div>
+        <div class="reveal" style="max-width:640px;margin:2.6rem auto 0">
+          <img src="images/hero-boslaantje-doen.jpg" alt="Boslaantje Doen in Veenendaal" width="1500" height="1000" loading="lazy" style="width:100%;height:auto;border-radius:var(--r);box-shadow:var(--shadow);display:block">
+        </div>
+        <div class="reveal" style="max-width:640px;margin:2.2rem auto 0;line-height:1.7">
+          <h3>Afhalen</h3>
+          <p>Bestel online en haal je bestelling op bij ons aan de Oleander in Veenendaal.</p>
+          <h3>Bezorgen</h3>
+          <p>Laat je bestelling thuisbezorgen in Veenendaal.</p>
         </div>
       </div>
-
-      <p class="bestel-note">
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-        Bezorgen en afhalen verlopen via ons online bestelsysteem, waar je veilig afrekent met iDEAL.
-      </p>
-    </div>
-  </section>
-</main>
+    </section>
+  </main>
 <footer>
   <span class="rings" aria-hidden="true"></span>
   <div class="wrap">
