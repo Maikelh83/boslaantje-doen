@@ -520,6 +520,16 @@ Wit + subtiele tekstschaduw haalt dit ruim boven de WCAG-norm. */
 .hero-cta .btn{padding:1em 2em;font-size:1.02rem}
 .hero-cta .btn-gold{box-shadow:0 10px 28px -10px rgba(0,0,0,.55)}
 .hero-cta .btn svg{width:16px;height:16px;margin-right:.4em;vertical-align:-3px;flex:none}
+
+  /* Zachte kleurbrug naar het bestelsysteem (CashDesk): subtiele tan-accent
+     die alvast de tint van de bestelomgeving laat zien, zodat de overstap
+     minder abrupt aanvoelt. */
+  .btn-order{border-bottom:3px solid #B9AD98}
+  .hero-order-note{
+    display:flex;align-items:center;gap:.5em;
+    margin-top:.9rem;font-size:.85rem;color:#EDE7DC;opacity:.85;
+  }
+  .hero-order-note svg{width:16px;height:16px;flex:none;color:#B9AD98}
 .hero-slogan{margin-top:2.2rem;padding-top:1.1rem}
 .hero-slogan-img{display:block;width:210px;height:auto}
 @media(max-width:480px){
@@ -845,8 +855,8 @@ checkVakantie();
       <a href="/veelgestelde-vragen">Veelgestelde vragen</a>
     </nav>
     <div class="nav-order-group">
-    <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold nav-order">Bezorgen</a>
-    <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold nav-order">Afhalen</a>
+    <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold nav-order btn-order" title="Je gaat naar ons online bestelsysteem">Bezorgen</a>
+    <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold nav-order btn-order" title="Je gaat naar ons online bestelsysteem">Afhalen</a>
     </div>
     <!-- Hamburgerknop: alleen zichtbaar op mobiel/tablet, opent het menu -->
     <button class="nav-toggle" id="navToggle" aria-label="Menu openen" aria-expanded="false" aria-controls="mobileMenu">
@@ -874,10 +884,11 @@ checkVakantie();
 <h1>Friet, Burgers &amp; Meer…<span class="hero-h1-sub">in Veenendaal</span></h1>
 <p class="lead">Zin in friet, burgers, loaded fries, snacks of wraps? Bestel eenvoudig online voor afhalen of bezorgen bij Boslaantje Doen.</p>
 <div class="hero-cta">
-<a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold">Bezorgen</a>
-<a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold">Afhalen</a>
+<a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold btn-order">Bezorgen</a>
+<a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold btn-order">Afhalen</a>
 <a href="#contact" class="btn btn-ghost-light"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Route &amp; openingstijden</a>
 </div>
+<p class="hero-order-note"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Bezorgen en afhalen verloopt via ons online bestelsysteem</p>
 <p class="hero-slogan"><img src="images/slogan_small.png" width="900" height="358" alt="Wat eet jij vandaag? #boslaantjedoen" class="hero-slogan-img" loading="lazy"></p>
 </div>
 </section>
@@ -1097,8 +1108,8 @@ checkVakantie();
           <a class="big" href="mailto:info@boslaantjedoen.nl">info@boslaantjedoen.nl</a>
         </div>
         <div class="contact-cta">
-          <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold">Bezorgen</a>
-          <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold">Afhalen</a>
+          <a href="https://www.boslaantjedoen.nl/bestel#bezorgen" target="_blank" rel="noopener" class="btn btn-gold btn-order">Bezorgen</a>
+          <a href="https://www.boslaantjedoen.nl/SelectStore/boslaantje-doen" target="_blank" rel="noopener" class="btn btn-gold btn-order">Afhalen</a>
         </div>
         <p class="cta-note">Bij online bestellen kies je zelf afhalen of bezorgen.</p>
 <p class="contact-sub">Heb je nog een vraag over bestellen, openingstijden of iets anders? Bel of mail ons gerust, of bekijk eerst onze <a href="/veelgestelde-vragen" class="faq-link">veelgestelde vragen</a>.</p>
