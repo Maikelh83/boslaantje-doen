@@ -6,6 +6,7 @@ eleventyConfig.addPassthroughCopy('src/robots.txt');
 // zie NOTES-MORGEN.md en src/_redirects zelf voor uitleg).
 eleventyConfig.addPassthroughCopy('src/_redirects');
 eleventyConfig.addPassthroughCopy('src/images');
+eleventyConfig.addPassthroughCopy('src/fonts');
 eleventyConfig.addPassthroughCopy('src/sitemap.xml');
 eleventyConfig.addPassthroughCopy('src/index.html');
 eleventyConfig.addPassthroughCopy('src/voorwaarden.html');
