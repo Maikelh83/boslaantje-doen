@@ -94,6 +94,7 @@ eleventyConfig.addPassthroughCopy('admin');
   eleventyConfig.addPassthroughCopy('src/manifest.json');
   eleventyConfig.addPassthroughCopy('src/sw.js');
   eleventyConfig.addPassthroughCopy('src/pwa-install.js');
+  eleventyConfig.addPassthroughCopy('src/consent.js');
   // Los installeerbare PWA voor de bezorger-app (kassa-bezorger.html):
   // eigen manifest met scope '/kassa-bezorger', zodat de chauffeur een
   // apart app-icoon op zijn homescreen krijgt in plaats van de hele

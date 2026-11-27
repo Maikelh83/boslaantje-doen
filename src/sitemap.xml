@@ -20,6 +20,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+  <!-- /bestellen bewust niet opgenomen: die pagina is noindex. -->
   <url>
     <loc>https://www.boslaantjedoen.com/voorwaarden</loc>
     <changefreq>monthly</changefreq>
