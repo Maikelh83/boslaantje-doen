@@ -94,10 +94,10 @@
           "foto": "chili-chicken-burger.jpg"
         },
         {
-          "id": "milkshake-mango-passie",
-          "naam": "Milkshake Mango Passievrucht",
+          "id": "milkshake-pistache",
+          "naam": "Milkshake Pistache",
           "prijs": 3.5,
-          "beschrijving": "Romige milkshake met de frisse smaak van mango en passievrucht",
+          "beschrijving": "Romige milkshake met de heerlijke nootsmaak van pistache.",
           "foto": "milkshake.jpg",
           "kassaExtras": [
             {
